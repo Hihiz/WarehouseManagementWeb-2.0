@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="WarehouseManagementWeb.Api/WarehouseManagementWeb.Api.csproj" />
+  <Project Path="WarehouseManagementWeb.Application/WarehouseManagementWeb.Application.csproj" />
+  <Project Path="WarehouseManagementWeb.Domain/WarehouseManagementWeb.Domain.csproj" />
+  <Project Path="WarehouseManagementWeb.Infrastructure/WarehouseManagementWeb.Infrastructure.csproj" />
+  <Project Path="WarehouseManagementWeb.Tests/WarehouseManagementWeb.Tests.csproj" />
+</Solution>
