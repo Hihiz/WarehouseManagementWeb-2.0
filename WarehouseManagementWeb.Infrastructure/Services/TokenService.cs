@@ -96,7 +96,33 @@ namespace WarehouseManagementWeb.Infrastructure.Services
         /// <inheritdoc />
         public async Task RevokeRefreshTokenUserByEmailAsync(string userEmail)
         {
-           
+            try
+            {
+                if (string.IsNullOrWhiteSpace(userEmail))
+                {
+                    throw new InvalidOperationException($"Недопустимый email пользователя. UserEmail: {userEmail}.");
+                }
+
+                ApplicationUser? user = await _userManager.FindByEmailAsync(userEmail);
+
+                if (user is null)
+                {
+                    throw new InvalidOperationException($"Ошибка получения пользователя. UserEmail: {userEmail}.");
+                }
+
+                // Обнуляем токен обновления.
+                user.RefreshToken = null;
+                user.RefreshTokenExpiryTime = DateTime.MinValue;
+
+                await _userManager.UpdateAsync(user);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
     }
 }
