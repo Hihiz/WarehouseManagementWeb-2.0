@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Data;
+using System.Security.Claims;
 using WarehouseManagementWeb.Infrastructure.Data;
+using WarehouseManagementWeb.Infrastructure.Helpers;
 using WarehouseManagementWeb.Infrastructure.Identity;
 using WarehouseManagementWeb.Infrastructure.Identity.Models;
 using WarehouseManagementWeb.Infrastructure.Interfaces;
@@ -15,6 +18,7 @@ namespace WarehouseManagementWeb.Infrastructure.Services
     public class AuthService : IAuthService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<AuthService> _logger;
         private readonly ApplicationDbContext _db;
 
@@ -23,14 +27,15 @@ namespace WarehouseManagementWeb.Infrastructure.Services
         /// </summary>
         /// <param name="userManager">Менеджер пользователей.</param>
         /// <param name="configuration">Конфигурация.</param>
-        /// <param name="tokenService">Сервисо токенов.</param>
         /// <param name="logger">Логгер.</param>
         /// <param name="db">Класс контекста Ef.</param>
-        public AuthService(UserManager<ApplicationUser> userManager,     
+        public AuthService(UserManager<ApplicationUser> userManager,
+            IConfiguration configuration,
             ILogger<AuthService> logger,
             ApplicationDbContext db)
         {
             _userManager = userManager;
+            _configuration = configuration;
             _logger = logger;
             _db = db;
         }
@@ -106,7 +111,74 @@ namespace WarehouseManagementWeb.Infrastructure.Services
         /// <inheritdoc />
         public async Task<UserSignInOutput> SignInAsync(UserSignInInput userSignInInput)
         {
-            
+            try
+            {
+                if (userSignInInput is null)
+                {
+                    throw new InvalidOperationException("Недопустимые данные пользователя.");
+                }
+
+                ApplicationUser? user = await _userManager.FindByEmailAsync(userSignInInput.Email!);
+
+                if (user is null)
+                {
+                    throw new InvalidOperationException(
+                        $"Пользователь с почтой {userSignInInput.Email} не существует в системе.");
+                }
+
+                // Проверяем пароль пользователя.
+                bool isPasswordValid = await _userManager.CheckPasswordAsync(user, userSignInInput.Password!);
+
+                if (!isPasswordValid)
+                {
+                    throw new InvalidOperationException("Не удалось выполнить вход. " +
+                        "Проверьте корректность учётных данных.");
+                }
+
+                // Получаем роли пользователя.
+                IList<string> userRoles = await _userManager.GetRolesAsync(user);
+
+                List<Claim> authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Email!),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                };
+
+                // Добавляем роли пользователя в claims.
+                foreach (var role in userRoles)
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, role));
+                }
+
+                // Создаем токен доступа.
+                string accessToken = _configuration.GenerateAccessToken(authClaims);
+
+                // Создаем токен обновления для пользователя.
+                user.RefreshToken = _configuration.GenerateRefreshToken();
+
+                user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(_configuration.GetSection(
+                    "Jwt:RefreshTokenValidityInMinutes").Get<int>());
+
+                await _userManager.UpdateAsync(user);
+
+                UserSignInOutput result = new UserSignInOutput
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    AccessToken = accessToken,
+                    RefreshToken = user.RefreshToken
+                };
+
+                return result;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
         /// <inheritdoc />
