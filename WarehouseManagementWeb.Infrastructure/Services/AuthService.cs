@@ -19,6 +19,7 @@ namespace WarehouseManagementWeb.Infrastructure.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly ITokenService _tokenService;
         private readonly ILogger<AuthService> _logger;
         private readonly ApplicationDbContext _db;
 
@@ -27,15 +28,18 @@ namespace WarehouseManagementWeb.Infrastructure.Services
         /// </summary>
         /// <param name="userManager">Менеджер пользователей.</param>
         /// <param name="configuration">Конфигурация.</param>
+        /// <param name="tokenService">Сервис токенов.</param>
         /// <param name="logger">Логгер.</param>
         /// <param name="db">Класс контекста Ef.</param>
         public AuthService(UserManager<ApplicationUser> userManager,
             IConfiguration configuration,
+            ITokenService tokenService,
             ILogger<AuthService> logger,
             ApplicationDbContext db)
         {
             _userManager = userManager;
             _configuration = configuration;
+            _tokenService = tokenService;
             _logger = logger;
             _db = db;
         }
@@ -184,7 +188,17 @@ namespace WarehouseManagementWeb.Infrastructure.Services
         /// <inheritdoc />
         public async Task LogoutAsync(string userEmail)
         {
-           
+            try
+            {
+                await _tokenService.RevokeRefreshTokenUserByEmailAsync(userEmail);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
     }
 }
