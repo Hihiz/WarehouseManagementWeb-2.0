@@ -1,0 +1,89 @@
+<div class="card-body p-4">
+  <div class="card card-container">
+    <img src="auth-img.png" class="profile-img-card" alt="Фото регистрации" />
+
+    <form
+      method="post"
+      name="form"
+      #signInForm="ngForm"
+      (ngSubmit)="signInForm.form.valid && onSendSignIn()"
+      novalidate
+    >
+      <div class="form-group">
+        <label class="control-label">Email</label>
+        <input
+          class="form-control"
+          type="email"
+          name="email"
+          [(ngModel)]="userSignInInput.email"
+          placeholder="Введите email"
+          required
+          email
+          #email="ngModel"
+          autocomplete="email"
+          [ngClass]="{ 'is-invalid': signInForm.submitted && email.errors }"
+        />
+
+        @if (email.errors && signInForm.submitted) {
+          <div class="invalid-feedback">
+            @if (email.errors['required']) {
+              Почта не заполнена
+            }
+            @if (email.errors['email']) {
+              Введите валидный email
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="control-label">Пароль</label>
+        <input
+          class="form-control"
+          type="password"
+          name="password"
+          [(ngModel)]="userSignInInput.password"
+          placeholder="Введите пароль"
+          required
+          #password="ngModel"
+          minlength="1"
+          autocomplete="new-password"
+          [ngClass]="{ 'is-invalid': signInForm.submitted && password.errors }"
+        />
+
+        @if (password.errors && signInForm.submitted) {
+          <div class="invalid-feedback">
+            @if (password.errors['required']) {
+              Пароль не заполнен
+            }
+            @if (password.errors['minlength']) {
+              Минимальная длина пароля 6 символов
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Уведомление об ошибкe пользователю -->
+      @if (errorMessage) {
+        <div class="alert alert-danger mb-1 bottom-margin">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <div class="mb-3 text-center bottom-margin">
+        <button class="btn btn-primary" type="submit">Вход</button>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-12 text-center">
+          <p class="text-muted">
+            У вас нет учетной записи?
+            <a routerLink="/signup" class="text-muted ms-1">
+              <b>Регистрация</b>
+            </a>
+          </p>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

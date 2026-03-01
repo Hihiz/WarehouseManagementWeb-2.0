@@ -1,0 +1,165 @@
+<div class="card-body p-4">
+  <div class="card card-container">
+    <img src="auth-img.png" class="profile-img-card" alt="Фото регистрации" />
+
+    <form
+      method="post"
+      name="form"
+      (ngSubmit)="signUpForm.form.valid && onSendSignUp()"
+      #signUpForm="ngForm"
+      novalidate
+    >
+      <div class="form-group">
+        <label class="control-label">Имя пользоватея</label>
+        <input
+          class="form-control"
+          type="text"
+          name="firstName"
+          [(ngModel)]="userSignUpInput.firstName"
+          placeholder="Введите имя пользователя"
+          required
+          #firstName="ngModel"
+          minlength="3"
+          maxlength="20"
+          [ngClass]="{ 'is-invalid': signUpForm.submitted && firstName.errors }"
+        />
+
+        @if (firstName.errors && signUpForm.submitted) {
+          <div class="invalid-feedback">
+            @if (firstName.errors['required']) {
+              Имя пользователя не заполнено
+            }
+            @if (firstName.errors['minlength']) {
+              Имя пользователя слишком короткое
+            }
+            @if (firstName.errors['maxlength']) {
+              Имя пользователя слишком длиное
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="control-label">Фамилия пользователя</label>
+        <input
+          class="form-control"
+          type="text"
+          name="lastName"
+          [(ngModel)]="userSignUpInput.lastName"
+          placeholder="Введите фамилию пользователя"
+          required
+          #lastName="ngModel"
+          minlength="3"
+          maxlength="20"
+          [ngClass]="{ 'is-invalid': signUpForm.submitted && lastName.errors }"
+        />
+
+        @if (lastName.errors && signUpForm.submitted) {
+          <div class="invalid-feedback">
+            @if (lastName.errors['required']) {
+              Фамилия пользователя не заполнена
+            }
+            @if (lastName.errors['minlength']) {
+              Фамилия пользователя слишком короткая
+            }
+            @if (lastName.errors['maxlength']) {
+              Фамилия пользователя слишком длинная
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="control-label">Email</label>
+        <input
+          class="form-control"
+          type="email"
+          name="email"
+          [(ngModel)]="userSignUpInput.email"
+          placeholder="Введите email"
+          required
+          email
+          #email="ngModel"
+          autocomplete="email"
+          [ngClass]="{ 'is-invalid': signUpForm.submitted && email.errors }"
+        />
+
+        @if (email.errors && signUpForm.submitted) {
+          <div class="invalid-feedback">
+            @if (email.errors['required']) {
+              Почта не заполнена
+            }
+            @if (email.errors['email']) {
+              Введите валидный email
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="control-label">Пароль</label>
+        <input
+           class="form-control"
+          type="password"
+          name="password"
+        [(ngModel)]="userSignUpInput.password"
+          placeholder="Введите пароль"
+          required
+          #password="ngModel"
+          minlength="1"
+          autocomplete="new-password"
+          [ngClass]="{ 'is-invalid': signUpForm.submitted && password.errors }"
+        />
+
+        @if (password.errors && signUpForm.submitted) {
+          <div class="invalid-feedback">
+            @if (password.errors['required']) {
+              Пароль не заполнен
+            }
+            @if (password.errors['minlength']) {
+              Минимальная длина пароля 6 символов
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="control-label">Повторите пароль</label>
+        <input
+          class="form-control"
+          type="password"
+          [(ngModel)]="userSignUpInput.passwordConfirm"
+          name="passwordConfirm"
+          placeholder="Повторите введенный пароль"
+          required
+          minlength="1"
+          #passwordConfirm="ngModel"
+          autocomplete="new-password"
+          [ngClass]="{ 'is-invalid': signUpForm.submitted && passwordConfirm.errors }"
+        />
+
+        @if (passwordConfirm.errors && signUpForm.submitted) {
+          <div class="invalid-feedback">
+            @if (passwordConfirm.errors['required']) {
+              Повторный пароль не заполнен
+            }
+            @if (passwordConfirm.errors['minlength']) {
+              Минимальная длина пароля 6 символов
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Уведомление об ошибкe пользователю -->
+      @if (errorMessage) {
+        <div class="alert alert-danger mb-1 bottom-margin">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <div class="mb-3 text-center bottom-margin">
+        <button class="btn btn-primary" type="submit">Регистрация</button>
+      </div>
+    </form>
+  </div>
+</div>
