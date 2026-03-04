@@ -15,12 +15,12 @@ namespace WarehouseManagementWeb.Domain.Entities
         /// <summary>
         /// Наименование клиента.
         /// </summary>
-        public string? Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Адрес клиента.
         /// </summary>
-        public string? Address { get; set; }
+        public string Address { get; set; }
 
         /// <summary>
         /// Статус клиента в значении перечисления.
