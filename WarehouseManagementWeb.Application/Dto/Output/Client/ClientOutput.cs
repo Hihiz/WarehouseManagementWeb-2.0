@@ -27,5 +27,10 @@ namespace WarehouseManagementWeb.Application.Dto.Output.Client
         /// Статус клиента в значении перечисления.
         /// </summary>
         public DirectoryStatusEnum ClientStatusEnum { get; set; }
+
+        /// <summary>
+        /// Статус клиента.
+        /// </summary>
+        public string? ClientStatusTitle { get; set; }
     }
 }
