@@ -12,7 +12,7 @@ using WarehouseManagementWeb.Infrastructure.Data;
 namespace WarehouseManagementWeb.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260225210358_Initial")]
+    [Migration("20260307043210_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -155,6 +155,47 @@ namespace WarehouseManagementWeb.Infrastructure.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("WarehouseManagementWeb.Domain.Entities.ClientEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id")
+                        .HasComment("PK.");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("address")
+                        .HasComment("Адрес клиента.");
+
+                    b.Property<string>("ClientStatusEnum")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("active")
+                        .HasColumnName("status_enum")
+                        .HasComment("Статус клиента в значении перечисления.");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name")
+                        .HasComment("Наименование клиента.");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("clients", "directory", t =>
+                        {
+                            t.HasComment("Таблица клиентов.");
+                        });
                 });
 
             modelBuilder.Entity("WarehouseManagementWeb.Infrastructure.Identity.ApplicationUser", b =>
