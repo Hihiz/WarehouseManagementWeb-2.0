@@ -92,12 +92,20 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
 
         /// <inheritdoc />
         public async Task<bool> CheckClientExistsByNameAndIdAsync(int clientId, string clientName)
-        {
+        {            
             bool result = await _db.Clients
                   .AsNoTracking()
                   .AnyAsync(c => c.Name == clientName && c.Id != clientId);
 
             return result;
+        }
+
+        /// <inheritdoc />
+        public async Task CreateClientAsync(ClientEntity clientEntity)
+        {
+            await _db.Clients.AddAsync(clientEntity);
+
+            await _db.SaveChangesAsync();
         }
 
         #endregion
