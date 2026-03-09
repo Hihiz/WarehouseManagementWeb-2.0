@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WarehouseManagementWeb.Application.Dto.Output.Client;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.Client;
+using WarehouseManagementWeb.Domain.Enums;
 using WarehouseManagementWeb.Infrastructure.Data;
 
 namespace WarehouseManagementWeb.Infrastructure.Repositories
@@ -28,6 +29,26 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         {
             IEnumerable<ClientOutput> result = await _db.Clients
                 .AsNoTracking()
+                .Select(c => new ClientOutput
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Address = c.Address,
+                    ClientStatusEnum = c.ClientStatusEnum,
+                    ClientStatusTitle = c.ClientStatusEnum.ToString()
+                })
+                .OrderByDescending(c => c.Id)
+                .ToListAsync();
+
+            return result;
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<ClientOutput>> GetActiveClientsAsync()
+        {
+            IEnumerable<ClientOutput> result = await _db.Clients
+                .AsNoTracking()
+                .Where(c => c.ClientStatusEnum == DirectoryStatusEnum.Active)
                 .Select(c => new ClientOutput
                 {
                     Id = c.Id,
