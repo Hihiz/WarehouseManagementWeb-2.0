@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
+using WarehouseManagementWeb.Application.Dto.Input.Client;
 using WarehouseManagementWeb.Application.Dto.Output.Client;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.Client;
 using WarehouseManagementWeb.Application.Interfaces.Services.Client;
+using WarehouseManagementWeb.Domain.Entities;
 using WarehouseManagementWeb.Domain.Enums;
 
 namespace WarehouseManagementWeb.Application.Services.Client
@@ -109,6 +111,129 @@ namespace WarehouseManagementWeb.Application.Services.Client
                 }
 
                 return result;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task CreateClientAsync(CreateClientInput createClientInput)
+        {
+            try
+            {
+                if (createClientInput is null)
+                {
+                    throw new InvalidOperationException("Недопустимые данные клиента.");
+                }
+
+                bool isClientNameExist = await _clientRepository.CheckClientExistsByNameAsync(createClientInput.Name!);
+
+                if (isClientNameExist)
+                {
+                    throw new InvalidOperationException(
+                        $"Клиент с наименованием: '{createClientInput.Name}' уже существует в системе.");
+                }
+
+                ClientEntity entity = new ClientEntity
+                {
+                    Name = createClientInput.Name!,
+                    Address = createClientInput.Address!
+                };
+
+                await _clientRepository.CreateClientAsync(entity);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task UpdateClientAsync(UpdateClientInput updateClientInput)
+        {
+            try
+            {
+                if (updateClientInput is null)
+                {
+                    throw new InvalidOperationException("Недопустимые данные клиента.");
+                }
+
+                bool isClientNameExist = await _clientRepository.CheckClientExistsByNameAndIdAsync(
+                    updateClientInput.Id, updateClientInput.Name!);
+
+                if (isClientNameExist)
+                {
+                    throw new InvalidOperationException(
+                        $"Клиент с наименованием: '{updateClientInput.Name}' уже существует в системе.");
+                }
+
+                ClientEntity entity = new ClientEntity
+                {
+                    Id = updateClientInput.Id,
+                    Name = updateClientInput.Name!,
+                    Address = updateClientInput.Address!
+                };
+
+                await _clientRepository.UpdateClientAsync(entity);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task ChangeStatusClientAsync(int clientId, DirectoryStatusEnum statusEnum)
+        {
+            try
+            {
+                if (clientId <= 0)
+                {
+                    throw new InvalidOperationException("Недопустимый Id клиента. " +
+                                                        $"ClientId: {clientId}.");
+                }
+
+                if (statusEnum is DirectoryStatusEnum.Undefined)
+                {
+                    throw new InvalidOperationException("Недопустимый статус клиента. " +
+                                                        $"ClientId: {clientId}. " +
+                                                        $"Status: {statusEnum.ToString()}.");
+                }
+
+                await _clientRepository.ChangeStatusClientAsync(clientId, statusEnum);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task RemoveClientAsync(int clientId)
+        {
+            try
+            {
+                if (clientId <= 0)
+                {
+                    throw new InvalidOperationException("Недопустимый Id клиента. " +
+                                                        $"ClientId: {clientId}.");
+                }
+
+                await _clientRepository.RemoveClientAsync(clientId);
             }
 
             catch (Exception ex)
