@@ -39,6 +39,20 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Метод получает список активных клиентов.
+        /// </summary>
+        /// <returns>Список активных клиентов.</returns>
+        [HttpGet]
+        [Route("active-clients")]
+        public async Task<IActionResult> GetActiveClientsAsync()
+        {
+            IEnumerable<ClientOutput> result = await _clientService.GetActiveClientsAsync();
+
+            return Ok(result);
+        }
+
+
         #endregion
 
         #region Приватные методы.
