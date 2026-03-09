@@ -101,6 +101,17 @@ namespace WarehouseManagementWeb.Api.Controllers
                 changeStatusClientInput.ClientStatusEnum);
         }
 
+        /// <summary>
+        /// Метод удаляет клиента.
+        /// </summary>
+        /// <param name="clientId">Id клиента.</param>
+        [HttpDelete]
+        [Route("client")]
+        public async Task RemoveClientAsync([FromBody] int clientId)
+        {
+            await _clientService.RemoveClientAsync(clientId);
+        }
+
         #endregion
 
         #region Приватные методы.
