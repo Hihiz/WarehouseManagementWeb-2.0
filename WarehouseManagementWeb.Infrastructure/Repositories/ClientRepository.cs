@@ -108,6 +108,26 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             await _db.SaveChangesAsync();
         }
 
+        /// <inheritdoc />
+        public async Task UpdateClientAsync(ClientEntity clientEntity)
+        {
+            ClientEntity? client = await _db.Clients
+                .FirstOrDefaultAsync(c => c.Id == clientEntity.Id);
+
+            if (client is null)
+            {
+                throw new InvalidOperationException("Ошибка при редактировании клиента. " +
+                                                    $"ClientId: {clientEntity.Id}. " +
+                                                    $"Name: {clientEntity.Name}. " +
+                                                    $"Address: {clientEntity.Address}.");
+            }
+
+            client.Name = clientEntity.Name;
+            client.Address = clientEntity.Address;
+
+            await _db.SaveChangesAsync();
+        }
+
         #endregion
 
         #region Приватные методы.
