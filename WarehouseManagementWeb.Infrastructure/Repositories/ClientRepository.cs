@@ -63,6 +63,22 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             return result;
         }
 
+        /// <inheritdoc />
+        public async Task<ClientOutput?> GetClientByIdAsync(int clientId)
+        {
+            ClientOutput? result = await _db.Clients
+                .Select(c => new ClientOutput
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Address = c.Address,
+                    ClientStatusEnum = c.ClientStatusEnum,
+                    ClientStatusTitle = c.ClientStatusEnum.ToString()
+                }).FirstOrDefaultAsync(c => c.Id == clientId);
+
+            return result;
+        }
+
         #endregion
 
         #region Приватные методы.
