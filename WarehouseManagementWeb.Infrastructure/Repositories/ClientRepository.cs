@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WarehouseManagementWeb.Application.Dto.Output.Client;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.Client;
+using WarehouseManagementWeb.Domain.Entities;
 using WarehouseManagementWeb.Domain.Enums;
 using WarehouseManagementWeb.Infrastructure.Data;
 
@@ -85,6 +86,16 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             bool result = await _db.Clients
                 .AsNoTracking()
                 .AnyAsync(c => c.Name == clientName);
+
+            return result;
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> CheckClientExistsByNameAndIdAsync(int clientId, string clientName)
+        {
+            bool result = await _db.Clients
+                  .AsNoTracking()
+                  .AnyAsync(c => c.Name == clientName && c.Id != clientId);
 
             return result;
         }
