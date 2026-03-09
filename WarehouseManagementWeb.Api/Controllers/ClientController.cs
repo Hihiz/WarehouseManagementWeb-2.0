@@ -78,6 +78,29 @@ namespace WarehouseManagementWeb.Api.Controllers
             await _clientService.CreateClientAsync(createClientInput);
         }
 
+        /// <summary>
+        /// Метод редактирует клиента.
+        /// </summary>
+        /// <param name="updateClientInput">Входная модель.</param>
+        [HttpPut]
+        [Route("client")]
+        public async Task UpdateClientAsync([FromBody] UpdateClientInput updateClientInput)
+        {
+            await _clientService.UpdateClientAsync(updateClientInput);
+        }
+
+        /// <summary>
+        /// Метод обновляет статус клиенту.
+        /// </summary>
+        /// <param name="changeStatusClientInput">Входная модель.</param>
+        [HttpPatch]
+        [Route("change-status-client")]
+        public async Task ChangeStatusClientAsync([FromBody] ChangeStatusClientInput changeStatusClientInput)
+        {
+            await _clientService.ChangeStatusClientAsync(changeStatusClientInput.ClientId,
+                changeStatusClientInput.ClientStatusEnum);
+        }
+
         #endregion
 
         #region Приватные методы.
