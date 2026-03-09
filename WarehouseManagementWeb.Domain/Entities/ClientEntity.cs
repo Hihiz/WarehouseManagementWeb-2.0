@@ -3,7 +3,7 @@
 namespace WarehouseManagementWeb.Domain.Entities
 {
     /// <summary>
-    /// Класс клиента сопоставляется с таблицей directory.Clients.
+    /// Класс клиента сопоставляется с таблицей directory.сlients.
     /// </summary>
     public class ClientEntity
     {

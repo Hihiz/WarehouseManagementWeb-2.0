@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using WarehouseManagementWeb.Domain.Entities;
 using WarehouseManagementWeb.Infrastructure.Identity;
 
 namespace WarehouseManagementWeb.Infrastructure.Data
@@ -16,5 +17,14 @@ namespace WarehouseManagementWeb.Infrastructure.Data
         /// <param name="options">Параметры.</param>
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
+
+        public DbSet<ClientEntity> Clients { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        }
     }
 }
