@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseManagementWeb.Application.Dto.Output.Client;
 using WarehouseManagementWeb.Application.Interfaces.Services.Client;
 
 namespace WarehouseManagementWeb.Api.Controllers
@@ -23,5 +24,25 @@ namespace WarehouseManagementWeb.Api.Controllers
             _clientService = clientService;
         }
 
+        #region Публичные методы.
+
+        /// <summary>
+        /// Метод получает список клиентов.
+        /// </summary>
+        /// <returns>Список клиентов.</returns>
+        [HttpGet]
+        [Route("clients")]
+        public async Task<IActionResult> GetClientsAsync()
+        {
+            ClientListByStatusOutput result = await _clientService.GetClientsAsync();
+
+            return Ok(result);
+        }
+
+        #endregion
+
+        #region Приватные методы.
+
+        #endregion
     }
 }
