@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using WarehouseManagementWeb.Application.Dto.Input.Client;
 using WarehouseManagementWeb.Application.Dto.Output.Client;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.Client;
 using WarehouseManagementWeb.Application.Interfaces.Services.Client;
@@ -27,39 +26,103 @@ namespace WarehouseManagementWeb.Application.Services.Client
             _logger = logger;
         }
 
-        public Task ChangeStatusClientAsync(int clientId, DirectoryStatusEnum statusEnum)
+        #region Публичные методы.
+
+        /// <inheritdoc />
+        public async Task<ClientListByStatusOutput> GetClientsAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                IEnumerable<ClientOutput> clients = await _clientRepository.GetClientsAsync();
+
+                List<ClientOutput> activeClients = new List<ClientOutput>(clients.Count(
+                    c => c.ClientStatusEnum == DirectoryStatusEnum.Active));
+
+                List<ClientOutput> archivedClients = new List<ClientOutput>(clients.Count(
+                   c => c.ClientStatusEnum == DirectoryStatusEnum.Archived));
+
+                foreach (var client in clients)
+                {
+                    switch (client.ClientStatusEnum)
+                    {
+                        case DirectoryStatusEnum.Active:
+                            activeClients.Add(client);
+                            break;
+
+                        case DirectoryStatusEnum.Archived:
+                            archivedClients.Add(client);
+                            break;
+                    }
+                }
+
+                ClientListByStatusOutput result = new ClientListByStatusOutput
+                {
+                    ActiveClients = activeClients.OrderByDescending(c => c.Id).ToList(),
+                    ArchivedClients = archivedClients.OrderByDescending(c => c.Id).ToList()
+                };
+
+                return result;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
-        public Task CreateClientAsync(CreateClientInput createClientInput)
+        /// <inheritdoc />
+        public async Task<IEnumerable<ClientOutput>> GetActiveClientsAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                IEnumerable<ClientOutput> result = await _clientRepository.GetActiveClientsAsync();
+
+                return result;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
-        public Task<IEnumerable<ClientOutput>> GetActiveClientsAsync()
+        /// <inheritdoc />
+        public async Task<ClientOutput?> GetClientByIdAsync(int clientId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (clientId <= 0)
+                {
+                    throw new InvalidOperationException("Недопустимый Id клиента. " +
+                                                        $"ClientId: {clientId}.");
+                }
+
+                ClientOutput? result = await _clientRepository.GetClientByIdAsync(clientId);
+
+                if (result is null)
+                {
+                    return new ClientOutput();
+                }
+
+                return result;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
-        public Task<ClientOutput?> GetClientByIdAsync(int clientId)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
 
-        public Task<ClientListByStatusOutput> GetClientsAsync()
-        {
-            throw new NotImplementedException();
-        }
+        #region Приватные методы.
 
-        public Task RemoveClientAsync(int clientId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateClientAsync(UpdateClientInput updateClientInput)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }
