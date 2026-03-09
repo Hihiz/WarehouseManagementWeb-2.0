@@ -52,6 +52,20 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Метод получает клиента по Id.
+        /// </summary>
+        /// <param name="clientId">Id клиента.</param>
+        /// <returns>Данные клиента.</returns>
+        [HttpGet]
+        [Route("client")]
+        public async Task<IActionResult> GetClientByIdAsync([FromQuery] int clientId)
+        {
+            ClientOutput? result = await _clientService.GetClientByIdAsync(clientId);
+
+            return Ok(result);
+        }
+
 
         #endregion
 
