@@ -128,6 +128,25 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             await _db.SaveChangesAsync();
         }
 
+        /// <inheritdoc />
+        public async Task ChangeStatusClientAsync(int clientId, DirectoryStatusEnum statusEnum)
+        {
+            ClientEntity? client = await _db.Clients
+                .FirstOrDefaultAsync(c => c.Id == clientId);
+
+            if (client is null)
+            {
+                throw new InvalidOperationException("Ошибка при обновлении статуса клиента. " +
+                                                     $"ClientId: {clientId}. " +
+                                                     $"Status: {statusEnum}.");
+            }
+
+            client.ClientStatusEnum = statusEnum;
+
+            await _db.SaveChangesAsync();
+        }
+
+
         #endregion
 
         #region Приватные методы.
