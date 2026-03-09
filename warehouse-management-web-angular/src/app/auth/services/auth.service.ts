@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, of, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 import { UserSignInOutput } from '../models/output/user-sign-in-output';
 import { UserSignUpOutput } from '../models/output/user-sign-up-output';
 import { HttpClient } from '@angular/common/http';
