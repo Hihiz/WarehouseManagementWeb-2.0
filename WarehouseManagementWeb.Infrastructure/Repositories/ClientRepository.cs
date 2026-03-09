@@ -1,7 +1,6 @@
-﻿using WarehouseManagementWeb.Application.Dto.Output.Client;
+﻿using Microsoft.EntityFrameworkCore;
+using WarehouseManagementWeb.Application.Dto.Output.Client;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.Client;
-using WarehouseManagementWeb.Domain.Entities;
-using WarehouseManagementWeb.Domain.Enums;
 using WarehouseManagementWeb.Infrastructure.Data;
 
 namespace WarehouseManagementWeb.Infrastructure.Repositories
@@ -22,49 +21,31 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             _db = db;
         }
 
-        public Task ChangeStatusClientAsync(int clientId, DirectoryStatusEnum statusEnum)
+        #region Публичные методы.
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<ClientOutput>> GetClientsAsync()
         {
-            throw new NotImplementedException();
+            IEnumerable<ClientOutput> result = await _db.Clients
+                .AsNoTracking()
+                .Select(c => new ClientOutput
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Address = c.Address,
+                    ClientStatusEnum = c.ClientStatusEnum,
+                    ClientStatusTitle = c.ClientStatusEnum.ToString()
+                })
+                .OrderByDescending(c => c.Id)
+                .ToListAsync();
+
+            return result;
         }
 
-        public Task<bool> CheckClientExistsByNameAndIdAsync(int clientId, string clientName)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
 
-        public Task<bool> CheckClientExistsByNameAsync(string clientName)
-        {
-            throw new NotImplementedException();
-        }
+        #region Приватные методы.
 
-        public Task CreateClientAsync(ClientEntity clientEntity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<ClientOutput>> GetActiveClientsAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ClientOutput?> GetClientByIdAsync(int clientId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<ClientOutput>> GetClientsAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RemoveClientAsync(int clientId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateClientAsync(ClientEntity clientEntity)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }
