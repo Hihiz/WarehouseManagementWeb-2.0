@@ -47,15 +47,13 @@ export class SigninComponent implements OnInit {
       next: (_) => {
         console.log('Пользователь аутентифицирован: ', this.userSignIn$.value);
 
-        this._router.navigate(['/']);
+        this._router.navigate(['/clients']);
       },
       error: (error) => {
         console.log('Ошибка при прохождении аутентификации: ', error);
 
         this.errorMessage =
           error.error.message || 'Ошибка при прохождении аутентификации, повторите попытку !';
-
-        console.log('Ошибка инициализи', this.errorMessage);
 
         this.cdr.detectChanges();
       },
