@@ -16,5 +16,5 @@ export const authGuard: CanActivateFn = () => {
   }
 
   // Перенаправляем на страницу аутентификации.
-  return router.parseUrl('/signin');
+  return router.navigate(['/signin']);
 };
