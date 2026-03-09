@@ -92,7 +92,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
 
         /// <inheritdoc />
         public async Task<bool> CheckClientExistsByNameAndIdAsync(int clientId, string clientName)
-        {            
+        {
             bool result = await _db.Clients
                   .AsNoTracking()
                   .AnyAsync(c => c.Name == clientName && c.Id != clientId);
@@ -146,6 +146,19 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             await _db.SaveChangesAsync();
         }
 
+        /// <inheritdoc />
+        public async Task RemoveClientAsync(int clientId)
+        {
+            int removedClient = await _db.Clients
+                .Where(x => x.Id == clientId)
+                .ExecuteDeleteAsync();
+
+            if (removedClient <= 0)
+            {
+                throw new InvalidOperationException("Ошибка удаления клиента. " +
+                    $"ClientId: {clientId}.");
+            }
+        }
 
         #endregion
 
