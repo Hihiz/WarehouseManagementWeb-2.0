@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseManagementWeb.Application.Dto.Input.Client;
 using WarehouseManagementWeb.Application.Dto.Output.Client;
 using WarehouseManagementWeb.Application.Interfaces.Services.Client;
 
@@ -66,6 +67,16 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Метод добавляет клиента.
+        /// </summary>
+        /// <param name="createClientInput">Входная модель.</param>
+        [HttpPost]
+        [Route("client")]
+        public async Task CreateClientAsync([FromBody] CreateClientInput createClientInput)
+        {
+            await _clientService.CreateClientAsync(createClientInput);
+        }
 
         #endregion
 
