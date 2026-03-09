@@ -1,0 +1,106 @@
+@let detailClient = detailClient$ | async;
+@let isActive = detailClient?.clientStatusEnum?.toString()?.toLowerCase() === 'active';
+
+@if (isLoader) {
+ <div class="text-center py-5">
+    <p>Загрузка данных клиента...</p>
+  </div>
+} @else {
+  <div class="container-fluid">
+    <h3>Детали клиента</h3>
+    <div class="elem-bottom">
+      <button (click)="onUpdateClient()" class="btn btn-success me-2">Сохранить</button>
+      <button (click)="onRemoveClient()" class="btn btn-danger me-2">Удалить</button>
+      <button
+        (click)="onChangeStatusClient()"
+        class="btn me-2 no-transition"
+        [class.btn-warning]="isActive"
+        [class.btn-primary]="!isActive"
+      >
+        {{ isActive ? 'В архив' : 'В работу' }}
+      </button>
+    </div>
+    <form
+      method="post"
+      name="form"
+      #updateClientForm="ngForm"
+      (ngSubmit)="updateClientForm.form.valid && onUpdateClient()"
+      novalidate
+    >
+      <div class="row align-items-center mb-3">
+        <div class="col-md-1">
+          <label class="col-form-label">Наименование:</label>
+        </div>
+        <div class="col-md-3">
+          <input
+            class="form-control"
+            type="text"
+            name="name"
+            [(ngModel)]="updateClientInput.name"
+            placeholder="Введите наименование клиента"
+            required
+            #name="ngModel"
+            minlength="3"
+            maxlength="20"
+            [ngClass]="{
+              'is-invalid': (updateClientForm.submitted && name.errors) || serverNameError,
+            }"
+            (input)="serverNameError = null"
+          />
+          @if (name.errors && updateClientForm.submitted) {
+            <div class="invalid-feedback">
+              @if (name.errors['required']) {
+                Наименование клиента не заполнено
+              }
+              @if (name.errors['minlength']) {
+                Наименование клиента слишком короткое
+              }
+              @if (name.errors['maxlength']) {
+                Наименование клиента слишком длинное
+              }
+            </div>
+          }
+
+          @if (serverNameError) {
+            <span class="invalid-feedback">{{ serverNameError }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="row align-items-center mb-3">
+        <div class="col-md-1">
+          <label class="col-form-label">Адрес:</label>
+        </div>
+        <div class="col-md-3">
+          <input
+            class="form-control"
+            type="text"
+            name="address"
+            [(ngModel)]="updateClientInput.address"
+            placeholder="Введите адрес клиента"
+            required
+            #address="ngModel"
+            minlength="3"
+            maxlength="20"
+            [ngClass]="{ 'is-invalid': updateClientForm.submitted && address.errors }"
+          />
+          @if (address.errors && updateClientForm.submitted) {
+            <div class="invalid-feedback">
+              @if (address.errors['required']) {
+                Адрес клиента не заполнен
+              }
+              @if (address.errors['minlength']) {
+                Адрес клиента слишком короткий
+              }
+              @if (address.errors['maxlength']) {
+                Адрес клиента слишком длинный
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </form>
+
+    <a class="btn btn-primary" (click)="onGetClients()">Назад</a>
+  </div>
+}
