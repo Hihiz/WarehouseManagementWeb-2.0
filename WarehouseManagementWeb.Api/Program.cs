@@ -1,12 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
 using WarehouseManagementWeb.Api.Middlewares;
+using WarehouseManagementWeb.Application;
 using WarehouseManagementWeb.Infrastructure;
 using WarehouseManagementWeb.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddApplicationServices()
+    .AddInfrastructureServices(builder.Configuration);
 
 builder.Services.AddCors(options =>
 {
@@ -53,7 +56,11 @@ builder.Services.AddSwaggerGen(option =>
                 });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 var app = builder.Build();
 

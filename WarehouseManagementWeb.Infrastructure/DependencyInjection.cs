@@ -6,9 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using WarehouseManagementWeb.Application.Interfaces.Repositories.Client;
 using WarehouseManagementWeb.Infrastructure.Data;
 using WarehouseManagementWeb.Infrastructure.Identity;
 using WarehouseManagementWeb.Infrastructure.Interfaces;
+using WarehouseManagementWeb.Infrastructure.Repositories;
 using WarehouseManagementWeb.Infrastructure.Services;
 
 namespace WarehouseManagementWeb.Infrastructure
@@ -36,6 +38,7 @@ namespace WarehouseManagementWeb.Infrastructure
 
             IdentityInit(services);
             AuthenticationInit(services, configuration);
+            AuthServicesInit(services);
             ServicesInit(services);
 
             return services;
@@ -100,13 +103,22 @@ namespace WarehouseManagementWeb.Infrastructure
         }
 
         /// <summary>
+        /// Метод регистрирует сервисы аутентификации, регистрации.
+        /// </summary>
+        /// <param name="services">Регистрация зависимостей.</param>
+        private static void AuthServicesInit(IServiceCollection services)
+        {
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ITokenService, TokenService>();
+        }
+
+        /// <summary>
         /// Метод регистрирует сервисы.
         /// </summary>
         /// <param name="services">Регистрация зависимостей.</param>
         private static void ServicesInit(IServiceCollection services)
         {
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IClientRepository, ClientRepository>();
         }
     }
 }
