@@ -79,6 +79,16 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             return result;
         }
 
+        /// <inheritdoc />
+        public async Task<bool> CheckClientExistsByNameAsync(string clientName)
+        {
+            bool result = await _db.Clients
+                .AsNoTracking()
+                .AnyAsync(c => c.Name == clientName);
+
+            return result;
+        }
+
         #endregion
 
         #region Приватные методы.
