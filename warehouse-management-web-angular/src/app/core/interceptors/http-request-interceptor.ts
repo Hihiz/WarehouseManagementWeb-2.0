@@ -2,12 +2,14 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../../auth/services/auth.service';
+import { Router } from '@angular/router';
 
 /**
  * Функция перехватыает HTTP запросы.
  */
 export const httpRequestInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
+  const router = inject(Router);
 
   const accessToken = localStorage.getItem('utoken');
 
@@ -22,9 +24,11 @@ export const httpRequestInterceptor: HttpInterceptorFn = (req, next) => {
   let responseNext = next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       if (req.url.includes('refresh-token')) {
+        authService.clearStorage();
+        router.navigate(['signin']);
         return throwError(() => error);
       }
-      
+
       if (error.status !== 401) {
         return throwError(() => error);
       }
@@ -53,6 +57,8 @@ export const httpRequestInterceptor: HttpInterceptorFn = (req, next) => {
         }),
 
         catchError((err) => {
+          authService.clearStorage();
+          router.navigate(['signin']);
           return throwError(() => err);
         }),
       );

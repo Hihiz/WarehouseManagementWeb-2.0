@@ -78,11 +78,9 @@ export class AuthService {
     return this._httpClient.post(environment.apiUrl + '/api/account/logout', null).pipe(
       tap(() => {
         this.clearStorage();
-        this.userSignIn$.next(new UserSignInOutput());
       }),
       catchError((error) => {
         this.clearStorage();
-        this.userSignIn$.next(new UserSignInOutput());
         return throwError(() => error);
       }),
     );
@@ -110,10 +108,12 @@ export class AuthService {
   /**
    * Фукнция очищает хранилище.
    */
-  private clearStorage() {
+  public clearStorage() {
     localStorage.removeItem('utoken');
     localStorage.removeItem('urefresh-token');
     localStorage.removeItem('uemail');
+
+    this.userSignIn$.next(new UserSignInOutput());
   }
 
   /**
