@@ -2,21 +2,20 @@
   <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm bg-white border-bottom">
       <div class="container-fluid">
-        <a class="navbar-brand">Header</a>
+        <a class="navbar-brand" routerLink="/resource-shipments"> Управление складом </a>
         <div class="navbar-collapse collapse d-sm-inline-flex">
           <ul class="navbar-nav flex-grow-1 elem-right-end">
             @if ((userSignIn$ | async)?.accessToken) {
               <li class="nav-item">
-                <a class="nav-link text-dark" (click)="onSendLogout()">Logout</a>
+                <a class="nav-link" (click)="onSendLogout()">Logout</a>
               </li>
-
             } @else if (!(userSignIn$ | async)?.accessToken) {
               <li class="nav-item">
-                <a class="nav-link text-dark" routerLink="/signin">Sign In</a>
+                <a class="nav-link" routerLink="/signin">Sign In</a>
               </li>
 
               <li class="nav-item">
-                <a class="nav-link text-dark" routerLink="/signup">Sign Up</a>
+                <a class="nav-link" routerLink="/signup">Sign Up</a>
               </li>
             }
           </ul>
@@ -25,4 +24,24 @@
     </nav>
   </header>
 </body>
-<router-outlet></router-outlet>
+
+<div class="app-container">
+  @if ((userSignIn$ | async)?.accessToken) {
+    <nav class="sidebar">
+      <ul class="menu">
+       <h5>Документы</h5>
+        <li><a routerLink="/resource-shipments" routerLinkActive="active">Отгрузки</a></li>
+        <li><a routerLink="/resource-receipts" routerLinkActive="active">Поступления</a></li>
+        <br />
+        <h5>Справочники</h5>
+        <li><a routerLink="/clients" routerLinkActive="active">Клиенты</a></li>
+        <li><a routerLink="/measure-units" routerLinkActive="active">Единицы измерения</a></li>
+        <li><a routerLink="/resources" routerLinkActive="active">Ресурсы</a></li>
+      </ul>
+    </nav>
+  }
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

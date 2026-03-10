@@ -12,6 +12,9 @@ namespace WarehouseManagementWeb.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "directory");
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -57,6 +60,23 @@ namespace WarehouseManagementWeb.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "clients",
+                schema: "directory",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false, comment: "PK.")
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "text", nullable: false, comment: "Наименование клиента."),
+                    address = table.Column<string>(type: "text", nullable: false, comment: "Адрес клиента."),
+                    status_enum = table.Column<string>(type: "text", nullable: false, defaultValue: "active", comment: "Статус клиента в значении перечисления.")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_clients", x => x.id);
+                },
+                comment: "Таблица клиентов.");
 
             migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
@@ -200,6 +220,13 @@ namespace WarehouseManagementWeb.Infrastructure.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_clients_name",
+                schema: "directory",
+                table: "clients",
+                column: "name",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -219,6 +246,10 @@ namespace WarehouseManagementWeb.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "clients",
+                schema: "directory");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

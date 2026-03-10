@@ -69,16 +69,6 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "User, Admin")]
-        [HttpGet]
-        [Route("test")]
-        public IActionResult TestAuthorize()
-        {
-            List<string> r = ["string", "string21"];
-
-            return Ok(r);
-        }
-
         /// <summary>
         /// Метод выходит из аккаунта пользователя.
         /// </summary>

@@ -15,11 +15,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WarehouseManagementWeb.Api\WarehouseManagementWeb.Api.csproj" />
+    <Using Include="Xunit" />
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Xunit" />
+    <Folder Include="Unit\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WarehouseManagementWeb.Api\WarehouseManagementWeb.Api.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, of, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 import { UserSignInOutput } from '../models/output/user-sign-in-output';
 import { UserSignUpOutput } from '../models/output/user-sign-up-output';
 import { HttpClient } from '@angular/common/http';
@@ -78,11 +78,9 @@ export class AuthService {
     return this._httpClient.post(environment.apiUrl + '/api/account/logout', null).pipe(
       tap(() => {
         this.clearStorage();
-        this.userSignIn$.next(new UserSignInOutput());
       }),
       catchError((error) => {
         this.clearStorage();
-        this.userSignIn$.next(new UserSignInOutput());
         return throwError(() => error);
       }),
     );
@@ -110,10 +108,12 @@ export class AuthService {
   /**
    * Фукнция очищает хранилище.
    */
-  private clearStorage() {
+  public clearStorage() {
     localStorage.removeItem('utoken');
     localStorage.removeItem('urefresh-token');
     localStorage.removeItem('uemail');
+
+    this.userSignIn$.next(new UserSignInOutput());
   }
 
   /**

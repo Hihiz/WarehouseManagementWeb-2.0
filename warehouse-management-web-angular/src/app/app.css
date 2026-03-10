@@ -1,3 +1,77 @@
 .elem-right-end {
-    justify-content: flex-end;
+  justify-content: flex-end;
+}
+
+.navbar {
+  background-color: #34495e !important;
+  border-bottom: none !important;
+  color: white;
+}
+
+.navbar .navbar-brand {
+  color: white;
+}
+
+.navbar .nav-link {
+  color: #e0e0e0;
+}
+
+.navbar .nav-link:hover {
+  color: white;
+}
+
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #2d3e50;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.logo-link {
+  color: white;
+  text-decoration: none;
+}
+
+.logo {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu li {
+  margin-bottom: 1rem;
+}
+
+.menu a {
+  color: #ccc;
+  text-decoration: none;
+  display: block;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.menu a.active,
+.menu a:hover {
+  background-color: #1b2838;
+  color: #fff;
+}
+
+.content {
+  flex: 1;
+  background-color: #f7f7f7;
+  padding: 10px;
+  overflow-y: auto;
 }
