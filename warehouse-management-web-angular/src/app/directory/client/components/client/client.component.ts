@@ -1,6 +1,6 @@
 import {  Component, OnInit } from '@angular/core';
 import { ClientListByStatusOutput } from '../../models/output/client-list-by-status-output';
-import { BehaviorSubject, forkJoin  } from 'rxjs';
+import { BehaviorSubject  } from 'rxjs';
 import { ClientService } from '../../services/client.service';
 import { Router } from '@angular/router';
 import { AsyncPipe, NgClass } from '@angular/common';
