@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseManagementWeb.Api.Validators.IdentityUser;
 using WarehouseManagementWeb.Infrastructure.Identity.Models;
 using WarehouseManagementWeb.Infrastructure.Interfaces;
 
@@ -36,6 +38,13 @@ namespace WarehouseManagementWeb.Api.Controllers
         [Route("signup")]
         public async Task<IActionResult> SignUpAsync([FromBody] UserSignUpInput userSignUpInput)
         {
+            ValidationResult validator = await new SignUpUserValidator().ValidateAsync(userSignUpInput);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
             UserSignUpOutput result = await _authService.SignUpAsync(userSignUpInput);
 
             return Ok(result);
@@ -50,6 +59,13 @@ namespace WarehouseManagementWeb.Api.Controllers
         [Route("signin")]
         public async Task<IActionResult> SignInAsync([FromBody] UserSignInInput userSignInInput)
         {
+            ValidationResult validator = await new SignInUserValidator().ValidateAsync(userSignInInput);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
             UserSignInOutput result = await _authService.SignInAsync(userSignInInput);
 
             return Ok(result);
@@ -64,6 +80,13 @@ namespace WarehouseManagementWeb.Api.Controllers
         [Route("refresh-token")]
         public async Task<IActionResult> RefreshTokenAsync([FromBody] TokenInput tokenInput)
         {
+            ValidationResult validator = await new RefreshTokenUserValidator().ValidateAsync(tokenInput);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
             TokenOutput result = await _tokenService.RefreshTokenAsync(tokenInput);
 
             return Ok(result);
