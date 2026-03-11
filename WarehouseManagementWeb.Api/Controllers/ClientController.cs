@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseManagementWeb.Api.Validators.Clients;
 using WarehouseManagementWeb.Application.Dto.Input.Client;
 using WarehouseManagementWeb.Application.Dto.Output.Client;
 using WarehouseManagementWeb.Application.Interfaces.Services.Client;
@@ -62,6 +64,13 @@ namespace WarehouseManagementWeb.Api.Controllers
         [Route("client")]
         public async Task<IActionResult> GetClientByIdAsync([FromQuery] int clientId)
         {
+            ValidationResult validator = await new GetClientByIdValidator().ValidateAsync(clientId);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
             ClientOutput? result = await _clientService.GetClientByIdAsync(clientId);
 
             return Ok(result);
@@ -73,9 +82,18 @@ namespace WarehouseManagementWeb.Api.Controllers
         /// <param name="createClientInput">Входная модель.</param>
         [HttpPost]
         [Route("client")]
-        public async Task CreateClientAsync([FromBody] CreateClientInput createClientInput)
+        public async Task<IActionResult> CreateClientAsync([FromBody] CreateClientInput createClientInput)
         {
+            ValidationResult validator = await new CreateClientValidator().ValidateAsync(createClientInput);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
             await _clientService.CreateClientAsync(createClientInput);
+
+            return Ok();
         }
 
         /// <summary>
@@ -84,9 +102,18 @@ namespace WarehouseManagementWeb.Api.Controllers
         /// <param name="updateClientInput">Входная модель.</param>
         [HttpPut]
         [Route("client")]
-        public async Task UpdateClientAsync([FromBody] UpdateClientInput updateClientInput)
+        public async Task<IActionResult> UpdateClientAsync([FromBody] UpdateClientInput updateClientInput)
         {
+            ValidationResult validator = await new UpdateClientValidator().ValidateAsync(updateClientInput);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
             await _clientService.UpdateClientAsync(updateClientInput);
+
+            return Ok();
         }
 
         /// <summary>
@@ -95,10 +122,21 @@ namespace WarehouseManagementWeb.Api.Controllers
         /// <param name="changeStatusClientInput">Входная модель.</param>
         [HttpPatch]
         [Route("change-status-client")]
-        public async Task ChangeStatusClientAsync([FromBody] ChangeStatusClientInput changeStatusClientInput)
+        public async Task<IActionResult> ChangeStatusClientAsync([FromBody] ChangeStatusClientInput
+            changeStatusClientInput)
         {
+            ValidationResult validator = await new ChangeStatusClientValidator().ValidateAsync(
+                changeStatusClientInput);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
             await _clientService.ChangeStatusClientAsync(changeStatusClientInput.ClientId,
                 changeStatusClientInput.ClientStatusEnum);
+
+            return Ok();
         }
 
         /// <summary>
@@ -107,9 +145,18 @@ namespace WarehouseManagementWeb.Api.Controllers
         /// <param name="clientId">Id клиента.</param>
         [HttpDelete]
         [Route("client")]
-        public async Task RemoveClientAsync([FromBody] int clientId)
+        public async Task<IActionResult> RemoveClientAsync([FromBody] int clientId)
         {
+            ValidationResult validator = await new RemoveClientValidator().ValidateAsync(clientId);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
             await _clientService.RemoveClientAsync(clientId);
+
+            return Ok();
         }
 
         #endregion
