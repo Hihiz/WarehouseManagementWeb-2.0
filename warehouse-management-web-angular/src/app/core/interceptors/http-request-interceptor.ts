@@ -1,8 +1,13 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { catchError, switchMap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
 import { AuthService } from '../../auth/services/auth.service';
 import { Router } from '@angular/router';
+
+let isRefreshing = false;
+const refreshTokenSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(
+  null,
+);
 
 /**
  * Функция перехватыает HTTP запросы.
@@ -15,6 +20,10 @@ export const httpRequestInterceptor: HttpInterceptorFn = (req, next) => {
 
   console.log('accessToken', accessToken);
 
+  if (req.url.includes('refresh-token')) {
+    return next(req);
+  }
+
   if (accessToken) {
     req = req.clone({
       setHeaders: { Authorization: `Bearer ${accessToken}` },
@@ -23,15 +32,29 @@ export const httpRequestInterceptor: HttpInterceptorFn = (req, next) => {
 
   let responseNext = next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (req.url.includes('refresh-token')) {
-        authService.clearStorage();
-        router.navigate(['signin']);
-        return throwError(() => error);
-      }
-
       if (error.status !== 401) {
         return throwError(() => error);
       }
+
+      if (isRefreshing) {
+        // Уже идёт обновление, ждём новый токен.
+        return refreshTokenSubject.pipe(
+          take(1),
+          switchMap((token) => {
+            if (!token) {
+              return throwError(() => error);
+            }
+            return next(
+              req.clone({
+                setHeaders: { Authorization: `Bearer ${token}` },
+              }),
+            );
+          }),
+        );
+      }
+
+      isRefreshing = true;
+      refreshTokenSubject.next(null);
 
       return authService.refreshToken().pipe(
         switchMap((response: any) => {
@@ -49,6 +72,9 @@ export const httpRequestInterceptor: HttpInterceptorFn = (req, next) => {
             authService.userSignIn$.next(currentUser);
           }
 
+          isRefreshing = false;
+          refreshTokenSubject.next(newAccessToken);
+
           return next(
             req.clone({
               setHeaders: { Authorization: `Bearer ${newAccessToken}` },
@@ -57,8 +83,11 @@ export const httpRequestInterceptor: HttpInterceptorFn = (req, next) => {
         }),
 
         catchError((err) => {
+          isRefreshing = false;
+          refreshTokenSubject.error(err);
+
           authService.clearStorage();
-          router.navigate(['signin']);
+          router.navigate(['/signin']);
           return throwError(() => err);
         }),
       );
