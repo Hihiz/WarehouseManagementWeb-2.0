@@ -1,5 +1,7 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 using System.Text.Json.Serialization;
 using WarehouseManagementWeb.Api.Middlewares;
 using WarehouseManagementWeb.Application;
@@ -10,6 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplicationServices()
     .AddInfrastructureServices(builder.Configuration);
+
+builder.Services.AddValidatorsFromAssemblies(new[] { Assembly.GetExecutingAssembly() });
 
 builder.Services.AddCors(options =>
 {
