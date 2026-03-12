@@ -156,12 +156,42 @@ namespace WarehouseManagementWeb.Application.Services.Resource
         }
 
         /// <inheritdoc />
-        public async Task ChangeStatusResourceAsync(ChangeStatusResourceInput changeStatusResourceInput)
+        public async Task UpdateResourceAsync(UpdateResourceInput updateResourceInput)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (updateResourceInput is null)
+                {
+                    throw new InvalidOperationException("Недопустимые данные ресурса.");
+                }
+
+                bool isResourceTitleExist = await _resourceRepository.CheckResourceExistsByIdAndTitleAsync(
+                    updateResourceInput.Id, updateResourceInput.Title!);
+
+                if (isResourceTitleExist)
+                {
+                    throw new InvalidOperationException(
+                        $"Ресурс с наименованием: '{updateResourceInput.Title}' уже существует в системе.");
+                }
+
+                ResourceEntity entity = new ResourceEntity
+                {
+                    Id = updateResourceInput.Id,
+                    Title = updateResourceInput.Title!
+                };
+
+                await _resourceRepository.UpdateResourceAsync(entity);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                throw;
+            }
         }
 
-        public Task UpdateResourceAsync(UpdateResourceInput updateResourceInput)
+        /// <inheritdoc />
+        public async Task ChangeStatusResourceAsync(ChangeStatusResourceInput changeStatusResourceInput)
         {
             throw new NotImplementedException();
         }
