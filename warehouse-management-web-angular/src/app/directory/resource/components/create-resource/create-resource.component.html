@@ -1,0 +1,54 @@
+<div class="container-fluid">
+    <h3>Добавление ресурса</h3>
+  <form
+    method="post"
+    name="form"
+    (ngSubmit)="createResourceForm.form.valid && onCreateResource()"
+    #createResourceForm="ngForm"
+    novalidate
+  >
+    <div class="row align-items-center mb-3">
+      <div class="col-md-1">
+        <label class="col-form-label">Наименование:</label>
+      </div>
+      <div class="col-md-3">
+        <input
+          class="form-control"
+          type="text"
+          name="title"
+          [(ngModel)]="createResourceInput.title"
+          placeholder="Введите наименование ресурса"
+          required
+          #title="ngModel"
+          minlength="3"
+          maxlength="20"
+          [ngClass]="{ 'is-invalid': (createResourceForm.submitted && title.errors) || serverNameError }"
+          (input)="serverNameError = null"
+        />
+        @if (title.errors && createResourceForm.submitted) {
+          <div class="invalid-feedback">
+            @if (title.errors['required']) {
+              Наименование ресурса не заполнено
+            }
+            @if (title.errors['minlength']) {
+              Наименование ресурса слишком короткое
+            }
+            @if (title.errors['maxlength']) {
+              Наименование ресурса слишком длинное
+            }
+          </div>
+        }
+
+       @if (serverNameError) {
+        <span class="invalid-feedback">{{ serverNameError }}</span>
+      }
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <button type="submit" class="btn btn-success mt-2">Добавить</button>
+    </div>
+  </form>
+
+  <a class="btn btn-primary" (click)="onGetResources()">Назад</a>
+</div>
