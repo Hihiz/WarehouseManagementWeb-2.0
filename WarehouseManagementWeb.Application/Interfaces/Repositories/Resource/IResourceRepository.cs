@@ -41,6 +41,31 @@ namespace WarehouseManagementWeb.Application.Interfaces.Repositories.Resource
         /// <param name="resourceId">Id ресурса.</param>
         /// <param name="resourceTitle">Наименование ресурса.</param>
         /// <returns>Признак существования ресурса.</returns>
-        Task<bool> CheckResourceExistsByIdAndTitleAsync(int resourceId, string resourceTitle);      
+        Task<bool> CheckResourceExistsByIdAndTitleAsync(int resourceId, string resourceTitle);
+
+        /// <summary>
+        /// Метод добавляет ресурс.
+        /// </summary>
+        /// <param name="resourceEntity">Модель ресурса.</param>
+        Task CreateResourceAsync(ResourceEntity resourceEntity);
+
+        /// <summary>
+        /// Метод редактирует ресурс.
+        /// </summary>
+        /// <param name="resourceEntity">Модель ресурса.</param>
+        Task UpdateResourceAsync(ResourceEntity resourceEntity);
+
+        /// <summary>
+        /// Метод обновляет статус ресурсу.
+        /// </summary>
+        /// <param name="resourceId">Id ресурса.</param>
+        /// <param name="statusEnum">Новый статус ресурса.</param>
+        Task ChangeStatusResourceAsync(int resourceId, DirectoryStatusEnum statusEnum);
+
+        /// <summary>
+        /// Метод удаляет ресурс.
+        /// </summary>
+        /// <param name="resourceId">Id ресурса.</param>
+        Task RemoveResourceAsync(int resourceId);
     }
 }
