@@ -12,7 +12,7 @@ namespace WarehouseManagementWeb.Application.Interfaces.Services.Resource
         /// Метод получает список ресурсов.
         /// </summary>
         /// <returns>Список ресурсов.</returns>
-        Task<IEnumerable<ResourceOutput>> GetResourcesAsync();
+        Task<ResourceListByStatusOutput> GetResourcesAsync();
 
         /// <summary>
         /// Метод получает список активных ресурсов.
