@@ -26,5 +26,29 @@ namespace WarehouseManagementWeb.Application.Interfaces.Services.Resource
         /// <param name="resourceId">Id ресурса.</param>
         /// <returns>Данные ресурса.</returns>
         Task<ResourceOutput?> GetResourceByIdAsync(int resourceId);
+
+        /// <summary>
+        /// Метод добавляет ресурс.
+        /// </summary>
+        /// <param name="createResourceInput">Входная модель.</param>
+        Task CreateResourceAsync(CreateResourceInput createResourceInput);
+
+        /// <summary>
+        /// Метод редактирует ресурс.
+        /// </summary>
+        /// <param name="updateResourceInput">Входная модель.</param>
+        Task UpdateResourceAsync(UpdateResourceInput updateResourceInput);
+
+        /// <summary>
+        /// Метод обновляет статус ресурсу.
+        /// </summary>
+        /// <param name="changeStatusResourceInput">Входная модель.</param>
+        Task ChangeStatusResourceAsync(ChangeStatusResourceInput changeStatusResourceInput);
+
+        /// <summary>
+        /// Метод удаляет ресурс.
+        /// </summary>
+        /// <param name="resourceId">Id ресурса.</param>
+        Task RemoveResourceAsync(int resourceId);
     }
 }
