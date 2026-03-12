@@ -91,9 +91,33 @@ namespace WarehouseManagementWeb.Application.Services.Resource
             }
         }
 
-        public Task<ResourceOutput?> GetResourceByIdAsync(int resourceId)
+        /// <inheritdoc />
+        public async Task<ResourceOutput?> GetResourceByIdAsync(int resourceId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (resourceId <= 0)
+                {
+                    throw new InvalidOperationException("Недопустимый Id ресурса. " +
+                                                        $"ResourceId: {resourceId}.");
+                }
+
+                ResourceOutput? result = await _resourceRepository.GetResourceByIdAsync(resourceId);
+
+                if (result is null)
+                {
+                    return new ResourceOutput();
+                }
+
+                return result;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
         /// <inheritdoc />
