@@ -73,9 +73,22 @@ namespace WarehouseManagementWeb.Application.Services.Resource
             }
         }
 
-        public Task<IEnumerable<ResourceOutput>> GetActiveResourcesAsync()
+        /// <inheritdoc />
+        public async Task<IEnumerable<ResourceOutput>> GetActiveResourcesAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                IEnumerable<ResourceOutput> result = await _resourceRepository.GetActiveResourcesAsync();
+
+                return result;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
         public Task<ResourceOutput?> GetResourceByIdAsync(int resourceId)
