@@ -193,7 +193,22 @@ namespace WarehouseManagementWeb.Application.Services.Resource
         /// <inheritdoc />
         public async Task ChangeStatusResourceAsync(ChangeStatusResourceInput changeStatusResourceInput)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (changeStatusResourceInput is null)
+                {
+                    throw new InvalidOperationException("Недопустимые данные ресурса.");
+                }
+
+                await _resourceRepository.ChangeStatusResourceAsync(changeStatusResourceInput.ResourceId,
+                    changeStatusResourceInput.ResourceStatusEnum);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                throw;
+            }
         }
 
         public Task RemoveResourceAsync(int resourceId)
