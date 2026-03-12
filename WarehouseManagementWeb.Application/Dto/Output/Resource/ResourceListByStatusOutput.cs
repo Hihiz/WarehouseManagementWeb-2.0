@@ -1,6 +1,4 @@
-﻿using WarehouseManagementWeb.Domain.Entities;
-
-namespace WarehouseManagementWeb.Application.Dto.Output.Resource
+﻿namespace WarehouseManagementWeb.Application.Dto.Output.Resource
 {
     /// <summary>
     /// Класс выходной модели ресурсов разделенных по статусам.
@@ -10,11 +8,11 @@ namespace WarehouseManagementWeb.Application.Dto.Output.Resource
         /// <summary>
         /// Список активных ресурсов.
         /// </summary>
-        public IEnumerable<ResourceEntity>? ActiveResources { get; set; }
+        public IEnumerable<ResourceOutput>? ActiveResources { get; set; }
 
         /// <summary>
         /// Список ресурсов находящихся в архиве.
         /// </summary>
-        public IEnumerable<ResourceEntity>? ArchivedResources { get; set; }
+        public IEnumerable<ResourceOutput>? ArchivedResources { get; set; }
     }
 }
