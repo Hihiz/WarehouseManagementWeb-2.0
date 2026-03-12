@@ -133,8 +133,7 @@ namespace WarehouseManagementWeb.Api.Controllers
                 return BadRequest(string.Join("\n", validator.Errors));
             }
 
-            await _clientService.ChangeStatusClientAsync(changeStatusClientInput.ClientId,
-                changeStatusClientInput.ClientStatusEnum);
+            await _clientService.ChangeStatusClientAsync(changeStatusClientInput);
 
             return Ok();
         }
