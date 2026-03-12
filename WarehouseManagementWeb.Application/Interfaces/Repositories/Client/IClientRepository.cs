@@ -32,7 +32,7 @@ namespace WarehouseManagementWeb.Application.Interfaces.Repositories.Client
         /// Метод проверяет существование клиента по его наименованию. 
         /// </summary>
         /// <param name="clientName">Наименование клиента.</param>
-        /// <returns>Признак проверки.</returns>
+        /// <returns>Признак существования клиента.</returns>
         Task<bool> CheckClientExistsByNameAsync(string clientName);
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace WarehouseManagementWeb.Application.Interfaces.Repositories.Client
         /// </summary>
         /// <param name="clientId">Id клиента.</param>
         /// <param name="clientName">Наименование клиента.</param>
-        /// <returns>Признак проверки.</returns>
+        /// <returns>Признак существования клиента.</returns>
         Task<bool> CheckClientExistsByNameAndIdAsync(int clientId, string clientName);
 
         /// <summary>
