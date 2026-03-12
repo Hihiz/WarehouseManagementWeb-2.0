@@ -43,9 +43,8 @@ namespace WarehouseManagementWeb.Application.Interfaces.Services.Client
         /// <summary>
         /// Метод обновляет статус клиенту.
         /// </summary>
-        /// <param name="clientId">Id клиента.</param>
-        /// <param name="statusEnum">Новый статус клиента.</param>
-        Task ChangeStatusClientAsync(int clientId, DirectoryStatusEnum statusEnum);
+        /// <param name="changeStatusClientInput">Входная модель.</param>
+        Task ChangeStatusClientAsync(ChangeStatusClientInput changeStatusClientInput);
 
         /// <summary>
         /// Метод удаляет клиента.
