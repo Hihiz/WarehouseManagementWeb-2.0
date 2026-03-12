@@ -20,6 +20,8 @@ namespace WarehouseManagementWeb.Infrastructure.Data
 
         public DbSet<ClientEntity> Clients { get; set; }
 
+        public DbSet<ResourceEntity> Resources { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
