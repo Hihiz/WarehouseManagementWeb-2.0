@@ -3,7 +3,7 @@
 namespace WarehouseManagementWeb.Application.Dto.Output.Client
 {
     /// <summary>
-    /// Класс выходной модели клиентов.
+    /// Класс выходной модели клиента.
     /// </summary>
 
     public class ClientOutput
