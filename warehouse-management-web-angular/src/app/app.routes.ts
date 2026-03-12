@@ -6,6 +6,9 @@ import { DetailClientComponent } from './directory/client/components/detail-clie
 import { CreateClientComponent } from './directory/client/components/create-client/create-client.component';
 import { authGuard } from './core/guards/auth.guard';
 import { noAuthGuard } from './core/guards/no-auth-guard';
+import { ResourceComponent } from './directory/resource/components/resource/resource.component';
+import { DetailResourceComponent } from './directory/resource/components/detail-resource/detail-resource.component';
+import { CreateResourceComponent } from './directory/resource/components/create-resource/create-resource.component';
 
 export const routes: Routes = [
   {
@@ -18,31 +21,50 @@ export const routes: Routes = [
   {
     path: 'signup',
     component: SignupComponent,
-    canActivate: [noAuthGuard]
+    canActivate: [noAuthGuard],
   },
 
   {
     path: 'signin',
     component: SigninComponent,
-    canActivate: [noAuthGuard]
+    canActivate: [noAuthGuard],
   },
 
   // Роуты для Client.
   {
     path: 'clients',
     component: ClientComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
   },
 
   {
     path: 'detail-client',
     component: DetailClientComponent,
-     canActivate: [authGuard]
+    canActivate: [authGuard],
   },
 
   {
     path: 'create-client',
     component: CreateClientComponent,
-     canActivate: [authGuard]
+    canActivate: [authGuard],
+  },
+
+  // Роуты для Resource.
+  {
+    path: 'resources',
+    component: ResourceComponent,
+    canActivate: [authGuard],
+  },
+
+  {
+    path: 'detail-resource',
+    component: DetailResourceComponent,
+    canActivate: [authGuard],
+  },
+
+  {
+    path: 'create-resource',
+    component: CreateResourceComponent,
+    canActivate: [authGuard],
   },
 ];
