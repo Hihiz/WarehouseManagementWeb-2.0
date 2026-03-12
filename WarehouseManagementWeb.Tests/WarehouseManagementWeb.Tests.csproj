@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Integration\Repository\Resource\" />
     <Folder Include="Unit\" />
   </ItemGroup>
 
