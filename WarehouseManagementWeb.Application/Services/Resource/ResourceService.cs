@@ -211,9 +211,26 @@ namespace WarehouseManagementWeb.Application.Services.Resource
             }
         }
 
-        public Task RemoveResourceAsync(int resourceId)
+        /// <inheritdoc />
+        public async Task RemoveResourceAsync(int resourceId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (resourceId <= 0)
+                {
+                    throw new InvalidOperationException("Недопустимый Id ресурса. " +
+                                                        $"ResourceId: {resourceId}.");
+                }
+
+                await _resourceRepository.RemoveResourceAsync(resourceId);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
         #endregion
