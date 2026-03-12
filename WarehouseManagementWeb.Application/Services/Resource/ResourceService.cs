@@ -3,6 +3,7 @@ using WarehouseManagementWeb.Application.Dto.Input.Resource;
 using WarehouseManagementWeb.Application.Dto.Output.Resource;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.Resource;
 using WarehouseManagementWeb.Application.Interfaces.Services.Resource;
+using WarehouseManagementWeb.Domain.Entities;
 using WarehouseManagementWeb.Domain.Enums;
 
 namespace WarehouseManagementWeb.Application.Services.Resource
@@ -123,7 +124,35 @@ namespace WarehouseManagementWeb.Application.Services.Resource
         /// <inheritdoc />
         public async Task CreateResourceAsync(CreateResourceInput createResourceInput)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (createResourceInput is null)
+                {
+                    throw new InvalidOperationException("Недопустимые данные ресурса.");
+                }
+
+                bool isResourceTitleExist = await _resourceRepository.CheckResourceExistsByTitleAsync(createResourceInput.Title!);
+
+                if (isResourceTitleExist)
+                {
+                    throw new InvalidOperationException(
+                        $"Ресурс с наименованием: '{createResourceInput.Title}' уже существует в системе.");
+                }
+
+                ResourceEntity entity = new ResourceEntity
+                {
+                    Title = createResourceInput.Title!
+                };
+
+                await _resourceRepository.CreateResourceAsync(entity);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
         /// <inheritdoc />
