@@ -80,7 +80,7 @@ export class ClientService {
 
   /**
    * Функция обновляет статус клиенту.
-   * @param changeClientStatus Входная модель.
+   * @param changeStatusClientInput Входная модель.
    */
   public changeStatusClient(changeStatusClientInput: ChangeStatusClientInput) {
     return this._httpClient.patch<void>(

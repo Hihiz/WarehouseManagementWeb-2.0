@@ -101,7 +101,6 @@ export class DetailClientComponent implements OnInit {
 
   /**
    * Функция обновляет статус клиенту.
-   * @param statusEnum Статус.
    */
   public async onChangeStatusClient() {
     if (this.updateClientInput.id !== 0) {
@@ -116,7 +115,6 @@ export class DetailClientComponent implements OnInit {
         this.changeStatusClientInput.clientStatusEnum = DirectoryStatusEnum.active;
         break;
     }
-    console.log(this.changeStatusClientInput.clientStatusEnum);
     this._clientService.changeStatusClient(this.changeStatusClientInput).subscribe((_) => {
       console.log('Статус клиента изменен');
 
