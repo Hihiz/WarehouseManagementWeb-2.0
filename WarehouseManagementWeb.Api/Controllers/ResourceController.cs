@@ -138,6 +138,25 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Метод удаляет ресурс.
+        /// </summary>
+        /// <param name="resourceId">Id ресурса.</param>
+        [HttpDelete]
+        [Route("resource")]
+        public async Task<IActionResult> RemoveResourceAsync([FromBody] int resourceId)
+        {
+            ValidationResult validator = await new RemoveResourceValidator().ValidateAsync(resourceId);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
+            await _resourceService.RemoveResourceAsync(resourceId);
+
+            return Ok();
+        }
 
         #endregion
 
