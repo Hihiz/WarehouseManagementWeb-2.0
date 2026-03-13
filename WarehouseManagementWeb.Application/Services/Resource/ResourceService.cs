@@ -57,7 +57,7 @@ namespace WarehouseManagementWeb.Application.Services.Resource
                     }
                 }
 
-                ResourceListByStatusOutput result = new ResourceListByStatusOutput()
+                ResourceListByStatusOutput result = new ResourceListByStatusOutput
                 {
                     ActiveResources = activeResources.OrderByDescending(r => r.Id).ToList(),
                     ArchivedResources = archivedResources.OrderByDescending(r => r.Id).ToList()
