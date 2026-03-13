@@ -159,9 +159,40 @@ namespace WarehouseManagementWeb.Application.Services.MeasureUnit
             }
         }
 
-        public Task UpdateMeasureUnitAsync(UpdateMeasureUnitInput updateMeasureUnitInput)
+        /// <inheritdoc />
+        public async Task UpdateMeasureUnitAsync(UpdateMeasureUnitInput updateMeasureUnitInput)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (updateMeasureUnitInput is null)
+                {
+                    throw new InvalidOperationException("Недопустимые данные единицы измерения.");
+                }
+
+                bool isMeasureUnitTitleExist = await _measureUnitRepository.CheckMeasureUnitExistsByIdAndTitleAsync(
+                  updateMeasureUnitInput.Id, updateMeasureUnitInput.Title!);
+
+                if (isMeasureUnitTitleExist)
+                {
+                    throw new InvalidOperationException("Единица измерения с наименованием: " +
+                                                        $"'{updateMeasureUnitInput.Title}' уже существует в системе.");
+                }
+
+                MeasureUnitEntity entity = new MeasureUnitEntity
+                {
+                    Id = updateMeasureUnitInput.Id,
+                    Title = updateMeasureUnitInput.Title!
+                };
+
+                await _measureUnitRepository.UpdateMeasureUnitAsync(entity);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
         /// <inheritdoc />
