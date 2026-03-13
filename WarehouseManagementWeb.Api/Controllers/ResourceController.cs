@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseManagementWeb.Api.Validators.Resources;
 using WarehouseManagementWeb.Application.Dto.Output.Resource;
 using WarehouseManagementWeb.Application.Interfaces.Services.Resource;
 
@@ -52,7 +54,26 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok(result);
         }
 
-        
+        /// <summary>
+        /// Метод получает ресурс по Id.
+        /// </summary>
+        /// <param name="resourceId">Id ресурса.</param>
+        /// <returns>Данные ресурса.</returns>
+        [HttpGet]
+        [Route("resource")]
+        public async Task<IActionResult> GetResourceByIdAsync([FromQuery] int resourceId)
+        {
+            ValidationResult validator = await new GetResourceByIdValidator().ValidateAsync(resourceId);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
+            ResourceOutput? result = await _resourceService.GetResourceByIdAsync(resourceId);
+
+            return Ok(result);
+        }
 
         #endregion
 
