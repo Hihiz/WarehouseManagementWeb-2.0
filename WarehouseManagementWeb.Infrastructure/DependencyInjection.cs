@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.Client;
+using WarehouseManagementWeb.Application.Interfaces.Repositories.Resource;
 using WarehouseManagementWeb.Infrastructure.Data;
 using WarehouseManagementWeb.Infrastructure.Identity;
 using WarehouseManagementWeb.Infrastructure.Interfaces;
@@ -119,6 +120,7 @@ namespace WarehouseManagementWeb.Infrastructure
         private static void ServicesInit(IServiceCollection services)
         {
             services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddScoped<IResourceRepository, ResourceRepository>();
         }
     }
 }
