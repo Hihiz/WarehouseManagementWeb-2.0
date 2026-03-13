@@ -97,7 +97,9 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         /// <inheritdoc />
         public async Task CreateMeasureUnitAsync(MeasureUnitEntity measureUnitEntity)
         {
-            throw new NotImplementedException();
+            await _db.MeasureUnits.AddAsync(measureUnitEntity);
+
+            await _db.SaveChangesAsync();
         }
 
         /// <inheritdoc />
