@@ -123,7 +123,19 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         /// <inheritdoc />
         public async Task ChangeStatusMeasureUnitAsync(int measureUnitId, DirectoryStatusEnum statusEnum)
         {
-            throw new NotImplementedException();
+            MeasureUnitEntity? measureUnit = await _db.MeasureUnits
+                .FirstOrDefaultAsync(mu => mu.Id == measureUnitId);
+
+            if (measureUnit is null)
+            {
+                throw new InvalidOperationException("Ошибка при обновлении статуса единицы измерения. " +
+                                                    $"MeasureUnitId: {measureUnitId}. " +
+                                                    $"Status: {statusEnum}.");
+            }
+
+            measureUnit.MeasureUnitStatusEnum = statusEnum;
+
+            await _db.SaveChangesAsync();
         }
 
         /// <inheritdoc />
