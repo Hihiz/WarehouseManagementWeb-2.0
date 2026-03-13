@@ -105,7 +105,19 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         /// <inheritdoc />
         public async Task UpdateMeasureUnitAsync(MeasureUnitEntity measureUnitEntity)
         {
-            throw new NotImplementedException();
+            MeasureUnitEntity? measureUnit = await _db.MeasureUnits
+                .FirstOrDefaultAsync(mu => mu.Id == measureUnitEntity.Id);
+
+            if (measureUnit is null)
+            {
+                throw new InvalidOperationException("Ошибка при редактировании единицы измерения. " +
+                                                    $"MeasureUnitId: {measureUnitEntity.Id}. " +
+                                                    $"Title: {measureUnitEntity.Title}.");
+            }
+
+            measureUnit.Title = measureUnitEntity.Title;
+
+            await _db.SaveChangesAsync();
         }
 
         /// <inheritdoc />
