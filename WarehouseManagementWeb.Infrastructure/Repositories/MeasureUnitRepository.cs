@@ -75,15 +75,23 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<bool> CheckMeasureUnitExistsByIdAndTitleAsync(int measureUnitId, string measureUnitTitle)
+        public async Task<bool> CheckMeasureUnitExistsByTitleAsync(string measureUnitTitle)
         {
-            throw new NotImplementedException();
+            bool result = await _db.MeasureUnits
+                .AsNoTracking()
+                .AnyAsync(mu => mu.Title == measureUnitTitle);
+
+            return result;
         }
 
         /// <inheritdoc />
-        public async Task<bool> CheckMeasureUnitExistsByTitleAsync(string measureUnitTitle)
+        public async Task<bool> CheckMeasureUnitExistsByIdAndTitleAsync(int measureUnitId, string measureUnitTitle)
         {
-            throw new NotImplementedException();
+            bool result = await _db.MeasureUnits
+                .AsNoTracking()
+                .AnyAsync(mu => mu.Title == measureUnitTitle && mu.Id != measureUnitId);
+
+            return result;
         }
 
         /// <inheritdoc />
