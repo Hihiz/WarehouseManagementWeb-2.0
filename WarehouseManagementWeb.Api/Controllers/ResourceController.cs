@@ -95,6 +95,28 @@ namespace WarehouseManagementWeb.Api.Controllers
 
             return Ok();
         }
+
+        /// <summary>
+        /// Метод редактирует ресурс.
+        /// </summary>
+        /// <param name="updateResourceInput">Входная модель.</param>
+        [HttpPut]
+        [Route("resource")]
+        public async Task<IActionResult> UpdateResourceAsync([FromBody] UpdateResourceInput updateResourceInput)
+        {
+            ValidationResult validator = await new UpdateResourceValidator().ValidateAsync(updateResourceInput);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
+            await _resourceService.UpdateResourceAsync(updateResourceInput);
+
+            return Ok();
+        }
+
+
         #endregion
 
         #region Приватные методы.
