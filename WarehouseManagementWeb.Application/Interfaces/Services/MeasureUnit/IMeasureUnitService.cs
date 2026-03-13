@@ -1,6 +1,5 @@
-﻿using WarehouseManagementWeb.Application.Dto.Output.MeasureUnit;
-using WarehouseManagementWeb.Domain.Entities;
-using WarehouseManagementWeb.Domain.Enums;
+﻿using WarehouseManagementWeb.Application.Dto.Input.MeasureUnit;
+using WarehouseManagementWeb.Application.Dto.Output.MeasureUnit;
 
 namespace WarehouseManagementWeb.Application.Interfaces.Services.MeasureUnit
 {
@@ -31,21 +30,20 @@ namespace WarehouseManagementWeb.Application.Interfaces.Services.MeasureUnit
         /// <summary>
         /// Метод добавляет единицу измерения.
         /// </summary>
-        /// <param name="measureUnitEntity">Модель единицы измерения.</param>
-        Task CreateMeasureUnitAsync(MeasureUnitEntity measureUnitEntity);
+        /// <param name="createMeasureUnitInput">Входная модель.</param>
+        Task CreateMeasureUnitAsync(CreateMeasureUnitInput createMeasureUnitInput);
 
         /// <summary>
         /// Метод редактирует единицу измерения.
         /// </summary>
-        /// <param name="measureUnitEntity">Модель единицы измерения.</param>
-        Task UpdateMeasureUnitAsync(MeasureUnitEntity measureUnitEntity);
+        /// <param name="updateMeasureUnitInput">Входная модель.</param>
+        Task UpdateMeasureUnitAsync(UpdateMeasureUnitInput updateMeasureUnitInput);
 
         /// <summary>
         /// Метод обновляет статус единице измерения.
         /// </summary>
-        /// <param name="measureUnitId">Id единицы измерения.</param>
-        /// <param name="statusEnum">Новый статус единицы измерения.</param>
-        Task ChangeStatusMeasureUnitAsync(int measureUnitId, DirectoryStatusEnum statusEnum);
+        /// <param name="changeStatusMeasureUnitInput">Входная модель.</param>
+        Task ChangeStatusMeasureUnitAsync(ChangeStatusMeasureUnitInput changeStatusMeasureUnitInput);
 
         /// <summary>
         /// Метод удаляет единицу измерения.
