@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using WarehouseManagementWeb.Application.Dto.Input.MeasureUnit;
+using WarehouseManagementWeb.Application.Dto.Input.Resource;
 using WarehouseManagementWeb.Application.Dto.Output.MeasureUnit;
 using WarehouseManagementWeb.Application.Dto.Output.Resource;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.MeasureUnit;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.Resource;
 using WarehouseManagementWeb.Application.Interfaces.Services.MeasureUnit;
+using WarehouseManagementWeb.Domain.Entities;
 using WarehouseManagementWeb.Domain.Enums;
 
 namespace WarehouseManagementWeb.Application.Services.MeasureUnit
@@ -122,9 +124,39 @@ namespace WarehouseManagementWeb.Application.Services.MeasureUnit
             }
         }
 
-        public Task CreateMeasureUnitAsync(CreateMeasureUnitInput createMeasureUnitInput)
+        /// <inheritdoc />
+        public async Task CreateMeasureUnitAsync(CreateMeasureUnitInput createMeasureUnitInput)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (createMeasureUnitInput is null)
+                {
+                    throw new InvalidOperationException("Недопустимые данные единицы измерения.");
+                }
+
+                bool isMeasureUnitTitleExist = await _measureUnitRepository.CheckMeasureUnitExistsByTitleAsync(
+                    createMeasureUnitInput.Title!);
+
+                if (isMeasureUnitTitleExist)
+                {
+                    throw new InvalidOperationException("Единица измерения с наименованием: " +
+                                                        $"'{createMeasureUnitInput.Title}' уже существует в системе.");
+                }
+
+                MeasureUnitEntity entity = new MeasureUnitEntity
+                {
+                    Title = createMeasureUnitInput.Title!
+                };
+
+                await _measureUnitRepository.CreateMeasureUnitAsync(entity);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
         public Task UpdateMeasureUnitAsync(UpdateMeasureUnitInput updateMeasureUnitInput)
