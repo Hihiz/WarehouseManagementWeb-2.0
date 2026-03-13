@@ -13,8 +13,8 @@ namespace WarehouseManagementWeb.Api.Validators.Clients
         /// </summary>
         public GetClientByIdValidator()
         {
-            RuleFor(x => x)
-                .Must(x => x > 0).WithMessage(ValidationConst.NOT_VALID_CLIENT_ID);
+            RuleFor(с => с)
+                .Must(с => с > 0).WithMessage(ValidationConst.NOT_VALID_CLIENT_ID);
         }
     }
 }

@@ -17,14 +17,18 @@ namespace WarehouseManagementWeb.Api.Validators.IdentityUser
             RuleFor(x => x.FirstName)
               .NotNull().WithMessage(ValidationConst.NOT_VALID_USER_FIRST_NAME)
               .NotEmpty().WithMessage(ValidationConst.EMPTY_USER_FIRST_NAME)
-              .MinimumLength(3).WithMessage(ValidationConst.MINIMUM_LENGTH_USER_FIRST_NAME)
-              .MaximumLength(20).WithMessage(ValidationConst.MAXIMUM_LENGTH_USER_FIRST_NAME);
+              .MinimumLength(ValidationConst.MIN_USER_FIRST_NAME_LENGTH)
+                .WithMessage(ValidationConst.MINIMUM_LENGTH_USER_FIRST_NAME)
+              .MaximumLength(ValidationConst.MAX_USER_FIRST_NAME_LENGTH)
+                .WithMessage(ValidationConst.MAXIMUM_LENGTH_USER_FIRST_NAME);
 
             RuleFor(x => x.LastName)
                 .NotNull().WithMessage(ValidationConst.NOT_VALID_USER_LAST_NAME)
                 .NotEmpty().WithMessage(ValidationConst.EMPTY_USER_LAST_NAME)
-                .MinimumLength(3).WithMessage(ValidationConst.MINIMUM_LENGTH_USER_LAST_NAME)
-                .MaximumLength(20).WithMessage(ValidationConst.MAXIMUM_LENGTH_USER_LAST_NAME);
+                .MinimumLength(ValidationConst.MIN_USER_LAST_NAME_LENGTH)
+                    .WithMessage(ValidationConst.MINIMUM_LENGTH_USER_LAST_NAME)
+                .MaximumLength(ValidationConst.MAX_USER_LAST_NAME_LENGTH)
+                    .WithMessage(ValidationConst.MAXIMUM_LENGTH_USER_LAST_NAME);
 
             RuleFor(x => x.Email)
                 .NotNull().WithMessage(ValidationConst.NOT_VALID_USER_EMAIL)
