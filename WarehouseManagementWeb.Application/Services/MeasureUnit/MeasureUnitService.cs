@@ -93,9 +93,33 @@ namespace WarehouseManagementWeb.Application.Services.MeasureUnit
             }
         }
 
-        public Task<MeasureUnitOutput?> GetMeasureUnitByIdAsync(int measureUnitId)
+        /// <inheritdoc />
+        public async Task<MeasureUnitOutput?> GetMeasureUnitByIdAsync(int measureUnitId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (measureUnitId <= 0)
+                {
+                    throw new InvalidOperationException("Недопустимый Id единицы измерения. " +
+                                                        $"MeasureUnitId: {measureUnitId}.");
+                }
+
+                MeasureUnitOutput? result = await _measureUnitRepository.GetMeasureUnitByIdAsync(measureUnitId);
+
+                if (result is null)
+                {
+                    return new MeasureUnitOutput();
+                }
+
+                return result;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
         public Task CreateMeasureUnitAsync(CreateMeasureUnitInput createMeasureUnitInput)
