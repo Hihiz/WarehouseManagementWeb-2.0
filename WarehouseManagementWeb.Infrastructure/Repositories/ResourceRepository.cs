@@ -1,7 +1,9 @@
-﻿using WarehouseManagementWeb.Application.Dto.Output.Resource;
+﻿using Microsoft.EntityFrameworkCore;
+using WarehouseManagementWeb.Application.Dto.Output.Resource;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.Resource;
 using WarehouseManagementWeb.Domain.Entities;
 using WarehouseManagementWeb.Domain.Enums;
+using WarehouseManagementWeb.Infrastructure.Data;
 
 namespace WarehouseManagementWeb.Infrastructure.Repositories
 {
@@ -10,51 +12,144 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
     /// </summary>
     public class ResourceRepository : IResourceRepository
     {
+        private readonly ApplicationDbContext _db;
+
+        /// <summary>
+        /// Конструктор.
+        /// </summary>
+        /// <param name="db">Класс контекста.</param>
+        public ResourceRepository(ApplicationDbContext db)
+        {
+            _db = db;
+        }
+
         #region Публичные методы.
 
-        public Task<IEnumerable<ResourceOutput>> GetResourcesAsync()
+        /// <inheritdoc />
+        public async Task<IEnumerable<ResourceOutput>> GetResourcesAsync()
         {
-            throw new NotImplementedException();
+            IEnumerable<ResourceOutput> result = await _db.Resources
+                .AsNoTracking()
+                .Select(r => new ResourceOutput
+                {
+                    Id = r.Id,
+                    Title = r.Title,
+                    ResourceStatusEnum = r.ResourceStatusEnum
+                })
+                .OrderByDescending(r => r.Id)
+                .ToListAsync();
+
+            return result;
         }
 
-        public Task<ResourceOutput?> GetResourceByIdAsync(int resourceId)
+        /// <inheritdoc />
+        public async Task<IEnumerable<ResourceOutput>> GetActiveResourcesAsync()
         {
-            throw new NotImplementedException();
+            IEnumerable<ResourceOutput> result = await _db.Resources
+                .AsNoTracking()
+                .Where(r => r.ResourceStatusEnum == DirectoryStatusEnum.Active)
+                .Select(r => new ResourceOutput
+                {
+                    Id = r.Id,
+                    Title = r.Title,
+                    ResourceStatusEnum = r.ResourceStatusEnum
+                })
+                .OrderByDescending(r => r.Id)
+                .ToListAsync();
+
+            return result;
         }
 
-        public Task<IEnumerable<ResourceOutput>> GetActiveResourcesAsync()
+        /// <inheritdoc />
+        public async Task<ResourceOutput?> GetResourceByIdAsync(int resourceId)
         {
-            throw new NotImplementedException();
+            ResourceOutput? result = await _db.Resources
+               .Select(r => new ResourceOutput
+               {
+                   Id = r.Id,
+                   Title = r.Title,
+                   ResourceStatusEnum = r.ResourceStatusEnum
+               }).FirstOrDefaultAsync(r => r.Id == resourceId);
+
+            return result;
         }
 
-        public Task<bool> CheckResourceExistsByIdAndTitleAsync(int resourceId, string resourceTitle)
+        /// <inheritdoc />
+        public async Task<bool> CheckResourceExistsByTitleAsync(string resourceTitle)
         {
-            throw new NotImplementedException();
+            bool result = await _db.Resources
+               .AsNoTracking()
+               .AnyAsync(r => r.Title == resourceTitle);
+
+            return result;
         }
 
-        public Task<bool> CheckResourceExistsByTitleAsync(string resourceTitle)
+        /// <inheritdoc />
+        public async Task<bool> CheckResourceExistsByIdAndTitleAsync(int resourceId, string resourceTitle)
         {
-            throw new NotImplementedException();
+            bool result = await _db.Resources
+                .AsNoTracking()
+                .AnyAsync(r => r.Title == resourceTitle && r.Id != resourceId);
+
+            return result;
         }
 
-        public Task CreateResourceAsync(ResourceEntity resourceEntity)
+        /// <inheritdoc />
+        public async Task CreateResourceAsync(ResourceEntity resourceEntity)
         {
-            throw new NotImplementedException();
+            await _db.Resources.AddAsync(resourceEntity);
+
+            await _db.SaveChangesAsync();
         }
 
-        public Task UpdateResourceAsync(ResourceEntity resourceEntity)
+        /// <inheritdoc />
+        public async Task UpdateResourceAsync(ResourceEntity resourceEntity)
         {
-            throw new NotImplementedException();
+            ResourceEntity? resource = await _db.Resources
+                  .FirstOrDefaultAsync(c => c.Id == resourceEntity.Id);
+
+            if (resource is null)
+            {
+                throw new InvalidOperationException("Ошибка при редактировании ресурса. " +
+                                                    $"ResourceId: {resourceEntity.Id}. " +
+                                                    $"Title: {resourceEntity.Title}.");
+            }
+
+            resource.Title = resourceEntity.Title;
+
+            await _db.SaveChangesAsync();
         }
 
-        public Task ChangeStatusResourceAsync(int resourceId, DirectoryStatusEnum statusEnum)
+        /// <inheritdoc />
+        public async Task ChangeStatusResourceAsync(int resourceId, DirectoryStatusEnum statusEnum)
         {
-            throw new NotImplementedException();
+            ResourceEntity? resource = await _db.Resources
+                   .FirstOrDefaultAsync(c => c.Id == resourceId);
+
+            if (resource is null)
+            {
+                throw new InvalidOperationException("Ошибка при обновлении статуса ресурса. " +
+                                                             $"ResourceId: {resourceId}. " +
+                                                             $"Status: {statusEnum}.");
+            }
+
+            resource.ResourceStatusEnum = statusEnum;
+
+            await _db.SaveChangesAsync();
         }
 
-        public Task RemoveResourceAsync(int resourceId)
+        /// <inheritdoc />
+        public async Task RemoveResourceAsync(int resourceId)
         {
-            throw new NotImplementedException();
+            int removedResource = await _db.Resources
+              .Where(x => x.Id == resourceId)
+              .ExecuteDeleteAsync();
+
+            if (removedResource <= 0)
+            {
+                throw new InvalidOperationException("Ошибка удаления ресурса. " +
+                    $"ResourceId: {resourceId}.");
+            }
         }
 
         #endregion
