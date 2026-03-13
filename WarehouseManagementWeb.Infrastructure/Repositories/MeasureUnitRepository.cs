@@ -45,7 +45,19 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         /// <inheritdoc />
         public async Task<IEnumerable<MeasureUnitOutput>> GetActiveMeasureUnitsAsync()
         {
-            throw new NotImplementedException();
+            IEnumerable<MeasureUnitOutput> result = await _db.MeasureUnits
+             .AsNoTracking()
+             .Where(mu => mu.MeasureUnitStatusEnum == DirectoryStatusEnum.Active)
+             .Select(mu => new MeasureUnitOutput
+             {
+                 Id = mu.Id,
+                 Title = mu.Title,
+                 MeasureUnitStatusEnum = mu.MeasureUnitStatusEnum
+             })
+             .OrderByDescending(mu => mu.Id)
+             .ToListAsync();
+
+            return result;
         }
 
         /// <inheritdoc />
