@@ -141,7 +141,15 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         /// <inheritdoc />
         public async Task RemoveMeasureUnitAsync(int measureUnitId)
         {
-            throw new NotImplementedException();
+            int removedMeasureUnit = await _db.MeasureUnits
+                .Where(mu => mu.Id == measureUnitId)
+                .ExecuteDeleteAsync();
+
+            if (removedMeasureUnit <= 0)
+            {
+                throw new InvalidOperationException("Ошибка удаления единицы измерения. " +
+                                                    $"MeasureUnitId: {measureUnitId}.");
+            }
         }
 
         #endregion
