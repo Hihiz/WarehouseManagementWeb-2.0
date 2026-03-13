@@ -3,6 +3,7 @@ using WarehouseManagementWeb.Application.Dto.Input.MeasureUnit;
 using WarehouseManagementWeb.Application.Dto.Output.MeasureUnit;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.MeasureUnit;
 using WarehouseManagementWeb.Application.Interfaces.Services.MeasureUnit;
+using WarehouseManagementWeb.Domain.Enums;
 
 namespace WarehouseManagementWeb.Application.Services.MeasureUnit
 {
@@ -28,9 +29,48 @@ namespace WarehouseManagementWeb.Application.Services.MeasureUnit
 
         #region Публичные методы.
 
-        public Task<MeasureUnitListByStatusOutput> GetMeasureUnitsAsync()
+        /// <inheritdoc />
+        public async Task<MeasureUnitListByStatusOutput> GetMeasureUnitsAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                IEnumerable<MeasureUnitOutput> measureUnits = await _measureUnitRepository.GetMeasureUnitsAsync();
+
+                List<MeasureUnitOutput> activeMeasureUnits = new List<MeasureUnitOutput>(measureUnits.Count(
+                    r => r.MeasureUnitStatusEnum == DirectoryStatusEnum.Active));
+
+                List<MeasureUnitOutput> archivedMeasureUnits = new List<MeasureUnitOutput>(measureUnits.Count(
+                    r => r.MeasureUnitStatusEnum == DirectoryStatusEnum.Archived));
+
+                foreach (var measureUnit in measureUnits)
+                {
+                    switch (measureUnit.MeasureUnitStatusEnum)
+                    {
+                        case DirectoryStatusEnum.Active:
+                            activeMeasureUnits.Add(measureUnit);
+                            break;
+
+                        case DirectoryStatusEnum.Archived:
+                            archivedMeasureUnits.Add(measureUnit);
+                            break;
+                    }
+                }
+
+                MeasureUnitListByStatusOutput result = new MeasureUnitListByStatusOutput
+                {
+                    ActiveMeasureUnits = activeMeasureUnits.OrderByDescending(r => r.Id).ToList(),
+                    ArchivedMeasureUnits = archivedMeasureUnits.OrderByDescending(r => r.Id).ToList()
+                };
+
+                return result;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
         public Task<IEnumerable<MeasureUnitOutput>> GetActiveMeasureUnitsAsync()
