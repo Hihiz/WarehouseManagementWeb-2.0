@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using WarehouseManagementWeb.Application.Dto.Input.MeasureUnit;
 using WarehouseManagementWeb.Application.Dto.Output.MeasureUnit;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.MeasureUnit;
 using WarehouseManagementWeb.Application.Interfaces.Services.MeasureUnit;
-using WarehouseManagementWeb.Domain.Entities;
-using WarehouseManagementWeb.Domain.Enums;
 
 namespace WarehouseManagementWeb.Application.Services.MeasureUnit
 {
@@ -29,14 +28,7 @@ namespace WarehouseManagementWeb.Application.Services.MeasureUnit
 
         #region Публичные методы.
 
-
-        /// <inheritdoc />
-        public async Task ChangeStatusMeasureUnitAsync(int measureUnitId, DirectoryStatusEnum statusEnum)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task CreateMeasureUnitAsync(MeasureUnitEntity measureUnitEntity)
+        public Task<MeasureUnitListByStatusOutput> GetMeasureUnitsAsync()
         {
             throw new NotImplementedException();
         }
@@ -51,17 +43,39 @@ namespace WarehouseManagementWeb.Application.Services.MeasureUnit
             throw new NotImplementedException();
         }
 
-        public Task<MeasureUnitListByStatusOutput> GetMeasureUnitsAsync()
+        public Task CreateMeasureUnitAsync(CreateMeasureUnitInput createMeasureUnitInput)
         {
             throw new NotImplementedException();
+        }
+
+        public Task UpdateMeasureUnitAsync(UpdateMeasureUnitInput updateMeasureUnitInput)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public async Task ChangeStatusMeasureUnitAsync(ChangeStatusMeasureUnitInput changeStatusMeasureUnitInput)
+        {
+            try
+            {
+                if (changeStatusMeasureUnitInput is null)
+                {
+                    throw new InvalidOperationException("Недопустимые данные ресурса.");
+                }
+
+                await _measureUnitRepository.ChangeStatusMeasureUnitAsync(changeStatusMeasureUnitInput.MeasureUnitId,
+                    changeStatusMeasureUnitInput.MeasureUnitStatusEnum);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
         public Task RemoveMeasureUnitAsync(int measureUnitId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateMeasureUnitAsync(MeasureUnitEntity measureUnitEntity)
         {
             throw new NotImplementedException();
         }
