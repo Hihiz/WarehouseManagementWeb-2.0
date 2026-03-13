@@ -63,7 +63,15 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         /// <inheritdoc />
         public async Task<MeasureUnitOutput?> GetMeasureUnitByIdAsync(int measureUnitId)
         {
-            throw new NotImplementedException();
+            MeasureUnitOutput? result = await _db.MeasureUnits
+                .Select(mu => new MeasureUnitOutput
+                {
+                    Id = mu.Id,
+                    Title = mu.Title,
+                    MeasureUnitStatusEnum = mu.MeasureUnitStatusEnum
+                }).FirstOrDefaultAsync(mu => mu.Id == measureUnitId);
+
+            return result;
         }
 
         /// <inheritdoc />
