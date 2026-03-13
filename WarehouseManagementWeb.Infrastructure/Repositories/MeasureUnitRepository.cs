@@ -1,4 +1,5 @@
-﻿using WarehouseManagementWeb.Application.Dto.Output.MeasureUnit;
+﻿using Microsoft.EntityFrameworkCore;
+using WarehouseManagementWeb.Application.Dto.Output.MeasureUnit;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.MeasureUnit;
 using WarehouseManagementWeb.Domain.Entities;
 using WarehouseManagementWeb.Domain.Enums;
@@ -27,7 +28,18 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         /// <inheritdoc />
         public async Task<IEnumerable<MeasureUnitOutput>> GetMeasureUnitsAsync()
         {
-            throw new NotImplementedException();
+            IEnumerable<MeasureUnitOutput> result = await _db.MeasureUnits
+            .AsNoTracking()
+            .Select(mu => new MeasureUnitOutput
+            {
+                Id = mu.Id,
+                Title = mu.Title,
+                MeasureUnitStatusEnum = mu.MeasureUnitStatusEnum
+            })
+            .OrderByDescending(mu => mu.Id)
+            .ToListAsync();
+
+            return result;
         }
 
         /// <inheritdoc />
