@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using WarehouseManagementWeb.Application.Dto.Input.MeasureUnit;
 using WarehouseManagementWeb.Application.Dto.Output.MeasureUnit;
+using WarehouseManagementWeb.Application.Dto.Output.Resource;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.MeasureUnit;
+using WarehouseManagementWeb.Application.Interfaces.Repositories.Resource;
 using WarehouseManagementWeb.Application.Interfaces.Services.MeasureUnit;
 using WarehouseManagementWeb.Domain.Enums;
 
@@ -73,9 +75,22 @@ namespace WarehouseManagementWeb.Application.Services.MeasureUnit
             }
         }
 
-        public Task<IEnumerable<MeasureUnitOutput>> GetActiveMeasureUnitsAsync()
+        /// <inheritdoc />
+        public async Task<IEnumerable<MeasureUnitOutput>> GetActiveMeasureUnitsAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                IEnumerable<MeasureUnitOutput> result = await _measureUnitRepository.GetActiveMeasureUnitsAsync();
+
+                return result;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
         public Task<MeasureUnitOutput?> GetMeasureUnitByIdAsync(int measureUnitId)
