@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WarehouseManagementWeb.Api.Validators.Resources;
+using WarehouseManagementWeb.Application.Dto.Input.Resource;
 using WarehouseManagementWeb.Application.Dto.Output.Resource;
 using WarehouseManagementWeb.Application.Interfaces.Services.Resource;
 
@@ -75,6 +76,25 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Метод добавляет ресурс.
+        /// </summary>
+        /// <param name="createResourceInput">Входная модель.</param>
+        [HttpPost]
+        [Route("resource")]
+        public async Task<IActionResult> CreateResourceAsync([FromBody] CreateResourceInput createResourceInput)
+        {
+            ValidationResult validator = await new CreateResourceValidator().ValidateAsync(createResourceInput);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
+            await _resourceService.CreateResourceAsync(createResourceInput);
+
+            return Ok();
+        }
         #endregion
 
         #region Приватные методы.
