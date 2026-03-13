@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using WarehouseManagementWeb.Application.Dto.Input.MeasureUnit;
-using WarehouseManagementWeb.Application.Dto.Input.Resource;
 using WarehouseManagementWeb.Application.Dto.Output.MeasureUnit;
-using WarehouseManagementWeb.Application.Dto.Output.Resource;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.MeasureUnit;
-using WarehouseManagementWeb.Application.Interfaces.Repositories.Resource;
 using WarehouseManagementWeb.Application.Interfaces.Services.MeasureUnit;
 using WarehouseManagementWeb.Domain.Entities;
 using WarehouseManagementWeb.Domain.Enums;
@@ -217,9 +214,26 @@ namespace WarehouseManagementWeb.Application.Services.MeasureUnit
             }
         }
 
-        public Task RemoveMeasureUnitAsync(int measureUnitId)
+        /// <inheritdoc />
+        public async Task RemoveMeasureUnitAsync(int measureUnitId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (measureUnitId <= 0)
+                {
+                    throw new InvalidOperationException("Недопустимый Id единицы измерения. " +
+                                                        $"MeasureUnitId: {measureUnitId}.");
+                }
+
+                await _measureUnitRepository.RemoveMeasureUnitAsync(measureUnitId);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
         #endregion
