@@ -116,6 +116,28 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Метод обновляет статус ресурсу.
+        /// </summary>
+        /// <param name="changeStatusResourceInput">Входная модель.</param>
+        [HttpPatch]
+        [Route("change-status-resource")]
+        public async Task<IActionResult> ChangeStatusResourceAsync([FromBody] ChangeStatusResourceInput
+            changeStatusResourceInput)
+        {
+            ValidationResult validator = await new ChangeStatusResourceValidator().ValidateAsync(
+                changeStatusResourceInput);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
+            await _resourceService.ChangeStatusResourceAsync(changeStatusResourceInput);
+
+            return Ok();
+        }
+
 
         #endregion
 
