@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using WarehouseManagementWeb.Application.Interfaces.Services.Client;
+using WarehouseManagementWeb.Application.Interfaces.Services.Resource;
 using WarehouseManagementWeb.Application.Services.Client;
+using WarehouseManagementWeb.Application.Services.Resource;
 
 namespace WarehouseManagementWeb.Application
 {
@@ -28,6 +30,7 @@ namespace WarehouseManagementWeb.Application
         private static void ServicesInit(IServiceCollection services)
         {
             services.AddScoped<IClientService, ClientService>();
+            services.AddScoped<IResourceService, ResourceService>();
         }
     }
 }

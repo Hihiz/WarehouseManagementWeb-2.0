@@ -1,0 +1,73 @@
+@let detailResource = detailResource$ | async;
+@let isActive = detailResource?.resourceStatusEnum?.toString()?.toLowerCase() === 'active';
+
+@if (isLoader) {
+ <div class="text-center py-5">
+    <p>Загрузка данных ресурса...</p>
+  </div>
+} @else {
+  <div class="container-fluid">
+    <h3>Детали ресурса</h3>
+    <div class="elem-bottom">
+      <button (click)="onUpdateResource()" class="btn btn-success me-2">Сохранить</button>
+      <button (click)="onRemoveResource()" class="btn btn-danger me-2">Удалить</button>
+      <button
+        (click)="onChangeStatusResource()"
+        class="btn me-2 no-transition"
+        [class.btn-warning]="isActive"
+        [class.btn-primary]="!isActive"
+      >
+        {{ isActive ? 'В архив' : 'В работу' }}
+      </button>
+    </div>
+    <form
+      method="post"
+      name="form"
+      #updateResourceForm="ngForm"
+      (ngSubmit)="updateResourceForm.form.valid"
+      novalidate
+    >
+      <div class="row align-items-center mb-3">
+        <div class="col-md-1">
+          <label class="col-form-label">Наименование:</label>
+        </div>
+        <div class="col-md-3">
+          <input
+            class="form-control"
+            type="text"
+            name="title"
+            [(ngModel)]="updateResourceInput.title"
+            placeholder="Введите наименование ресурса"
+            required
+            #title="ngModel"
+            minlength="3"
+            maxlength="20"
+            [ngClass]="{
+              'is-invalid': (updateResourceForm.submitted && title.errors) || serverNameError,
+            }"
+            (input)="serverNameError = null"
+          />
+          @if (title.errors && updateResourceForm.submitted) {
+            <div class="invalid-feedback">
+              @if (title.errors['required']) {
+                Наименование ресурса не заполнено
+              }
+              @if (title.errors['minlength']) {
+                Наименование ресурса слишком короткое
+              }
+              @if (title.errors['maxlength']) {
+                Наименование ресурса слишком длинное
+              }
+            </div>
+          }
+
+          @if (serverNameError) {
+            <span class="invalid-feedback">{{ serverNameError }}</span>
+          }
+        </div>
+      </div>
+    </form>
+
+    <a class="btn btn-primary" (click)="onGetResources()">Назад</a>
+  </div>
+}

@@ -1,0 +1,52 @@
+<div class="container-fluid">
+  <div class="elem-bottom">
+    <h3>Список ресурсов</h3>
+    @if (isStatusResourcesActive) {
+      <a class="btn btn-success me-2" (click)="onCreateResource()"> Добавить </a>
+    }
+
+    <a
+      class="btn no-transition"
+      [ngClass]="{
+        'btn-warning': isStatusResourcesActive,
+        'btn-primary': !isStatusResourcesActive,
+      }"
+      (click)="onSwitchResources()"
+    >
+      {{ isStatusResourcesActive ? 'К архиву' : 'К рабочим' }}
+    </a>
+  </div>
+
+  @if (resources$ | async; as resources) {
+    @let resourceList =
+      isStatusResourcesActive
+       ? resources.activeResources 
+       : resources.archivedResources;
+
+    <!-- Таблица ресурсов -->
+    <table class="table table-sm table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Наименование</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of resourceList; track c.id) {
+          <tr (click)="onGetResourceById(c.id)">
+            <td>{{ c.title }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="2" style="text-align: center">
+              {{
+                isStatusResourcesActive
+                  ? 'Активных ресурсов нет'
+                  : 'Ресурсов находящихся в архиве нет'
+              }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

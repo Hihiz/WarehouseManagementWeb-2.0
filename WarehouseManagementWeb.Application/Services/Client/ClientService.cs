@@ -37,6 +37,8 @@ namespace WarehouseManagementWeb.Application.Services.Client
             {
                 IEnumerable<ClientOutput> clients = await _clientRepository.GetClientsAsync();
 
+                IEnumerable<ClientEntity> rr = new List<ClientEntity>();
+
                 List<ClientOutput> activeClients = new List<ClientOutput>(clients.Count(
                     c => c.ClientStatusEnum == DirectoryStatusEnum.Active));
 
@@ -194,24 +196,17 @@ namespace WarehouseManagementWeb.Application.Services.Client
         }
 
         /// <inheritdoc />
-        public async Task ChangeStatusClientAsync(int clientId, DirectoryStatusEnum statusEnum)
+        public async Task ChangeStatusClientAsync(ChangeStatusClientInput changeStatusClientInput)
         {
             try
             {
-                if (clientId <= 0)
+                if (changeStatusClientInput is null)
                 {
-                    throw new InvalidOperationException("Недопустимый Id клиента. " +
-                                                        $"ClientId: {clientId}.");
+                    throw new InvalidOperationException("Недопустимые данные клиента.");
                 }
 
-                if (statusEnum is DirectoryStatusEnum.Undefined)
-                {
-                    throw new InvalidOperationException("Недопустимый статус клиента. " +
-                                                        $"ClientId: {clientId}. " +
-                                                        $"Status: {statusEnum.ToString()}.");
-                }
-
-                await _clientRepository.ChangeStatusClientAsync(clientId, statusEnum);
+                await _clientRepository.ChangeStatusClientAsync(changeStatusClientInput.ClientId,
+                    changeStatusClientInput.ClientStatusEnum);
             }
 
             catch (Exception ex)

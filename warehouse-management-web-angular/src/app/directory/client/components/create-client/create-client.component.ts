@@ -19,6 +19,7 @@ export class CreateClientComponent {
    * Конструктор.
    * @param _clientService Сервис клиентов.
    * @param _router Роутер.
+   * @param cdr Обнаружение изменений.
    */
   constructor(
     private readonly _clientService: ClientService,
@@ -53,7 +54,7 @@ export class CreateClientComponent {
           this.cdr.detectChanges();
         }
         console.error('Ошибка при создании клиента:', err);
-      }
+      },
     });
   }
 

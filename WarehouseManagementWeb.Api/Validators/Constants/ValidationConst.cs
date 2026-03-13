@@ -179,7 +179,7 @@
         /// <summary>
         /// Если не передано подтверждение пароля пользователя.
         /// </summary>
-        public static string NOT_VALID_USER_PASSWORD_CONFIRM = 
+        public static string NOT_VALID_USER_PASSWORD_CONFIRM =
             "Подтверждение пароля пользователя не может быть пустым.";
 
         /// <summary>
@@ -211,6 +211,52 @@
         /// Если refresh token пустой.
         /// </summary>
         public static string EMPTY_USER_REFRESH_TOKEN = "Передайте токен обновления пользователя.";
+
+        #endregion
+
+        #region Resource.
+
+        /// <summary>
+        /// Если не передан Id ресурса.
+        /// </summary>
+        public static string NOT_VALID_RESOURCE_ID = "Id ресурса не передан.";
+
+        /// <summary>
+        /// Минимальная длина наименования ресурса.
+        /// </summary>
+        public static int MIN_RESOURCE_TITLE_LENGTH = 3;
+
+        /// <summary>
+        /// Максимальная длина наименования ресурса
+        /// </summary>
+        public static int MAX_RESOURCE_TITLE_LENGTH = 20;
+
+        /// <summary>
+        /// Если не передано наименование ресурса.
+        /// </summary>
+        public static string NOT_VALID_RESOURCE_TITLE = "Наименование ресурса не может быть пустым.";
+
+        /// <summary>
+        /// Если не заполнено наименование ресурса.
+        /// </summary>
+        public static string EMPTY_RESOURCE_TITLE = "Введите наименование ресурса.";
+
+        /// <summary>
+        /// Если наименование ресурса слишком короткое.
+        /// </summary>
+        public static string MINIMUM_LENGTH_RESOURCE_TITLE =
+            $"Наименование ресурса должно быть не менее {MIN_RESOURCE_TITLE_LENGTH} символов.";
+
+        /// <summary>
+        /// Если наименование ресурса слишком длинное.
+        /// </summary>
+        public static string MAXIMUM_LENGTH_RESOURCE_TITLE =
+            $"Наименование ресурса должно быть не более {MAX_RESOURCE_TITLE_LENGTH} символов.";
+
+        /// <summary>
+        /// Если статус ресурса не валиден.
+        /// </summary>
+        public static string NOT_VALID_RESOURCE_STATUS = "Недопустимый статус ресурса.";
 
         #endregion
     }
