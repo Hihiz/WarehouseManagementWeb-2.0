@@ -97,6 +97,26 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Метод редактирует единицу измерения.
+        /// </summary>
+        /// <param name="updateMeasureUnitInput">Входная модель.</param>
+        [HttpPut]
+        [Route("measure-unit")]
+        public async Task<IActionResult> UpdateMeasureUnitAsync([FromBody] UpdateMeasureUnitInput
+            updateMeasureUnitInput)
+        {
+            ValidationResult validator = await new UpdateMeasureUnitValidator().ValidateAsync(updateMeasureUnitInput);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
+            await _measureUnitService.UpdateMeasureUnitAsync(updateMeasureUnitInput);
+
+            return Ok();
+        }
 
         #endregion
 
