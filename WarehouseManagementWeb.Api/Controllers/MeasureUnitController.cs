@@ -76,6 +76,28 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Метод добавляет единицу измерения.
+        /// </summary>
+        /// <param name="createMeasureUnitInput">Входная модель.</param>
+        [HttpPost]
+        [Route("measure-unit")]
+        public async Task<IActionResult> CreateMeasureUnitAsync([FromBody] CreateMeasureUnitInput
+            createMeasureUnitInput)
+        {
+            ValidationResult validator = await new CreateMeasureUnitValidator().ValidateAsync(createMeasureUnitInput);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
+            await _measureUnitService.CreateMeasureUnitAsync(createMeasureUnitInput);
+
+            return Ok();
+        }
+
+
         #endregion
 
         #region Приватные методы.
