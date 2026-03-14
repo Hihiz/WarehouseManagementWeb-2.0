@@ -9,6 +9,9 @@ import { noAuthGuard } from './core/guards/no-auth-guard';
 import { ResourceComponent } from './directory/resource/components/resource/resource.component';
 import { DetailResourceComponent } from './directory/resource/components/detail-resource/detail-resource.component';
 import { CreateResourceComponent } from './directory/resource/components/create-resource/create-resource.component';
+import { MeasureUnitComponent } from './directory/measure-unit/components/measure-unit/measure-unit.component';
+import { DetailMeasureUnitComponent } from './directory/measure-unit/components/detail-measure-unit/detail-measure-unit.component';
+import { CreateMeasureUnitComponent } from './directory/measure-unit/components/create-measure-unit/create-measure-unit.component';
 
 export const routes: Routes = [
   {
@@ -65,6 +68,25 @@ export const routes: Routes = [
   {
     path: 'create-resource',
     component: CreateResourceComponent,
+    canActivate: [authGuard],
+  },
+
+  // Роуты для MeasureUnit.
+  {
+    path: 'measure-units',
+    component: MeasureUnitComponent,
+    canActivate: [authGuard],
+  },
+
+  {
+    path: 'detail-measure-unit',
+    component: DetailMeasureUnitComponent,
+    canActivate: [authGuard],
+  },
+
+  {
+    path: 'create-measure-unit',
+    component: CreateMeasureUnitComponent,
     canActivate: [authGuard],
   },
 ];
