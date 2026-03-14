@@ -42,7 +42,18 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok(result);
         }
 
-     
+        /// <summary>
+        /// Метод получает список активных единиц измерения.
+        /// </summary>
+        /// <returns>Список активных единиц измерения.</returns>
+        [HttpGet]
+        [Route("active-measure-units")]
+        public async Task<IActionResult> GetActiveMeasureUnitsAsync()
+        {
+            IEnumerable<MeasureUnitOutput> result = await _measureUnitService.GetActiveMeasureUnitsAsync();
+
+            return Ok(result);
+        }
         #endregion
 
         #region Приватные методы.
