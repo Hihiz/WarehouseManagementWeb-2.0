@@ -1,0 +1,56 @@
+<div class="container-fluid">
+  <h3>Добавление единицы измерения</h3>
+  <form
+    method="post"
+    name="form"
+    (ngSubmit)="createMeasureUnitForm.form.valid && onCreateMeasureUnit()"
+    #createMeasureUnitForm="ngForm"
+    novalidate
+  >
+    <div class="row align-items-center mb-3">
+      <div class="col-md-1">
+        <label class="col-form-label">Наименование:</label>
+      </div>
+      <div class="col-md-3">
+        <input
+          class="form-control"
+          type="text"
+          name="title"
+          [(ngModel)]="createMeasureUnitInput.title"
+          placeholder="Введите наименование единицы измерения"
+          required
+          #title="ngModel"
+          minlength="3"
+          maxlength="20"
+          [ngClass]="{
+            'is-invalid': (createMeasureUnitForm.submitted && title.errors) || serverNameError,
+          }"
+          (input)="serverNameError = null"
+        />
+        @if (title.errors && createMeasureUnitForm.submitted) {
+          <div class="invalid-feedback">
+            @if (title.errors['required']) {
+              Наименование единицы измерения не заполнено
+            }
+            @if (title.errors['minlength']) {
+              Наименование единицы измерения слишком короткое
+            }
+            @if (title.errors['maxlength']) {
+              Наименование единицы измерения слишком длинное
+            }
+          </div>
+        }
+
+        @if (serverNameError) {
+          <span class="invalid-feedback">{{ serverNameError }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <button type="submit" class="btn btn-success mt-2">Добавить</button>
+    </div>
+  </form>
+
+  <a class="btn btn-primary" (click)="onGetMeasureUnits()">Назад</a>
+</div>
