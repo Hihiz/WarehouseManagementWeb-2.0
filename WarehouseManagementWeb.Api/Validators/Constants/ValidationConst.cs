@@ -259,5 +259,51 @@
         public static string NOT_VALID_RESOURCE_STATUS = "Недопустимый статус ресурса.";
 
         #endregion
+
+        #region MeasureUnit.
+
+        /// <summary>
+        /// Минимальная длина наименования единицы измерения.
+        /// </summary>
+        public static int MIN_MEASURE_UNIT_TITLE_LENGTH = 3;
+
+        /// <summary>
+        /// Максимальная длина наименования единицы измерения.
+        /// </summary>
+        public static int MAX_MEASURE_UNIT_TITLE_LENGTH = 20;
+
+        /// <summary>
+        /// Если не передан Id единицы измерения.
+        /// </summary>
+        public static string NOT_VALID_MEASURE_UNIT_ID = "Id единицы измерения не передан.";
+
+        /// <summary>
+        /// Если не передано наименование единицы измерения.
+        /// </summary>
+        public static string NOT_VALID_MEASURE_UNIT_TITLE = "Наименование единицы измерения не может быть пустым.";
+
+        /// <summary>
+        /// Если не заполнено наименование единицы измерения.
+        /// </summary>
+        public static string EMPTY_MEASURE_UNIT_TITLE = "Введите наименование единицы измерения.";
+
+        /// <summary>
+        /// Если наименование единицы измерения слишком короткое.
+        /// </summary>
+        public static string MINIMUM_LENGTH_MEASURE_UNIT_TITLE =
+            $"Наименование единицы измерения должно быть не менее {MIN_MEASURE_UNIT_TITLE_LENGTH} символов.";
+
+        /// <summary>
+        /// Если наименование единицы измерения слишком длинное.
+        /// </summary>
+        public static string MAXIMUM_LENGTH_MEASURE_UNIT_TITLE =
+            $"Наименование единицы измерения должно быть не более {MAX_MEASURE_UNIT_TITLE_LENGTH} символов.";
+
+        /// <summary>
+        /// Если статус единицы измерения не валиден.
+        /// </summary>
+        public static string NOT_VALID_MEASURE_UNIT_STATUS = "Недопустимый статус единицы измерения.";
+
+        #endregion
     }
 }
