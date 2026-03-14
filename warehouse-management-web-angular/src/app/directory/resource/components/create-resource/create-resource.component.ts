@@ -46,7 +46,8 @@ export class CreateResourceComponent {
         if (err.status === 400) {
           this.serverNameError =
             err.error.message || 'Ресурс с таким наименованием уже существует в системе.';
-          this.cdr.detectChanges();
+        
+            this.cdr.detectChanges();
         }
 
         console.error('Ошибка при создании ресурса: ', err);
