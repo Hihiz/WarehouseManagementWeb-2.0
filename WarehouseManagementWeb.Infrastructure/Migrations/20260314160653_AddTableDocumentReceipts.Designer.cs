@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WarehouseManagementWeb.Infrastructure.Data;
@@ -11,9 +12,11 @@ using WarehouseManagementWeb.Infrastructure.Data;
 namespace WarehouseManagementWeb.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260314160653_AddTableDocumentReceipts")]
+    partial class AddTableDocumentReceipts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -306,51 +309,6 @@ namespace WarehouseManagementWeb.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("WarehouseManagementWeb.Domain.Entities.ResourceReceiptEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .HasComment("PK.");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DocumentReceiptId")
-                        .HasColumnType("integer")
-                        .HasColumnName("document_receipt_id")
-                        .HasComment("Id документа поступления.");
-
-                    b.Property<int?>("MeasureUnitId")
-                        .HasColumnType("integer")
-                        .HasColumnName("measure_unit_id")
-                        .HasComment("Id единицы измерения.");
-
-                    b.Property<int?>("Quantity")
-                        .HasColumnType("integer")
-                        .HasColumnName("quantity")
-                        .HasComment("Количество ресурсов поступления.");
-
-                    b.Property<int?>("ResourceId")
-                        .HasColumnType("integer")
-                        .HasColumnName("resource_id")
-                        .HasComment("Id ресурса.");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MeasureUnitId");
-
-                    b.HasIndex("ResourceId");
-
-                    b.HasIndex("DocumentReceiptId", "ResourceId", "MeasureUnitId")
-                        .IsUnique();
-
-                    b.ToTable("resource_receipts", "warehouse", t =>
-                        {
-                            t.HasComment("Таблица ресурсов поступления.");
-                        });
-                });
-
             modelBuilder.Entity("WarehouseManagementWeb.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Property<long>("Id")
@@ -497,49 +455,9 @@ namespace WarehouseManagementWeb.Infrastructure.Migrations
                     b.Navigation("ClientEntity");
                 });
 
-            modelBuilder.Entity("WarehouseManagementWeb.Domain.Entities.ResourceReceiptEntity", b =>
-                {
-                    b.HasOne("WarehouseManagementWeb.Domain.Entities.DocumentReceiptEntity", "DocumentReceiptEntity")
-                        .WithMany("ResourceReceiptEntities")
-                        .HasForeignKey("DocumentReceiptId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("WarehouseManagementWeb.Domain.Entities.MeasureUnitEntity", "MeasureUnitEntity")
-                        .WithMany("ResourceReceiptEntities")
-                        .HasForeignKey("MeasureUnitId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("WarehouseManagementWeb.Domain.Entities.ResourceEntity", "ResourceEntity")
-                        .WithMany("ResourceReceiptEntities")
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("DocumentReceiptEntity");
-
-                    b.Navigation("MeasureUnitEntity");
-
-                    b.Navigation("ResourceEntity");
-                });
-
             modelBuilder.Entity("WarehouseManagementWeb.Domain.Entities.ClientEntity", b =>
                 {
                     b.Navigation("DocumentReceiptEntities");
-                });
-
-            modelBuilder.Entity("WarehouseManagementWeb.Domain.Entities.DocumentReceiptEntity", b =>
-                {
-                    b.Navigation("ResourceReceiptEntities");
-                });
-
-            modelBuilder.Entity("WarehouseManagementWeb.Domain.Entities.MeasureUnitEntity", b =>
-                {
-                    b.Navigation("ResourceReceiptEntities");
-                });
-
-            modelBuilder.Entity("WarehouseManagementWeb.Domain.Entities.ResourceEntity", b =>
-                {
-                    b.Navigation("ResourceReceiptEntities");
                 });
 #pragma warning restore 612, 618
         }
