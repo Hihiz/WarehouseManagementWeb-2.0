@@ -140,6 +140,27 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Метод удаляет единицу измерения.
+        /// </summary>
+        /// <param name="measureUnitId">Id единицы измерения.</param>
+        [HttpDelete]
+        [Route("measure-unit")]
+        public async Task<IActionResult> RemoveMeasureUnitAsync([FromBody] int measureUnitId)
+        {
+            ValidationResult validator = await new RemoveMeasureUnitValidator().ValidateAsync(
+                measureUnitId);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
+            await _measureUnitService.RemoveMeasureUnitAsync(measureUnitId);
+
+            return Ok();
+        }
+
         #endregion
 
         #region Приватные методы.
