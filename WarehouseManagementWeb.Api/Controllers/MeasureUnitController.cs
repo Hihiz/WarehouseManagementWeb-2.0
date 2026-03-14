@@ -118,6 +118,28 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Метод обновляет статус единице измерения.
+        /// </summary>
+        /// <param name="changeStatusMeasureUnitInput">Входная модель.</param>
+        [HttpPatch]
+        [Route("measure-unit")]
+        public async Task<IActionResult> ChangeStatusMeasureUnitAsync([FromBody] ChangeStatusMeasureUnitInput
+            changeStatusMeasureUnitInput)
+        {
+            ValidationResult validator = await new ChangeStatusMeasureUnitValidator().ValidateAsync(
+                changeStatusMeasureUnitInput);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
+            await _measureUnitService.ChangeStatusMeasureUnitAsync(changeStatusMeasureUnitInput);
+
+            return Ok();
+        }
+
         #endregion
 
         #region Приватные методы.
