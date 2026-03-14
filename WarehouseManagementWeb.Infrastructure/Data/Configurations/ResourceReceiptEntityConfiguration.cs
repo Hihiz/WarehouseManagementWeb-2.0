@@ -5,7 +5,7 @@ using WarehouseManagementWeb.Domain.Entities;
 namespace WarehouseManagementWeb.Infrastructure.Data.Configurations
 {
     /// <summary>
-    /// Класс конфигурации сущности ресурсов поступления.
+    /// Класс конфигурации сущности ресурса поступления.
     /// </summary>
     public class ResourceReceiptEntityConfiguration : IEntityTypeConfiguration<ResourceReceiptEntity>
     {
