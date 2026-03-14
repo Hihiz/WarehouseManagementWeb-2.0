@@ -1,9 +1,9 @@
 ﻿namespace WarehouseManagementWeb.Domain.Enums
 {
     /// <summary>
-    /// Перечисления статусов документа отгрузки.
+    /// Перечисления статусов документа.
     /// </summary>
-    public enum DocumentShipmentStatusEnum
+    public enum DocumentStatusEnum
     {
         /// <summary>
         /// Неизвестный статус.
@@ -11,12 +11,12 @@
         Undefined = 0,
 
         /// <summary>
-        /// Статус подписанного документа отгрузки.
+        /// Статус подписанного документа.
         /// </summary>      
         Active = 1,
 
         /// <summary>
-        /// Статус не подписанного документа отгрузки.
+        /// Статус не подписанного документа.
         /// </summary>
         Inactive = 2
     }
