@@ -42,7 +42,7 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok(result);
         }
 
-        /// <summary>7
+        /// <summary>
         /// Метод получает список активных ресурсов.
         /// </summary>
         /// <returns>Список активных ресурсов.</returns>
