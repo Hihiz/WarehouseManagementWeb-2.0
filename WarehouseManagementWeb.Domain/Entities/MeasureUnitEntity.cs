@@ -3,7 +3,7 @@
 namespace WarehouseManagementWeb.Domain.Entities
 {
     /// <summary>
-    /// Класс единиц измерения сопоставляется с таблицей directory.measure_units.
+    /// Класс единицы измерения сопоставляется с таблицей directory.measure_units.
     /// </summary>
     public class MeasureUnitEntity
     {
