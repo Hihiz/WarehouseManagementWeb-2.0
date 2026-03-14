@@ -92,6 +92,7 @@ export class DetailResourceComponent implements OnInit {
         if (err.status === 400) {
           this.serverNameError =
             err.error.message || 'Ресурс с таким наименованием уже существует в системе.';
+
           this.cdr.detectChanges();
         }
         console.error('Ошибка при редактировании ресурса:', err);

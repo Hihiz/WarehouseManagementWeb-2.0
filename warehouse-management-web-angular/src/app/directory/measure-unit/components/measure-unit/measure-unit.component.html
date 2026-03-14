@@ -1,0 +1,52 @@
+<div class="container-fluid">
+  <div class="elem-bottom">
+    <h3>Список единиц измерений</h3>
+    @if (isStatusMeasureUnitsActive) {
+      <a class="btn btn-success me-2 " (click)="onCreateMeasureUnit()"> Добавить </a>
+    }
+
+    <a
+      class="btn no-transition"
+      [ngClass]="{
+        'btn-warning': isStatusMeasureUnitsActive,
+        'btn-primary': !isStatusMeasureUnitsActive,
+      }"
+      (click)="onSwitchMeasureUnits()"
+    >
+      {{ isStatusMeasureUnitsActive ? 'К архиву' : 'К рабочим' }}
+    </a>
+  </div>
+
+  @if (measureUnits$ | async; as measureUnits) {
+    @let measureUnitList =
+      isStatusMeasureUnitsActive
+        ? measureUnits.activeMeasureUnits
+        : measureUnits.archivedMeasureUnits;
+
+    <!-- Таблица единиц измерений -->
+    <table class="table table-sm table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Наименование</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (mu of measureUnitList; track mu.id) {
+          <tr (click)="onGetMeasureUnitById(mu.id)">
+            <td>{{ mu.title }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="1" style="text-align: center">
+              {{
+                isStatusMeasureUnitsActive
+                  ? 'Активных единиц измерений нет'
+                  : 'Единиц измерений находящихся в архиве нет'
+              }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

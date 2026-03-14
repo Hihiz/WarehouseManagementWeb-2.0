@@ -1,0 +1,73 @@
+@let detailMeasureUnit = detailMeasureUnit$ | async;
+@let isActive = detailMeasureUnit?.measureUnitStatusEnum?.toString()?.toLowerCase() === 'active';
+
+@if (isLoader) {
+  <div class="text-center py-5">
+    <p>Загрузка данных единицы измерения...</p>
+  </div>
+} @else {
+  <div class="container-fluid">
+    <h3>Детали единицы измерения</h3>
+    <div class="elem-bottom">
+      <button (click)="onUpdateMeasureUnit()" class="btn btn-success me-2">Сохранить</button>
+      <button (click)="onRemoveMeasureUnit()" class="btn btn-danger me-2">Удалить</button>
+      <button
+        (click)="onChangeStatusMeasureUnit()"
+        class="btn me-2 no-transition"
+        [class.btn-warning]="isActive"
+        [class.btn-primary]="!isActive"
+      >
+        {{ isActive ? 'В архив' : 'В работу' }}
+      </button>
+    </div>
+    <form
+      method="post"
+      name="form"
+      #updateMeasureUnitForm="ngForm"
+      (ngSubmit)="(updateMeasureUnitForm.form.valid)"
+      novalidate
+    >
+      <div class="row align-items-center mb-3">
+        <div class="col-md-1">
+          <label class="col-form-label">Наименование:</label>
+        </div>
+        <div class="col-md-3">
+          <input
+            class="form-control"
+            type="text"
+            name="title"
+            [(ngModel)]="updateMeasureUnitInput.title"
+            placeholder="Введите наименование единицы измерения"
+            required
+            #title="ngModel"
+            minlength="3"
+            maxlength="20"
+            [ngClass]="{
+              'is-invalid': (updateMeasureUnitForm.submitted && title.errors) || serverNameError,
+            }"
+            (input)="serverNameError = null"
+          />
+          @if (title.errors && updateMeasureUnitForm.submitted) {
+            <div class="invalid-feedback">
+              @if (title.errors['required']) {
+                Наименование единицы измерения не заполнено
+              }
+              @if (title.errors['minlength']) {
+                Наименование единицы измерения слишком короткое
+              }
+              @if (title.errors['maxlength']) {
+                Наименование единицы измерения слишком длинное
+              }
+            </div>
+          }
+
+          @if (serverNameError) {
+            <span class="invalid-feedback">{{ serverNameError }}</span>
+          }
+        </div>
+      </div>
+    </form>
+
+    <a class="btn btn-primary" (click)="onGetMeasureUnits()">Назад</a>
+  </div>
+}

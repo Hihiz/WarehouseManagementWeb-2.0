@@ -22,6 +22,8 @@ namespace WarehouseManagementWeb.Infrastructure.Data
 
         public DbSet<ResourceEntity> Resources { get; set; }
 
+        public DbSet<MeasureUnitEntity> MeasureUnits { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
