@@ -54,6 +54,28 @@ namespace WarehouseManagementWeb.Api.Controllers
 
             return Ok(result);
         }
+
+        /// <summary>
+        /// Метод получает единицу измерения по Id.
+        /// </summary>
+        /// <param name="measureUnitId">Id единицы измерения.</param>
+        /// <returns>Данные единицы измерения.</returns>
+        [HttpGet]
+        [Route("measure-unit")]
+        public async Task<IActionResult> GetMeasureUnitByIdAsync([FromQuery] int measureUnitId)
+        {
+            ValidationResult validator = await new GetMeasureUnitByIdValidator().ValidateAsync(measureUnitId);
+
+            if (!validator.IsValid)
+            {
+                return BadRequest(string.Join("\n", validator.Errors));
+            }
+
+            MeasureUnitOutput? result = await _measureUnitService.GetMeasureUnitByIdAsync(measureUnitId);
+
+            return Ok(result);
+        }
+
         #endregion
 
         #region Приватные методы.
