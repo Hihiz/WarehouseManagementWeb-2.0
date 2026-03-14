@@ -21,5 +21,10 @@ namespace WarehouseManagementWeb.Domain.Entities
         /// Статус ресурса в значении перечисления.
         /// </summary>
         public DirectoryStatusEnum ResourceStatusEnum { get; set; }
+
+        /// <summary>
+        /// Список ресурсов поступлений, которые связанны с ресурсом.
+        /// </summary>
+        public ICollection<ResourceReceiptEntity>? ResourceReceiptEntities { get; set; }
     }
 }
