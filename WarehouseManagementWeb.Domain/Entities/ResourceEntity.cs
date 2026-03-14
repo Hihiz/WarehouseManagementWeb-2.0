@@ -3,7 +3,7 @@
 namespace WarehouseManagementWeb.Domain.Entities
 {
     /// <summary>
-    /// Класс ресурсов сопоставляется с таблицей directory.resources.
+    /// Класс ресурса сопоставляется с таблицей directory.resources.
     /// </summary>
     public class ResourceEntity
     {

@@ -1,7 +1,7 @@
 ﻿namespace WarehouseManagementWeb.Domain.Entities
 {
     /// <summary>
-    /// Класс ресурсов поступления сопоставляется с таблицей warehouse.resource_receipts.
+    /// Класс ресурса поступления сопоставляется с таблицей warehouse.resource_receipts.
     /// </summary>
     public class ResourceReceiptEntity
     {
