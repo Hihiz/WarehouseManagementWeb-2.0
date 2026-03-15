@@ -30,6 +30,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         {
             IEnumerable<ClientOutput> result = await _db.Clients
                 .AsNoTracking()
+                 .OrderByDescending(c => c.Id)
                 .Select(c => new ClientOutput
                 {
                     Id = c.Id,
@@ -37,8 +38,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                     Address = c.Address,
                     ClientStatusEnum = c.ClientStatusEnum,
                     ClientStatusTitle = c.ClientStatusEnum.ToString()
-                })
-                .OrderByDescending(c => c.Id)
+                })               
                 .ToListAsync();
 
             return result;
@@ -49,6 +49,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         {
             IEnumerable<ClientOutput> result = await _db.Clients
                 .AsNoTracking()
+                .OrderByDescending(c => c.Id)
                 .Where(c => c.ClientStatusEnum == DirectoryStatusEnum.Active)
                 .Select(c => new ClientOutput
                 {
@@ -57,8 +58,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                     Address = c.Address,
                     ClientStatusEnum = c.ClientStatusEnum,
                     ClientStatusTitle = c.ClientStatusEnum.ToString()
-                })
-                .OrderByDescending(c => c.Id)
+                })                
                 .ToListAsync();
 
             return result;
