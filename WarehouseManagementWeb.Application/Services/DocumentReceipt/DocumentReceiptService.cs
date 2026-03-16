@@ -165,6 +165,28 @@ namespace WarehouseManagementWeb.Application.Services.DocumentReceipt
             }
         }
 
+        /// <inheritdoc />
+        public async Task RemoveDocumentReceiptAsync(int documentReceiptId)
+        {
+            try
+            {
+                if (documentReceiptId <= 0)
+                {
+                    throw new InvalidOperationException("Недопустимый Id документа поступления. " +
+                                                        $"DocumentReceiptId: {documentReceiptId}.");
+                }
+
+                await _documentReceiptRepository.RemoveDocumentReceiptAsync(documentReceiptId);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
+        }
+
         #endregion
 
         #region Приватные методы.
