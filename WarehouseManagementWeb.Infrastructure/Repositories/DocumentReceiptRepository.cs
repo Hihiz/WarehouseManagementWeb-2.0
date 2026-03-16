@@ -171,6 +171,37 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             await _db.SaveChangesAsync();
         }
 
+        /// <inheritdoc />
+        public async Task RemoveDocumentReceiptAsync(int documentReceiptId)
+        {
+            using var transaction = await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+
+            try
+            {
+                int deletedResourceReceipts = await _db.ResourceReceipts
+                    .Where(rr => rr.DocumentReceiptId == documentReceiptId)
+                    .ExecuteDeleteAsync();
+
+                if (deletedResourceReceipts <= 0)
+                {
+                    throw new InvalidOperationException("Ошибка удаления связанных ресурсов посупления. " +
+                                                        $"DocumentReceiptId: {documentReceiptId}.");
+                }
+
+                await _db.DocumentReceipts
+                    .Where(dr => dr.Id == documentReceiptId)
+                    .ExecuteDeleteAsync();
+
+                await transaction.CommitAsync();
+            }
+
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
         #endregion
 
         #region Приватные методы.
