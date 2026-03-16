@@ -1,4 +1,6 @@
-﻿using WarehouseManagementWeb.Application.Dto.Output.ResourceReceipt;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Data;
+using WarehouseManagementWeb.Application.Dto.Output.ResourceReceipt;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.DocumentReceipt;
 using WarehouseManagementWeb.Domain.Entities;
 using WarehouseManagementWeb.Infrastructure.Data;
@@ -21,39 +23,39 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             _db = db;
         }
 
-        public Task<bool> CheckDocumentReceiptExistsByIdAndNumberCodeAsync(int documentReceiptId, string documentReceiptNumberCode)
-        {
-            throw new NotImplementedException();
-        }
+        #region Публичные методы.
 
-        public Task<bool> CheckDocumentReceiptExistsByNumberCodeAsync(string documentReceiptNumberCode)
+        /// <inheritdoc />
+        public async Task<IEnumerable<ResourceReceiptListOutput>> GetResourceReceiptsAsync()
         {
-            throw new NotImplementedException();
-        }
+            IEnumerable<ResourceReceiptListOutput> result = await _db.DocumentReceipts
+                .AsNoTracking()
+                .OrderByDescending(dr => dr.Id)
+                .Select(x => new ResourceReceiptListOutput
+                {
+                    DocumentReceiptId = x.Id,
+                    DocumentReceiptNumberCode = x.NumberCode,
+                    DocumentReceiptDate = x.Date,
+                    DocumentClientName = x.ClientEntity!.Name,
+                    Items = x.ResourceReceiptEntities!
+                    .OrderByDescending(rr => rr.Id)
+                    .Select(rr => new ResourceReceiptItemOutput
+                    {
+                        ResourceReceiptId = rr.Id,
+                        ResourceTitle = rr.ResourceEntity!.Title,
+                        MeasureUnitTitle = rr.MeasureUnitEntity!.Title,
+                        ResourceQuantity = rr.Quantity
+                    })
 
-        public Task CreateResourceReceiptAsync(DocumentReceiptEntity documentEntity)
-        {
-            throw new NotImplementedException();
-        }
+                })
+                .ToListAsync();
 
-        public Task<ResourceReceiptListOutput> GetResourceReceiptByDocumentReceiptIdAsync(int documentReceiptId)
-        {
-            throw new NotImplementedException();
+            return result;
         }
+        #endregion
 
-        public Task<IEnumerable<ResourceReceiptListOutput>> GetResourceReceiptsAsync()
-        {
-            throw new NotImplementedException();
-        }
+        #region Приватные методы.
 
-        public Task RemoveDocumentReceiptAsync(int documentReceiptId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateResourceReceiptAsync(DocumentReceiptEntity documentEntity)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }
