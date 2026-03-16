@@ -232,7 +232,7 @@ namespace WarehouseManagementWeb.Infrastructure.Migrations
 
                     b.ToTable("document_receipts", "warehouse", t =>
                         {
-                            t.HasComment("Таблица документа поступления.");
+                            t.HasComment("Таблица документов поступлений.");
                         });
                 });
 
@@ -347,7 +347,7 @@ namespace WarehouseManagementWeb.Infrastructure.Migrations
 
                     b.ToTable("resource_receipts", "warehouse", t =>
                         {
-                            t.HasComment("Таблица ресурсов поступления.");
+                            t.HasComment("Таблица ресурсов поступлений.");
                         });
                 });
 
