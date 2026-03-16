@@ -109,6 +109,68 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             await _db.SaveChangesAsync();
         }
 
+        /// <inheritdoc />
+        public async Task UpdateResourceReceiptAsync(DocumentReceiptEntity documentEntity)
+        {
+            DocumentReceiptEntity? entity = await _db.DocumentReceipts
+                .Include(x => x.ResourceReceiptEntities)
+                .FirstOrDefaultAsync(x => x.Id == documentEntity.Id);
+
+            if (entity is null)
+            {
+                throw new InvalidOperationException("Ошибка при редактировании ресурсов поступления. " +
+                                                   $"DocumentReceiptId: {documentEntity.Id}. " +
+                                                   $"NumberCode: {documentEntity.NumberCode}.");
+            }
+
+            entity.NumberCode = documentEntity.NumberCode;
+            entity.Date = documentEntity.Date;
+            entity.ClientId = documentEntity.ClientId;
+
+            List<int>? incomingIds = documentEntity.ResourceReceiptEntities!
+                .Select(r => r.Id)
+                .ToList();
+
+            // Если исключили ресурсы, то удаляем их из поступления.
+            List<ResourceReceiptEntity> resourcesToRemove = entity.ResourceReceiptEntities!
+                .Where(r => !incomingIds.Contains(r.Id))
+                .ToList();
+
+            foreach (var resource in resourcesToRemove)
+            {
+                _db.ResourceReceipts.Remove(resource);
+            }
+
+            // Обновляем существующие ресурсы или добавляем новые.
+            foreach (var resourceReceipt in documentEntity.ResourceReceiptEntities!)
+            {
+                ResourceReceiptEntity? existResource = entity.ResourceReceiptEntities!
+                    .FirstOrDefault(rr => rr.Id == resourceReceipt.Id);
+
+                if (existResource is not null)
+                {
+                    // Обновляем существующие ресурсы.
+                    existResource.ResourceId = resourceReceipt.ResourceId;
+                    existResource.MeasureUnitId = resourceReceipt.MeasureUnitId;
+                    existResource.Quantity = resourceReceipt.Quantity;
+                }
+
+                else
+                {
+                    // Если ресурс поступления не найден, то добавляем.
+                    entity.ResourceReceiptEntities!.Add(new ResourceReceiptEntity
+                    {
+                        DocumentReceiptId = entity.Id,
+                        ResourceId = resourceReceipt.ResourceId,
+                        MeasureUnitId = resourceReceipt.MeasureUnitId,
+                        Quantity = resourceReceipt.Quantity
+                    });
+                }
+            }
+
+            await _db.SaveChangesAsync();
+        }
+
         #endregion
 
         #region Приватные методы.
