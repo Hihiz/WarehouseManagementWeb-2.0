@@ -49,6 +49,31 @@ namespace WarehouseManagementWeb.Application.Services.DocumentReceipt
             }
         }
 
+        /// <inheritdoc />
+        public async Task<ResourceReceiptListOutput> GetResourceReceiptByDocumentReceiptIdAsync(int documentReceiptId)
+        {
+            try
+            {
+                if (documentReceiptId <= 0)
+                {
+                    throw new InvalidOperationException("Недопустимый Id документа постуления. " +
+                                                        $"DocumentReceiptId: {documentReceiptId}.");
+                }
+
+                ResourceReceiptListOutput result = await _documentReceiptRepository
+                    .GetResourceReceiptByDocumentReceiptIdAsync(documentReceiptId);
+
+                return result;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
+        }
+
         #endregion
 
         #region Приватные методы.
