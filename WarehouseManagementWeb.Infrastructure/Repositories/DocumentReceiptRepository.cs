@@ -79,6 +79,27 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
 
             return result!;
         }
+
+        /// <inheritdoc />
+        public async Task<bool> CheckDocumentReceiptExistsByNumberCodeAsync(string documentReceiptNumberCode)
+        {
+            bool result = await _db.DocumentReceipts
+                .AsNoTracking()
+                .AnyAsync(dr => dr.NumberCode == documentReceiptNumberCode);
+
+            return result;
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> CheckDocumentReceiptExistsByIdAndNumberCodeAsync(int documentReceiptId,
+            string documentReceiptNumberCode)
+        {
+            bool result = await _db.DocumentReceipts
+               .AsNoTracking()
+               .AnyAsync(dr => dr.NumberCode == documentReceiptNumberCode && dr.Id != documentReceiptId);
+
+            return result;
+        }
         #endregion
 
         #region Приватные методы.
