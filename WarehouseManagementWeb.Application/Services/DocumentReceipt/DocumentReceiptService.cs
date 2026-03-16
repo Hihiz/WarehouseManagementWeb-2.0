@@ -74,6 +74,50 @@ namespace WarehouseManagementWeb.Application.Services.DocumentReceipt
             }
         }
 
+        /// <inheritdoc />
+        public async Task CreateResourceReceiptAsync(CreateResourceReceiptInput input)
+        {
+            try
+            {
+                if (input is null)
+                {
+                    throw new InvalidOperationException("Недопустимые данные ресурсов поступления.");
+                }
+
+                bool isDocumentReceiptExist = await _documentReceiptRepository
+                    .CheckDocumentReceiptExistsByNumberCodeAsync(input.DocumentReceiptNumberCode!);
+
+                if (isDocumentReceiptExist)
+                {
+                    throw new InvalidOperationException(
+                     $"Документ поступления с номером: '{input.DocumentReceiptNumberCode}' уже существует в системе.");
+                }
+
+                DocumentReceiptEntity entity = new DocumentReceiptEntity
+                {
+                    NumberCode = input.DocumentReceiptNumberCode!,
+                    Date = input.Date,
+                    ClientId = input.ClientId,
+                    ResourceReceiptEntities = input.IncludeResourceReceiptInputs!
+                    .Select(x => new ResourceReceiptEntity
+                    {
+                        ResourceId = x.ResourceId,
+                        MeasureUnitId = x.MeasureUnitId,
+                        Quantity = x.ResourceQuantity
+                    }).ToList()
+                };
+
+                await _documentReceiptRepository.CreateResourceReceiptAsync(entity);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
+        }
+
         #endregion
 
         #region Приватные методы.
