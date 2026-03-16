@@ -100,6 +100,15 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
 
             return result;
         }
+
+        /// <inheritdoc />
+        public async Task CreateResourceReceiptAsync(DocumentReceiptEntity documentEntity)
+        {
+            await _db.DocumentReceipts.AddAsync(documentEntity);
+
+            await _db.SaveChangesAsync();
+        }
+
         #endregion
 
         #region Приватные методы.
