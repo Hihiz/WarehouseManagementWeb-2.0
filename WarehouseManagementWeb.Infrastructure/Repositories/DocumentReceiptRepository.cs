@@ -52,6 +52,33 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
 
             return result;
         }
+
+        /// <inheritdoc />
+        public async Task<ResourceReceiptListOutput> GetResourceReceiptByDocumentReceiptIdAsync(
+            int documentReceiptId)
+        {
+            ResourceReceiptListOutput? result = await _db.DocumentReceipts
+                  .AsNoTracking()
+                  .Where(dr => dr.Id == documentReceiptId)
+                  .Select(dr => new ResourceReceiptListOutput
+                  {
+                      DocumentReceiptId = dr.Id,
+                      DocumentReceiptNumberCode = dr.NumberCode,
+                      DocumentReceiptDate = dr.Date,
+                      DocumentClientName = dr.ClientEntity!.Name,
+                      Items = dr.ResourceReceiptEntities!
+                      .OrderByDescending(rr => rr.Id)
+                      .Select(rr => new ResourceReceiptItemOutput
+                      {
+                          ResourceReceiptId = rr.Id,
+                          ResourceTitle = rr.ResourceEntity!.Title,
+                          MeasureUnitTitle = rr.MeasureUnitEntity!.Title,
+                          ResourceQuantity = rr.Quantity
+                      })
+                  }).FirstOrDefaultAsync();
+
+            return result!;
+        }
         #endregion
 
         #region Приватные методы.
