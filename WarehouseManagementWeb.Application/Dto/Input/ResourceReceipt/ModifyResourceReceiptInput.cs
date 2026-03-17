@@ -13,16 +13,16 @@
         /// <summary>
         /// Id ресурса.
         /// </summary>
-        public int ResourceId { get; set; }
+        public int? ResourceId { get; set; }
 
         /// <summary>
         /// Id единицы измерения.
         /// </summary>
-        public int MeasureUnitId { get; set; }
+        public int? MeasureUnitId { get; set; }
 
         /// <summary>
         /// Количество ресурса.
         /// </summary>
-        public int ResourceQuantity { get; set; }
+        public int? ResourceQuantity { get; set; }
     }
 }

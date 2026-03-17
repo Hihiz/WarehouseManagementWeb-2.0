@@ -23,7 +23,7 @@
         /// <summary>
         /// Id клиента документа поступления.
         /// </summary>
-        public int ClientId { get; set; }
+        public int DocumentReceiptClientId { get; set; }
 
         /// <summary>
         /// Список входящих ресурсов поступлений.

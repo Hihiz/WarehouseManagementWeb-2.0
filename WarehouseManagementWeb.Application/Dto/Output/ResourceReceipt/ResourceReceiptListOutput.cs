@@ -21,9 +21,14 @@
         public DateTime DocumentReceiptDate { get; set; }
 
         /// <summary>
+        /// Id клиента документа поступления.
+        /// </summary>
+        public int DocumentReceiptClientId { get; set; }
+
+        /// <summary>
         /// Наименование клиента документа поступения.
         /// </summary>
-        public string? DocumentClientName { get; set; }
+        public string? DocumentReceiptClientName { get; set; }
 
         /// <summary>
         ///  Список входящих ресурсов.
