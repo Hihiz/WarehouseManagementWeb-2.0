@@ -31,7 +31,6 @@ namespace WarehouseManagementWeb.Application.Interfaces.Services.DocumentReceipt
         /// Метод редактирует ресурсы поступления.
         /// </summary>    
         /// <param name="input">Входная модель.</param>
-        /// ресурсов поступлений.</param>
         Task UpdateResourceReceiptAsync(UpdateResourceReceiptInput input);
 
         /// <summary>
