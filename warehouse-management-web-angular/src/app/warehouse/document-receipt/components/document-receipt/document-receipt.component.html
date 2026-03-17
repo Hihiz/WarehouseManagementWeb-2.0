@@ -1,0 +1,62 @@
+<div>
+  <h3>Список документов поступлений</h3>
+
+  <div class="elem-bottom">
+    <a class="btn btn-success" (click)="onCreateResourceReceipt()"> Добавить</a>
+  </div>
+
+  <table class="table table-sm table-striped table-bordered border-dark">
+    <thead>
+      <tr>
+        <th>Номер</th>
+        <th>Дата поступления</th>
+        <th>Поставщик</th>
+        <th>Ресурс</th>
+        <th>Единица измерения</th>
+        <th>Количество</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (document of documentReceipts$ | async; track document.documentReceiptId) {
+        <tr (click)="onGetResourceReceiptByDocumentReceiptId(document.documentReceiptId)">
+          <td>{{ document.documentReceiptNumberCode }}</td>
+          <td>{{ document.documentReceiptDate | date: 'dd.MM.yyyy' }}</td>
+          <td>{{ document.documentReceiptClientName }}</td>
+          <td>
+            @for (item of document.items; track item.resourceReceiptId) {
+              <div class="p-2 border-bottom border-secondary">
+                <span [ngClass]="{ 'badge bg-danger': !item.resourceTitle }">
+                  {{ item.resourceTitle || 'Не указано' }}
+                </span>
+              </div>
+            }
+          </td>
+
+          <td>
+            @for (item of document.items; track item.resourceReceiptId) {
+              <div class="p-2 border-bottom border-secondary">
+                <span [ngClass]="{ 'badge bg-danger': !item.measureUnitTitle }">
+                  {{ item.measureUnitTitle || 'Не указано'  }}
+                </span>
+              </div>
+            }
+          </td>
+
+          <td>
+            @for (item of document.items; track item.resourceReceiptId) {
+              <div class="p-2 border-bottom border-secondary">
+                <span [ngClass]="{ 'badge bg-danger': !item.resourceQuantity }">
+                  {{ item.resourceQuantity || 'Не указано' }}
+                </span>
+              </div>
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="6" class="text-center">Нет документов поступлений</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
