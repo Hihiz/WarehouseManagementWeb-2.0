@@ -15,6 +15,9 @@ namespace WarehouseManagementWeb.Tests
         private readonly IDbContextTransaction _transaction;
 
         protected internal readonly ClientRepository clientRepository;
+        protected internal readonly DocumentReceiptRepository resourceReceiptRepository;
+        protected internal readonly MeasureUnitRepository measureUnitRepository;
+        protected internal readonly ResourceRepository resourceRepository;
 
         /// <summary>
         /// Конструктор.
@@ -33,6 +36,9 @@ namespace WarehouseManagementWeb.Tests
             var applicationDbContext = new ApplicationDbContext(optionsBuilder.Options);
 
             clientRepository = new ClientRepository(applicationDbContext);
+            resourceReceiptRepository = new DocumentReceiptRepository(applicationDbContext);
+            measureUnitRepository = new MeasureUnitRepository(applicationDbContext);
+            resourceRepository = new ResourceRepository(applicationDbContext);
 
             _transaction = applicationDbContext.Database.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
         }

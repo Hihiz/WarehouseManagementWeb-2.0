@@ -21,6 +21,7 @@
   <ItemGroup>
     <Folder Include="Integration\Repository\Resource\" />
     <Folder Include="Integration\Repository\MeasureUnit\" />
+    <Folder Include="Integration\Repository\DocumentReceipt\" />
     <Folder Include="Unit\" />
   </ItemGroup>
 
