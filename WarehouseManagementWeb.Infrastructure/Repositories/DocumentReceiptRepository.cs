@@ -31,18 +31,21 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             IEnumerable<ResourceReceiptListOutput> result = await _db.DocumentReceipts
                 .AsNoTracking()
                 .OrderByDescending(dr => dr.Id)
-                .Select(x => new ResourceReceiptListOutput
+                .Select(dr => new ResourceReceiptListOutput
                 {
-                    DocumentReceiptId = x.Id,
-                    DocumentReceiptNumberCode = x.NumberCode,
-                    DocumentReceiptDate = x.Date,
-                    DocumentClientName = x.ClientEntity!.Name,
-                    Items = x.ResourceReceiptEntities!
+                    DocumentReceiptId = dr.Id,
+                    DocumentReceiptNumberCode = dr.NumberCode,
+                    DocumentReceiptDate = dr.Date,
+                    DocumentReceiptClientId = dr.ClientId,
+                    DocumentReceiptClientName = dr.ClientEntity!.Name,
+                    Items = dr.ResourceReceiptEntities!
                     .OrderByDescending(rr => rr.Id)
                     .Select(rr => new ResourceReceiptItemOutput
                     {
                         ResourceReceiptId = rr.Id,
+                        ResourceId = rr.ResourceId,
                         ResourceTitle = rr.ResourceEntity!.Title,
+                        MeasureUnitId = rr.MeasureUnitId,
                         MeasureUnitTitle = rr.MeasureUnitEntity!.Title,
                         ResourceQuantity = rr.Quantity
                     })
@@ -65,13 +68,16 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                       DocumentReceiptId = dr.Id,
                       DocumentReceiptNumberCode = dr.NumberCode,
                       DocumentReceiptDate = dr.Date,
-                      DocumentClientName = dr.ClientEntity!.Name,
+                      DocumentReceiptClientId = dr.ClientId,
+                      DocumentReceiptClientName = dr.ClientEntity!.Name,
                       Items = dr.ResourceReceiptEntities!
                       .OrderByDescending(rr => rr.Id)
                       .Select(rr => new ResourceReceiptItemOutput
                       {
                           ResourceReceiptId = rr.Id,
+                          ResourceId = rr.ResourceId,
                           ResourceTitle = rr.ResourceEntity!.Title,
+                          MeasureUnitId = rr.MeasureUnitId,
                           MeasureUnitTitle = rr.MeasureUnitEntity!.Title,
                           ResourceQuantity = rr.Quantity
                       })
@@ -136,9 +142,19 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                 .Where(r => !incomingIds.Contains(r.Id))
                 .ToList();
 
-            foreach (var resource in resourcesToRemove)
+            if (resourcesToRemove.Any())
             {
-                _db.ResourceReceipts.Remove(resource);
+                foreach (var resource in resourcesToRemove)
+                {
+                    _db.ResourceReceipts.Remove(resource);
+                }
+            }
+
+            // Если у документа нет связанных ресурсов.
+            if (!documentEntity.ResourceReceiptEntities.Any())
+            {
+                await _db.SaveChangesAsync();
+                return;
             }
 
             // Обновляем существующие ресурсы или добавляем новые.
