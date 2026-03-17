@@ -93,9 +93,12 @@ namespace WarehouseManagementWeb.Application.Services.DocumentReceipt
                      $"Документ поступления с номером: '{input.DocumentReceiptNumberCode}' уже существует в системе.");
                 }
 
+                input.IncludeResourceReceiptInputs ??= new List<IncludeResourceReceiptInput>();
+
                 DocumentReceiptEntity entity = new DocumentReceiptEntity
                 {
                     NumberCode = input.DocumentReceiptNumberCode!,
+                    Date = DateTime.SpecifyKind(input.Date, DateTimeKind.Utc),
                     Date = input.Date,
                     ClientId = input.ClientId,
                     ResourceReceiptEntities = input.IncludeResourceReceiptInputs!
@@ -142,8 +145,8 @@ namespace WarehouseManagementWeb.Application.Services.DocumentReceipt
                 {
                     Id = input.DocumentReceiptId,
                     NumberCode = input.DocumentReceiptNumberCode!,
-                    Date = input.Date,
-                    ClientId = input.ClientId,
+                    Date = DateTime.SpecifyKind(input.Date, DateTimeKind.Utc),
+                    ClientId = input.DocumentReceiptClientId,
                     ResourceReceiptEntities = input.ModifyResourceReceiptInputs!
                     .Select(x => new ResourceReceiptEntity
                     {
