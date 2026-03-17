@@ -11,9 +11,19 @@
         public int ResourceReceiptId { get; set; }
 
         /// <summary>
+        /// Id ресурса.
+        /// </summary>
+        public int? ResourceId { get; set; }
+
+        /// <summary>
         /// Наименование ресурса.
         /// </summary>
         public string? ResourceTitle { get; set; }
+
+        /// <summary>
+        /// Id единицы измерения.
+        /// </summary>
+        public int? MeasureUnitId { get; set; }
 
         /// <summary>
         /// Наименование единицы измерения.
