@@ -1,0 +1,205 @@
+@if (isLoader) {
+  <div class="text-center py-5">
+    <p>Загрузка данных...</p>
+  </div>
+} @else {
+  <div class="container-fluid">
+    <h3>Добавление документа поступления</h3>
+    <form
+      method="post"
+      name="form"
+      #createDocumentReceiptForm="ngForm"
+      (ngSubmit)="createDocumentReceiptForm.form.valid && onCreateDocumentReceipt()"
+      novalidate
+    >
+      <div class="elem-bottom mb-3">
+        <button type="submit" class="btn btn-success me-2">Сохранить</button>
+      </div>
+
+      <div class="row align-items-center mb-3">
+        <div class="col-md-1">
+          <label class="col-form-label">Номер документа:</label>
+        </div>
+        <div class="col-md-3">
+          <input
+            class="form-control"
+            type="text"
+            name="numberCode"
+            [(ngModel)]="createResourceReceiptInput.documentReceiptNumberCode"
+            placeholder="Введите номер документа поступления"
+            required
+            #numberCode="ngModel"
+            minlength="3"
+            maxlength="50"
+            [ngClass]="{
+              'is-invalid':
+                (createDocumentReceiptForm.submitted && numberCode.errors) || serverNameError,
+            }"
+            (input)="serverNameError = null"
+          />
+
+          @if (numberCode.errors && createDocumentReceiptForm.submitted) {
+            <div class="invalid-feedback">
+              @if (numberCode.errors['required']) {
+                Номер документа поступления не заполнен
+              }
+              @if (numberCode.errors['minlength']) {
+                Номер документа поступления слишком короткий
+              }
+              @if (numberCode.errors['maxlength']) {
+                Номер документа поступления слишком длинный
+              }
+            </div>
+          }
+
+          @if (serverNameError) {
+            <span class="invalid-feedback">{{ serverNameError }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="row align-items-center mb-3">
+        <div class="col-md-1">
+          <label class="col-form-label">Поставщик:</label>
+        </div>
+        <div class="col-md-3">
+          <select
+            class="form-select"
+            [(ngModel)]="createResourceReceiptInput.clientId"
+            name="clientId"
+            #clientModel="ngModel"
+            required
+            min="1"
+            [ngClass]="{
+              'is-invalid': createDocumentReceiptForm.submitted && clientModel.errors,
+            }">
+            <option [value]="0" disabled>Выберите поставщика</option>
+            @for (client of activeClients$ | async; track client.id) {
+              <option [value]="client.id">
+                {{ client.name }}
+              </option>
+            } @empty {
+              <option disabled>Поставщики отсутствуют</option>
+            }
+          </select>
+
+          @if (clientModel.errors && createDocumentReceiptForm.submitted) {
+            <div class="invalid-feedback">
+                @if (clientModel.errors['min']) {
+                    Поставщик не выборан
+                }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="row align-items-center mb-3">
+        <div class="col-md-1">
+          <label class="col-form-label">Дата:</label>
+        </div>
+        <div class="col-md-3">
+          <input
+            class="form-control"
+            type="date"
+            name="date"
+            [(ngModel)]="createResourceReceiptInput.date"
+            placeholder="Выберите дату поступления"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <div class="d-flex align-items-center mb-2">
+          <h4 class="me-3 mb-0">Ресурсы</h4>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-primary"
+            (click)="onIncludeResourceReceipt()"
+          >
+            + Добавить ресурс
+          </button>
+        </div>
+
+        @if (errorMessage) {
+          <div class="alert alert-danger">{{ errorMessage }}</div>
+        }
+
+        <table class="table table-sm table-bordered border-dark align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Ресурс</th>
+              <th>Единица измерения</th>
+              <th>Количество</th>
+              <th class="text-center">Удалить</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (input of createResourceReceiptInput.includeResourceReceiptInputs; track $index) {
+              <tr>
+                <td>
+                  <select
+                    class="form-select form-select-sm"
+                    [(ngModel)]="input.resourceId"
+                    [name]="'resource-' + $index"
+                    required
+                  >
+                    <option [value]="null" disabled>Выберите ресурс</option>
+                    @for (r of activeResources$ | async; track r.id) {
+                      <option [value]="r.id">
+                        {{ r.title }}
+                      </option>
+                    }
+                  </select>
+                </td>
+                <td>
+                  <select
+                    class="form-select form-select-sm"
+                    [(ngModel)]="input.measureUnitId"
+                    [name]="'measure-' + $index"
+                    required
+                  >
+                    <option [value]="" disabled>Выберите ресурс измерения</option>
+                    @for (r of activeMeasureUnits$ | async; track r.id) {
+                      <option [value]="r.id">
+                        {{ r.title }}
+                      </option>
+                    }
+                  </select>
+                </td>
+
+                <td>
+                  <input
+                    class="form-select form-select-sm"
+                    [(ngModel)]="input.resourceQuantity"
+                    [name]="'quantity-' + $index"
+                    placeholder="Кол-во"
+                    min="0"
+                    required
+                  />
+                </td>
+
+                <td class="text-center">
+                  <button
+                    type="button"
+                    class="btn btn-outline-danger btn-sm"
+                    (click)="onRemoveResourceReceipt($index)"
+                  >
+                    &times;
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="text-center text-muted py-3">
+                  Список ресурсов пуст. Нажмите "+ Добавить ресурс"
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </form>
+    <a class="btn btn-primary" (click)="onGetDocumentReceipts()">Назад</a>
+  </div>
+}
