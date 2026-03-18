@@ -20,7 +20,7 @@
       @for (document of documentReceipts$ | async; track document.documentReceiptId) {
         <tr (click)="onGetResourceReceiptByDocumentReceiptId(document.documentReceiptId)">
           <td>{{ document.documentReceiptNumberCode }}</td>
-          <td>{{ document.documentReceiptDate | date: 'dd.MM.yyyy' }}</td>
+          <td>{{ document.documentReceiptDate | date: 'dd.MM.yyyy HH:mm': 'UTC' }}</td>
           <td>{{ document.documentReceiptClientName }}</td>
           <td>
             @for (item of document.items; track item.resourceReceiptId) {
