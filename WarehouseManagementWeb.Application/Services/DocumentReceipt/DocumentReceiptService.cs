@@ -93,13 +93,21 @@ namespace WarehouseManagementWeb.Application.Services.DocumentReceipt
                      $"Документ поступления с номером: '{input.DocumentReceiptNumberCode}' уже существует в системе.");
                 }
 
+                bool isDuplicates = input.IncludeResourceReceiptInputs!
+                       .GroupBy(x => new { x.ResourceId, x.MeasureUnitId })
+                       .Any(g => g.Count() > 1);
+
+                if (isDuplicates)
+                {
+                    throw new InvalidOperationException("В документе не может быть дважды указан один и тот же ресурс с одинаковой единицей измерения.");
+                }
+
                 input.IncludeResourceReceiptInputs ??= new List<IncludeResourceReceiptInput>();
 
                 DocumentReceiptEntity entity = new DocumentReceiptEntity
                 {
                     NumberCode = input.DocumentReceiptNumberCode!,
                     Date = DateTime.SpecifyKind(input.Date, DateTimeKind.Utc),
-                    Date = input.Date,
                     ClientId = input.ClientId,
                     ResourceReceiptEntities = input.IncludeResourceReceiptInputs!
                     .Select(x => new ResourceReceiptEntity
