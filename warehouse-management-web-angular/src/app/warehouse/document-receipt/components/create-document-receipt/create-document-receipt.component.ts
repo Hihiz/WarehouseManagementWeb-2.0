@@ -12,6 +12,7 @@ import { ClientService } from '../../../../directory/client/services/client.serv
 import { ResourceService } from '../../../../directory/resource/services/resource.service';
 import { BehaviorSubject } from 'rxjs';
 import { AsyncPipe, NgClass } from '@angular/common';
+import { DateService } from '../../../../helpers/date.service';
 
 /**
  * Класс компонента создания документа поступления.
@@ -38,6 +39,7 @@ export class CreateDocumentReceiptComponent implements OnInit {
     private readonly _documentReceiptService: DocumentReceiptSerivce,
     private readonly _router: Router,
     private _cdr: ChangeDetectorRef,
+    private readonly _dateService: DateService,
   ) {
     this.activeMeasureUnits$ = this._measureUnitSerivce.activeMeasureUnits$;
     this.activeClients$ = this._clientService.activeClients$;
@@ -49,15 +51,17 @@ export class CreateDocumentReceiptComponent implements OnInit {
   serverNameError: string | null = null;
   createResourceReceiptInput: CreateResourceReceiptInput = new CreateResourceReceiptInput();
 
- ngOnInit() {
+  ngOnInit() {
+    this.createResourceReceiptInput.date = this._dateService.getDateNow();
+
     this.getActiveClients();
     this.getActiveMeasureUnits();
     this.getActiveResources();
-    
+
     this.isLoader = false;
   }
 
-/**
+  /**
    * Фукнция получает список активных ресурсов для заполнения выпадающего списка.
    */
   private getActiveResources() {
@@ -84,7 +88,7 @@ export class CreateDocumentReceiptComponent implements OnInit {
     });
   }
 
-/**
+  /**
    * Функция добавляет пустую строку ресурса в список.
    */
   public onIncludeResourceReceipt() {
@@ -93,9 +97,9 @@ export class CreateDocumentReceiptComponent implements OnInit {
     }
 
     // Добавляем новый обьект с начальными значениями.
-    this.createResourceReceiptInput.includeResourceReceiptInputs.push({   
-      resourceId: 0,
-      measureUnitId: 0,
+    this.createResourceReceiptInput.includeResourceReceiptInputs.push({
+      resourceId: null,
+      measureUnitId: null,
       resourceQuantity: 0,
     });
   }
@@ -115,6 +119,8 @@ export class CreateDocumentReceiptComponent implements OnInit {
     this._documentReceiptService.createResourceReceipt(this.createResourceReceiptInput).subscribe({
       next: (_) => {
         console.log('Документ поступления создан');
+        this.createResourceReceiptInput = new CreateResourceReceiptInput();
+
         this.onGetDocumentReceipts();
       },
       error: (err) => {
