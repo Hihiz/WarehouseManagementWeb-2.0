@@ -27,5 +27,5 @@ export class UpdateResourceReceiptInput {
   /**
    * Список входящих ресурсов поступлений.
    */
-  modifyResourceReceiptInputs: ModifyResourceReceiptInput[] | null = null;
+  modifyResourceReceiptInputs: ModifyResourceReceiptInput[] = [];
 }
