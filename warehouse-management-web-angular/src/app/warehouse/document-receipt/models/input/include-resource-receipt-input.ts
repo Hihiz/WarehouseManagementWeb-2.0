@@ -5,12 +5,12 @@ export class IncludeResourceReceiptInput {
   /**
    * Id ресурса.
    */
-  resourceId: number = 0;
+  resourceId: number | null = null;
 
   /**
    * Id единицы измерения.
    */
-  measureUnitId: number = 0;
+  measureUnitId?: number | null = null;
 
   /**
    * Количество ресурса.

@@ -15,9 +15,9 @@ export class CreateResourceReceiptInput {
   /**
    * Id клиента документа поступления.
    */
-  clientId: number = 0;
+  clientId: number | null = null;
   /**
    * Список входящих ресурсов поступления.
    */
-  includeResourceReceiptInputs: IncludeResourceReceiptInput[] | null = null;
+  includeResourceReceiptInputs: IncludeResourceReceiptInput[] = [];
 }
