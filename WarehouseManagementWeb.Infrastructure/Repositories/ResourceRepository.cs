@@ -30,13 +30,13 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         {
             IEnumerable<ResourceOutput> result = await _db.Resources
                 .AsNoTracking()
+                 .OrderByDescending(r => r.Id)
                 .Select(r => new ResourceOutput
                 {
                     Id = r.Id,
                     Title = r.Title,
                     ResourceStatusEnum = r.ResourceStatusEnum
                 })
-                .OrderByDescending(r => r.Id)
                 .ToListAsync();
 
             return result;
@@ -47,14 +47,14 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         {
             IEnumerable<ResourceOutput> result = await _db.Resources
                 .AsNoTracking()
+                .OrderByDescending(r => r.Id)
                 .Where(r => r.ResourceStatusEnum == DirectoryStatusEnum.Active)
                 .Select(r => new ResourceOutput
                 {
                     Id = r.Id,
                     Title = r.Title,
                     ResourceStatusEnum = r.ResourceStatusEnum
-                })
-                .OrderByDescending(r => r.Id)
+                })                
                 .ToListAsync();
 
             return result;

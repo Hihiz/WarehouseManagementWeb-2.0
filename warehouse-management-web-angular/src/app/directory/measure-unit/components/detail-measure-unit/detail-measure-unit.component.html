@@ -8,10 +8,18 @@
 } @else {
   <div class="container-fluid">
     <h3>Детали единицы измерения</h3>
-    <div class="elem-bottom">
-      <button (click)="onUpdateMeasureUnit()" class="btn btn-success me-2">Сохранить</button>
-      <button (click)="onRemoveMeasureUnit()" class="btn btn-danger me-2">Удалить</button>
-      <button
+   
+    <form
+      method="post"
+      name="form"
+      #updateMeasureUnitForm="ngForm"
+      (ngSubmit)="updateMeasureUnitForm.form.valid && onUpdateMeasureUnit()"
+      novalidate>
+
+ <div class="elem-bottom">
+      <button type="submit" class="btn btn-success me-2">Сохранить</button>
+      <button type="button" (click)="onRemoveMeasureUnit()" class="btn btn-danger me-2">Удалить</button>
+      <button type="button"
         (click)="onChangeStatusMeasureUnit()"
         class="btn me-2 no-transition"
         [class.btn-warning]="isActive"
@@ -20,13 +28,7 @@
         {{ isActive ? 'В архив' : 'В работу' }}
       </button>
     </div>
-    <form
-      method="post"
-      name="form"
-      #updateMeasureUnitForm="ngForm"
-      (ngSubmit)="(updateMeasureUnitForm.form.valid)"
-      novalidate
-    >
+
       <div class="row align-items-center mb-3">
         <div class="col-md-1">
           <label class="col-form-label">Наименование:</label>

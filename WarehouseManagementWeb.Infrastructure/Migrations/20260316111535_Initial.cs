@@ -15,6 +15,9 @@ namespace WarehouseManagementWeb.Infrastructure.Migrations
             migrationBuilder.EnsureSchema(
                 name: "directory");
 
+            migrationBuilder.EnsureSchema(
+                name: "warehouse");
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -77,6 +80,38 @@ namespace WarehouseManagementWeb.Infrastructure.Migrations
                     table.PrimaryKey("PK_clients", x => x.id);
                 },
                 comment: "Таблица клиентов.");
+
+            migrationBuilder.CreateTable(
+                name: "measure_units",
+                schema: "directory",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false, comment: "PK.")
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    title = table.Column<string>(type: "text", nullable: false, comment: "Наименование единицы измерения."),
+                    status_enum = table.Column<string>(type: "text", nullable: false, defaultValue: "active", comment: "Статус единицы измерения в значении перечисления.")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_measure_units", x => x.id);
+                },
+                comment: "Таблица единиц измерений.");
+
+            migrationBuilder.CreateTable(
+                name: "resources",
+                schema: "directory",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false, comment: "PK.")
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    title = table.Column<string>(type: "text", nullable: false, comment: "Наименование ресурса."),
+                    status_enum = table.Column<string>(type: "text", nullable: false, defaultValue: "active", comment: "Статус ресурса в значении перечисления.")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_resources", x => x.id);
+                },
+                comment: "Таблица ресурсов.");
 
             migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
@@ -184,6 +219,65 @@ namespace WarehouseManagementWeb.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "document_receipts",
+                schema: "warehouse",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false, comment: "PK.")
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    number_code = table.Column<string>(type: "text", nullable: false, comment: "Номер документа поступления."),
+                    date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()", comment: "Дата документа поступления."),
+                    client_id = table.Column<int>(type: "integer", nullable: false, comment: "Id клиента документа поступления.")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_document_receipts", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_document_receipts_clients_client_id",
+                        column: x => x.client_id,
+                        principalSchema: "directory",
+                        principalTable: "clients",
+                        principalColumn: "id");
+                },
+                comment: "Таблица документов поступлений.");
+
+            migrationBuilder.CreateTable(
+                name: "resource_receipts",
+                schema: "warehouse",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false, comment: "PK.")
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    document_receipt_id = table.Column<int>(type: "integer", nullable: false, comment: "Id документа поступления."),
+                    resource_id = table.Column<int>(type: "integer", nullable: true, comment: "Id ресурса."),
+                    measure_unit_id = table.Column<int>(type: "integer", nullable: true, comment: "Id единицы измерения."),
+                    quantity = table.Column<int>(type: "integer", nullable: true, comment: "Количество ресурсов поступления.")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_resource_receipts", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_resource_receipts_document_receipts_document_receipt_id",
+                        column: x => x.document_receipt_id,
+                        principalSchema: "warehouse",
+                        principalTable: "document_receipts",
+                        principalColumn: "id");
+                    table.ForeignKey(
+                        name: "FK_resource_receipts_measure_units_measure_unit_id",
+                        column: x => x.measure_unit_id,
+                        principalSchema: "directory",
+                        principalTable: "measure_units",
+                        principalColumn: "id");
+                    table.ForeignKey(
+                        name: "FK_resource_receipts_resources_resource_id",
+                        column: x => x.resource_id,
+                        principalSchema: "directory",
+                        principalTable: "resources",
+                        principalColumn: "id");
+                },
+                comment: "Таблица ресурсов поступлений.");
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -227,6 +321,52 @@ namespace WarehouseManagementWeb.Infrastructure.Migrations
                 table: "clients",
                 column: "name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_document_receipts_client_id",
+                schema: "warehouse",
+                table: "document_receipts",
+                column: "client_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_document_receipts_number_code",
+                schema: "warehouse",
+                table: "document_receipts",
+                column: "number_code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_measure_units_title",
+                schema: "directory",
+                table: "measure_units",
+                column: "title",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_resource_receipts_document_receipt_id_resource_id_measure_u~",
+                schema: "warehouse",
+                table: "resource_receipts",
+                columns: new[] { "document_receipt_id", "resource_id", "measure_unit_id" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_resource_receipts_measure_unit_id",
+                schema: "warehouse",
+                table: "resource_receipts",
+                column: "measure_unit_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_resource_receipts_resource_id",
+                schema: "warehouse",
+                table: "resource_receipts",
+                column: "resource_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_resources_title",
+                schema: "directory",
+                table: "resources",
+                column: "title",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -248,14 +388,30 @@ namespace WarehouseManagementWeb.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "clients",
-                schema: "directory");
+                name: "resource_receipts",
+                schema: "warehouse");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "document_receipts",
+                schema: "warehouse");
+
+            migrationBuilder.DropTable(
+                name: "measure_units",
+                schema: "directory");
+
+            migrationBuilder.DropTable(
+                name: "resources",
+                schema: "directory");
+
+            migrationBuilder.DropTable(
+                name: "clients",
+                schema: "directory");
         }
     }
 }

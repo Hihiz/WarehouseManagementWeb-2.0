@@ -3,7 +3,7 @@
 namespace WarehouseManagementWeb.Domain.Entities
 {
     /// <summary>
-    /// Класс ресурсов сопоставляется с таблицей directory.resources.
+    /// Класс ресурса сопоставляется с таблицей directory.resources.
     /// </summary>
     public class ResourceEntity
     {
@@ -21,5 +21,10 @@ namespace WarehouseManagementWeb.Domain.Entities
         /// Статус ресурса в значении перечисления.
         /// </summary>
         public DirectoryStatusEnum ResourceStatusEnum { get; set; }
+
+        /// <summary>
+        /// Список ресурсов поступлений, которые связанны с ресурсом.
+        /// </summary>
+        public ICollection<ResourceReceiptEntity>? ResourceReceiptEntities { get; set; }
     }
 }

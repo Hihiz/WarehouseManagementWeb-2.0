@@ -3,7 +3,7 @@
 namespace WarehouseManagementWeb.Domain.Entities
 {
     /// <summary>
-    /// Класс единиц измерения сопоставляется с таблицей directory.measure_units.
+    /// Класс единицы измерения сопоставляется с таблицей directory.measure_units.
     /// </summary>
     public class MeasureUnitEntity
     {
@@ -22,5 +22,10 @@ namespace WarehouseManagementWeb.Domain.Entities
         /// Статус единицы измерения в значении перечисления.
         /// </summary>
         public DirectoryStatusEnum MeasureUnitStatusEnum { get; set; }
+
+        /// <summary>
+        /// Список ресурсов поступлений, которые связанны с единицей измерения.
+        /// </summary>
+        public ICollection<ResourceReceiptEntity>? ResourceReceiptEntities { get; set; }
     }
 }

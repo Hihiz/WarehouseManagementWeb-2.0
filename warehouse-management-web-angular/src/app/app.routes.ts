@@ -12,6 +12,9 @@ import { CreateResourceComponent } from './directory/resource/components/create-
 import { MeasureUnitComponent } from './directory/measure-unit/components/measure-unit/measure-unit.component';
 import { DetailMeasureUnitComponent } from './directory/measure-unit/components/detail-measure-unit/detail-measure-unit.component';
 import { CreateMeasureUnitComponent } from './directory/measure-unit/components/create-measure-unit/create-measure-unit.component';
+import { DocumentReceiptComponent } from './warehouse/document-receipt/components/document-receipt/document-receipt.component';
+import { DetailDocumentReceiptComponent } from './warehouse/document-receipt/components/detail-document-receipt/detail-document-receipt.component';
+import { CreateDocumentReceiptComponent } from './warehouse/document-receipt/components/create-document-receipt/create-document-receipt.component';
 
 export const routes: Routes = [
   {
@@ -88,5 +91,24 @@ export const routes: Routes = [
     path: 'create-measure-unit',
     component: CreateMeasureUnitComponent,
     canActivate: [authGuard],
+  },
+
+  // Роуты для DocumentReceipt
+  {
+    path: 'document-receipts',
+    component: DocumentReceiptComponent,
+    canActivate: [authGuard]
+  },
+
+  {
+    path: 'detail-document-receipt',
+    component: DetailDocumentReceiptComponent,
+    canActivate: [authGuard]
+  },
+  
+  {
+    path: 'create-document-receipt',
+    component: CreateDocumentReceiptComponent,
+    canActivate: [authGuard]
   },
 ];

@@ -30,13 +30,13 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         {
             IEnumerable<MeasureUnitOutput> result = await _db.MeasureUnits
             .AsNoTracking()
+              .OrderByDescending(mu => mu.Id)
             .Select(mu => new MeasureUnitOutput
             {
                 Id = mu.Id,
                 Title = mu.Title,
                 MeasureUnitStatusEnum = mu.MeasureUnitStatusEnum
             })
-            .OrderByDescending(mu => mu.Id)
             .ToListAsync();
 
             return result;
@@ -47,14 +47,14 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         {
             IEnumerable<MeasureUnitOutput> result = await _db.MeasureUnits
              .AsNoTracking()
+               .OrderByDescending(mu => mu.Id)
              .Where(mu => mu.MeasureUnitStatusEnum == DirectoryStatusEnum.Active)
              .Select(mu => new MeasureUnitOutput
              {
                  Id = mu.Id,
                  Title = mu.Title,
                  MeasureUnitStatusEnum = mu.MeasureUnitStatusEnum
-             })
-             .OrderByDescending(mu => mu.Id)
+             })           
              .ToListAsync();
 
             return result;

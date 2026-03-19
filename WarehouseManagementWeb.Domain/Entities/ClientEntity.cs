@@ -26,5 +26,10 @@ namespace WarehouseManagementWeb.Domain.Entities
         /// Статус клиента в значении перечисления.
         /// </summary>
         public DirectoryStatusEnum ClientStatusEnum { get; set; }
+
+        /// <summary>
+        /// Список документов поступлений, которые связанны с клиентом.
+        /// </summary>
+        public ICollection<DocumentReceiptEntity>? DocumentReceiptEntities { get; set; }
     }
 }
