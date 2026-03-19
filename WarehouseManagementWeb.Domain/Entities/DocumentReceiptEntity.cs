@@ -33,6 +33,6 @@
         /// <summary>
         /// Список ресурсов поступлений, которые связанны с документом поступления.
         /// </summary>
-        public ICollection<ResourceReceiptEntity>? ResourceReceiptEntities { get; set; }
+        public ICollection<ResourceReceiptEntity> ResourceReceiptEntities { get; set; }
     }
 }
