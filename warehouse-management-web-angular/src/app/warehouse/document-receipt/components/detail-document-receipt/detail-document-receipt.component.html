@@ -93,7 +93,7 @@
         <div class="col-md-3">
           <input
             class="form-control"
-            type="date"
+            type="datetime-local"
             name="date"
             [(ngModel)]="updateResourceReceiptInput.date"
             placeholder="Выберите дату поступления"
@@ -114,9 +114,11 @@
           </button>
         </div>
 
-        @if (errorMessage)
+        @if (tableResourcesError)
         {
-            <div class="alert alert-danger">{{errorMessage}}</div>
+            <div class="alert alert-danger">
+              {{tableResourcesError}}
+            </div>
         }
 
         <table class="table table-sm table-bordered border-dark align-middle">
@@ -136,6 +138,9 @@
                     class="form-select form-select-sm"
                     [(ngModel)]="input.resourceId"
                     [name]="'resource-' + $index"
+                    #resource="ngModel"
+                    required
+                    [ngClass]="{'is-invalid': updateDocumentReceiptForm.submitted && resource.errors}"
                   >
                     <option [value]="null" disabled>Выберите ресурс</option>
                     @for (r of activeResources$ | async; track r.id) {
@@ -144,6 +149,14 @@
                       </option>
                     }
                   </select>
+
+                  @if (updateDocumentReceiptForm.submitted && resource.errors) {
+                    <div class="invalid-feedback">
+                      @if (resource.errors['required']) {
+                        Ресурс не выбран
+                      }             
+                    </div>
+                  }
                 </td>
 
                 <td>
@@ -151,12 +164,23 @@
                     class="form-select form-select-sm"
                     [(ngModel)]="input.measureUnitId"
                     [name]="'measure-' + $index"
+                     #measure="ngModel"
+                    required
+                    [ngClass]="{'is-invalid': updateDocumentReceiptForm.submitted && measure.errors}"
                   >
                     <option [value]="null" disabled>Выберите единицу измерения</option>
                     @for (m of activeMeasureUnits$ | async; track m.id) {                        
                       <option [value]="m.id">{{ m.title }}</option>
                     }
                   </select>
+
+                   @if (updateDocumentReceiptForm.submitted && measure.errors) {
+                    <div class="invalid-feedback">
+                      @if (measure.errors['required']) {
+                        Единица измерения не выбрана
+                      }             
+                    </div>
+                  }
                 </td>
 
                 <td>
@@ -166,8 +190,22 @@
                     [(ngModel)]="input.resourceQuantity"
                     [name]="'quantity-' + $index"
                     placeholder="Кол-во"
-                    min="0"
+                    min="1"
+                    required
+                     #quantity="ngModel"
+                    [ngClass]="{'is-invalid': updateDocumentReceiptForm.submitted && quantity.errors}"
                   />
+
+                   @if (updateDocumentReceiptForm.submitted && quantity.errors) {
+                    <div class="invalid-feedback">
+                      @if (quantity.errors['min']) {
+                         Минимально 1 ед
+                      } 
+                      @if(quantity.errors['required']) {
+                        Количество ресурса не выбрано
+                      }         
+                    </div>
+                  }
                 </td>
 
                 <td class="text-center">
