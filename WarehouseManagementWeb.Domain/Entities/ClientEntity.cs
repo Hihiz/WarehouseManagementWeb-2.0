@@ -31,5 +31,10 @@ namespace WarehouseManagementWeb.Domain.Entities
         /// Список документов поступлений, которые связанны с клиентом.
         /// </summary>
         public ICollection<DocumentReceiptEntity>? DocumentReceiptEntities { get; set; }
+
+        /// <summary>
+        /// Список документов отгрузок, которые связанны с клиентом.
+        /// </summary>
+        public ICollection<DocumentShipmentEntity>? DocumentShipmentEntities { get; set; }
     }
 }
