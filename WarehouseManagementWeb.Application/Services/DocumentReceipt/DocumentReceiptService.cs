@@ -93,14 +93,7 @@ namespace WarehouseManagementWeb.Application.Services.DocumentReceipt
                      $"Документ поступления с номером: '{input.DocumentReceiptNumberCode}' уже существует в системе.");
                 }
 
-                bool isDuplicates = input.IncludeResourceReceiptInputs!
-                       .GroupBy(x => new { x.ResourceId, x.MeasureUnitId })
-                       .Any(g => g.Count() > 1);
-
-                if (isDuplicates)
-                {
-                    throw new InvalidOperationException("В документе не может быть дважды указан один и тот же ресурс с одинаковой единицей измерения.");
-                }
+                IsDuplicateResourceReceipts(input.IncludeResourceReceiptInputs!);
 
                 input.IncludeResourceReceiptInputs ??= new List<IncludeResourceReceiptInput>();
 
@@ -148,6 +141,8 @@ namespace WarehouseManagementWeb.Application.Services.DocumentReceipt
                     throw new InvalidOperationException("Документ поступления с номером: " +
                         $"'{input.DocumentReceiptNumberCode}' уже существует в системе.");
                 }
+
+                IsDuplicateResourceReceipts(input.ModifyResourceReceiptInputs!);
 
                 DocumentReceiptEntity entity = new DocumentReceiptEntity
                 {
@@ -201,6 +196,26 @@ namespace WarehouseManagementWeb.Application.Services.DocumentReceipt
         #endregion
 
         #region Приватные методы.
+
+        private bool IsDuplicateResourceReceipts(IEnumerable<BaseResourceReceiptInput> inputs)
+        {
+            if (inputs is null || !inputs.Any())
+            {
+                return false; ;
+            }
+
+            bool isDuplicates = inputs
+                      .GroupBy(x => new { x.ResourceId, x.MeasureUnitId })
+                      .Any(g => g.Count() > 1);
+
+            if (isDuplicates)
+            {
+                throw new InvalidOperationException(
+                    "В документе не должно быть повторяющихся пар Ресурс + Единица измерения.");
+            }
+
+            return isDuplicates;
+        }
 
         #endregion
     }
