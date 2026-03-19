@@ -3,7 +3,7 @@
     /// <summary>
     /// Базовый класс входной модели ресурса документа отгрузки.
     /// </summary>
-    public class BaseResourceShipmentinput
+    public class BaseResourceShipmentInput
     {
         /// <summary>
         /// Id ресурса.
