@@ -23,7 +23,7 @@
         /// <summary>
         /// FK Id ресурса.
         /// </summary>
-        public int? ResourceId { get; set; }
+        public int ResourceId { get; set; }
 
         /// <summary>
         /// Навигационное свойство.
@@ -32,7 +32,7 @@
 
         /// FK Id единицы измерения.
         /// </summary>
-        public int? MeasureUnitId { get; set; }
+        public int MeasureUnitId { get; set; }
 
         /// <summary>
         /// Навигационное свойство.
@@ -42,6 +42,6 @@
         /// <summary>
         /// Количество ресурсов поступления.
         /// </summary>
-        public int? Quantity { get; set; }
+        public int Quantity { get; set; }
     }
 }
