@@ -8,6 +8,7 @@
   <table class="table table-sm table-striped table-bordered border-dark">
     <thead>
       <tr>
+        <th>#</th>
         <th>Номер</th>
         <th>Дата поступления</th>
         <th>Поставщик</th>
@@ -17,38 +18,45 @@
       </tr>
     </thead>
     <tbody>
-      @for (document of documentReceipts$ | async; track document.documentReceiptId) {
-        <tr (click)="onGetResourceReceiptByDocumentReceiptId(document.documentReceiptId)">
+      @for (document of documentReceipts$ | async; track document.documentReceiptId; let i = $index) {
+        <tr [class.table-danger]="document.items.length === 0" (click)="onGetResourceReceiptByDocumentReceiptId(document.documentReceiptId)">
+          <td>{{i + 1}}</td>
           <td>{{ document.documentReceiptNumberCode }}</td>
-          <td>{{ document.documentReceiptDate | date: 'dd.MM.yyyy HH:mm': 'UTC' }}</td>
+          <td>{{ document.documentReceiptDate | date: 'dd.MM.yyyy HH:mm' : 'UTC' }}</td>
           <td>{{ document.documentReceiptClientName }}</td>
           <td>
             @for (item of document.items; track item.resourceReceiptId) {
               <div class="p-2 border-bottom border-secondary">
-                <span [ngClass]="{ 'badge bg-danger': !item.resourceTitle }">
-                  {{ item.resourceTitle || 'Не указано' }}
-                </span>
+                {{ item.resourceTitle }}
               </div>
+            } @empty {
+              <span class="badge bg-danger">
+                {{ 'Не указано' }}
+              </span>
             }
           </td>
 
           <td>
             @for (item of document.items; track item.resourceReceiptId) {
               <div class="p-2 border-bottom border-secondary">
-                <span [ngClass]="{ 'badge bg-danger': !item.measureUnitTitle }">
-                  {{ item.measureUnitTitle || 'Не указано'  }}
-                </span>
+                {{ item.measureUnitTitle }}
               </div>
+            } @empty {
+              <span class="badge bg-danger">
+                {{ 'Не указано' }}
+              </span>
             }
           </td>
 
           <td>
             @for (item of document.items; track item.resourceReceiptId) {
               <div class="p-2 border-bottom border-secondary">
-                <span [ngClass]="{ 'badge bg-danger': !item.resourceQuantity }">
-                  {{ item.resourceQuantity || 'Не указано' }}
-                </span>
+                {{ item.resourceQuantity }}
               </div>
+            } @empty {
+              <span class="badge bg-danger">
+                {{ 'Не указано' }}
+              </span>
             }
           </td>
         </tr>
