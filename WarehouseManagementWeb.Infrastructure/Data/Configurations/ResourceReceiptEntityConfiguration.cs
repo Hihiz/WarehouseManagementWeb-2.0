@@ -27,32 +27,35 @@ namespace WarehouseManagementWeb.Infrastructure.Data.Configurations
 
             entity.Property(rr => rr.ResourceId)
                 .HasColumnName("resource_id")
-                .HasComment("Id ресурса.");
+                .HasComment("Id ресурса.")
+            .IsRequired();
 
             entity.Property(rr => rr.MeasureUnitId)
               .HasColumnName("measure_unit_id")
-              .HasComment("Id единицы измерения.");
+              .HasComment("Id единицы измерения.")
+            .IsRequired();
 
             entity.Property(rr => rr.Quantity)
               .HasColumnName("quantity")
-              .HasComment("Количество ресурсов поступления.");
+              .HasComment("Количество ресурса поступления.")
+                .IsRequired();
 
             entity.HasIndex(rr => new { rr.DocumentReceiptId, rr.ResourceId, rr.MeasureUnitId })
               .IsUnique();
 
-            entity.HasOne(dr => dr.DocumentReceiptEntity)
-                .WithMany(rr => rr.ResourceReceiptEntities)
-                .HasForeignKey(dr => dr.DocumentReceiptId)
+            entity.HasOne(rr => rr.DocumentReceiptEntity)
+                .WithMany(dr => dr.ResourceReceiptEntities)
+                .HasForeignKey(rr => rr.DocumentReceiptId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            entity.HasOne(r => r.ResourceEntity)
-               .WithMany(rr => rr.ResourceReceiptEntities)
-               .HasForeignKey(r => r.ResourceId)
+            entity.HasOne(rr => rr.ResourceEntity)
+               .WithMany(r => r.ResourceReceiptEntities)
+               .HasForeignKey(rr => rr.ResourceId)
                .OnDelete(DeleteBehavior.NoAction);
 
-            entity.HasOne(mu => mu.MeasureUnitEntity)
-              .WithMany(rr => rr.ResourceReceiptEntities)
-              .HasForeignKey(mu => mu.MeasureUnitId)
+            entity.HasOne(rr => rr.MeasureUnitEntity)
+              .WithMany(mu => mu.ResourceReceiptEntities)
+              .HasForeignKey(rr => rr.MeasureUnitId)
               .OnDelete(DeleteBehavior.NoAction);
         }
     }
