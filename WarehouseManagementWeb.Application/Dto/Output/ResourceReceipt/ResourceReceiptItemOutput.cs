@@ -23,7 +23,7 @@
         /// <summary>
         /// Id единицы измерения.
         /// </summary>
-        public int? MeasureUnitId { get; set; }
+        public int MeasureUnitId { get; set; }
 
         /// <summary>
         /// Наименование единицы измерения.
@@ -33,6 +33,6 @@
         /// <summary>
         /// Количество ресурса.
         /// </summary>
-        public int? ResourceQuantity { get; set; }
+        public int ResourceQuantity { get; set; }
     }
 }
