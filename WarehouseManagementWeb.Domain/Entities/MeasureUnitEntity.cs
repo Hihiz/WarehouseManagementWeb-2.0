@@ -27,5 +27,10 @@ namespace WarehouseManagementWeb.Domain.Entities
         /// Список ресурсов поступлений, которые связанны с единицей измерения.
         /// </summary>
         public ICollection<ResourceReceiptEntity>? ResourceReceiptEntities { get; set; }
+
+        /// <summary>
+        /// Список ресурсов отгрузки, которые связанны с единицей измерения.
+        /// </summary>
+        public ICollection<ResourceShipmentEntity>? ResourceShipmentEntities { get; set; }
     }
 }
