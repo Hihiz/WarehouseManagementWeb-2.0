@@ -46,7 +46,7 @@ export class CreateDocumentReceiptComponent implements OnInit {
     this.activeResources$ = this._resourceService.activeResources$;
   }
 
-  errorMessage: string | null = null;
+  tableResourcesError: string | null = null;
   isLoader: boolean = true;
   serverNameError: string | null = null;
   createResourceReceiptInput: CreateResourceReceiptInput = new CreateResourceReceiptInput();
@@ -125,12 +125,17 @@ export class CreateDocumentReceiptComponent implements OnInit {
       },
       error: (err) => {
         if (err.status === 400) {
-          this.serverNameError =
-            err.error.message ||
-            'Документ поступления с таким номером документа уже существует в системе.';
+          if (err.error.message.includes('номером') ||
+              err.error.message.includes('существует в системе')) {
+            this.serverNameError =
+              err.error.message ||
+              'Документ поступления с таким номером документа уже существует в системе.';
+          } else {
+            this.tableResourcesError = err.error.message || 'Ошибка в ресурсах поступления.';
+          }
+
           this._cdr.detectChanges();
         }
-
         console.error('Ошибка создания документа поступления: ', err);
       },
     });

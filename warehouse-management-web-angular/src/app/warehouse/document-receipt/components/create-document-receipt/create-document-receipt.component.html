@@ -69,8 +69,8 @@
             name="clientId"
             #client="ngModel"
             required
-            [ngClass]="{'is-invalid': createDocumentReceiptForm.submitted && client.errors}">
-           
+            [ngClass]="{ 'is-invalid': createDocumentReceiptForm.submitted && client.errors }"
+          >
             <option [value]="null" disabled>Выберите поставщика</option>
             @for (c of activeClients$ | async; track c.id) {
               <option [value]="c.id">
@@ -83,9 +83,9 @@
 
           @if (client.errors && createDocumentReceiptForm.submitted) {
             <div class="invalid-feedback">
-                @if (client.errors['required']) {
-                    Поставщик не выбран
-                }
+              @if (client.errors['required']) {
+                Поставщик не выбран
+              }
             </div>
           }
         </div>
@@ -118,8 +118,10 @@
           </button>
         </div>
 
-        @if (errorMessage) {
-          <div class="alert alert-danger">{{ errorMessage }}</div>
+        @if (tableResourcesError) {
+          <div class="alert alert-danger">
+             {{ tableResourcesError }}           
+          </div>
         }
 
         <table class="table table-sm table-bordered border-dark align-middle">
@@ -141,8 +143,10 @@
                     [name]="'resource-' + $index"
                     #resource="ngModel"
                     required
-                    [ngClass]="{'is-invalid': createDocumentReceiptForm.submitted && resource.errors}">
-
+                    [ngClass]="{
+                      'is-invalid': createDocumentReceiptForm.submitted && resource.errors,
+                    }"
+                  >
                     <option [value]="null" disabled>Выберите ресурс</option>
                     @for (r of activeResources$ | async; track r.id) {
                       <option [value]="r.id">
@@ -151,13 +155,13 @@
                     }
                   </select>
 
-                    @if (resource.errors && createDocumentReceiptForm.submitted) {
-                      <div class="invalid-feedback">
-                          @if (resource.errors['required']) {
-                              Ресурс не выбран
-                          }
-                      </div>
-                    }
+                  @if (resource.errors && createDocumentReceiptForm.submitted) {
+                    <div class="invalid-feedback">
+                      @if (resource.errors['required']) {
+                        Ресурс не выбран
+                      }
+                    </div>
+                  }
                 </td>
                 <td>
                   <select
@@ -165,9 +169,11 @@
                     [(ngModel)]="input.measureUnitId"
                     [name]="'measure-' + $index"
                     required
-                     #measure="ngModel"
+                    #measure="ngModel"
                     required
-                    [ngClass]="{'is-invalid': createDocumentReceiptForm.submitted && measure.errors}"
+                    [ngClass]="{
+                      'is-invalid': createDocumentReceiptForm.submitted && measure.errors,
+                    }"
                   >
                     <option [value]="null" disabled>Выберите единицу измерения</option>
                     @for (r of activeMeasureUnits$ | async; track r.id) {
@@ -177,11 +183,11 @@
                     }
                   </select>
 
-                    @if (createDocumentReceiptForm.submitted && measure.errors) {
+                  @if (createDocumentReceiptForm.submitted && measure.errors) {
                     <div class="invalid-feedback">
                       @if (measure.errors['required']) {
                         Единица измерения не выбрана
-                      }             
+                      }
                     </div>
                   }
                 </td>
@@ -192,20 +198,23 @@
                     type="number"
                     [(ngModel)]="input.resourceQuantity"
                     [name]="'quantity-' + $index"
-                    placeholder="Кол-во"                  
+                    placeholder="Кол-во"
                     min="1"
                     required
-                     #quantity="ngModel"
-                    [ngClass]="{'is-invalid': createDocumentReceiptForm.submitted && quantity.errors}"/>
+                    #quantity="ngModel"
+                    [ngClass]="{
+                      'is-invalid': createDocumentReceiptForm.submitted && quantity.errors,
+                    }"
+                  />
 
-                    @if (createDocumentReceiptForm.submitted && quantity.errors) {
+                  @if (createDocumentReceiptForm.submitted && quantity.errors) {
                     <div class="invalid-feedback">
                       @if (quantity.errors['required']) {
                         Количество ресурса не выбрано
-                      }   
-                      @if(quantity.errors['min']) {
+                      }
+                      @if (quantity.errors['min']) {
                         Минимально 1 ед
-                      }          
+                      }
                     </div>
                   }
                 </td>
