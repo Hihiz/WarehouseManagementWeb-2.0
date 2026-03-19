@@ -24,9 +24,13 @@ namespace WarehouseManagementWeb.Infrastructure.Data
 
         public DbSet<MeasureUnitEntity> MeasureUnits { get; set; }
 
-        public DbSet<DocumentReceiptEntity> DocumentReceipts{ get; set; }
+        public DbSet<DocumentReceiptEntity> DocumentReceipts { get; set; }
 
         public DbSet<ResourceReceiptEntity> ResourceReceipts { get; set; }
+
+        public DbSet<DocumentShipmentEntity> DocumentShipments { get; set; }
+
+        public DbSet<ResourceShipmentEntity> ResourceShipments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
