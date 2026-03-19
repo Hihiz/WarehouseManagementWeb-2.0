@@ -30,7 +30,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         {
             IEnumerable<ResourceReceiptListOutput> result = await _db.DocumentReceipts
                 .AsNoTracking()
-                .OrderByDescending(dr => dr.Id)
+                .OrderByDescending(dr => dr.Date)
                 .Select(dr => new ResourceReceiptListOutput
                 {
                     DocumentReceiptId = dr.Id,
@@ -150,18 +150,11 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                 }
             }
 
-            // Если у документа нет связанных ресурсов.
-            if (!documentEntity.ResourceReceiptEntities.Any())
-            {
-                await _db.SaveChangesAsync();
-                return;
-            }
-
             // Обновляем существующие ресурсы или добавляем новые.
             foreach (var resourceReceipt in documentEntity.ResourceReceiptEntities!)
             {
                 ResourceReceiptEntity? existResource = entity.ResourceReceiptEntities!
-                    .FirstOrDefault(rr => rr.Id == resourceReceipt.Id);
+                    .FirstOrDefault(rr => rr.Id != 0 && rr.Id == resourceReceipt.Id);
 
                 if (existResource is not null)
                 {
@@ -197,12 +190,6 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                 int deletedResourceReceipts = await _db.ResourceReceipts
                     .Where(rr => rr.DocumentReceiptId == documentReceiptId)
                     .ExecuteDeleteAsync();
-
-                if (deletedResourceReceipts <= 0)
-                {
-                    throw new InvalidOperationException("Ошибка удаления связанных ресурсов посупления. " +
-                                                        $"DocumentReceiptId: {documentReceiptId}.");
-                }
 
                 await _db.DocumentReceipts
                     .Where(dr => dr.Id == documentReceiptId)
