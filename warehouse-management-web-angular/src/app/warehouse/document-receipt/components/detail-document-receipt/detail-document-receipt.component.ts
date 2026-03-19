@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { UpdateResourceReceiptInput } from '../../models/input/update-resource-receipt-input';
 import { ModifyResourceReceiptInput } from '../../models/input/modify-resource-receipt-input';
+import { DateService } from '../../../../helpers/date.service';
 
 /**
  * Класс компонента деталей документа поступления.
@@ -47,7 +48,8 @@ export class DetailDocumentReceiptComponent implements OnInit {
     private readonly _measureUnitSerivce: MeasureUnitService,
     private readonly _clientService: ClientService,
     private readonly _resourceService: ResourceService,
-    private _cdr: ChangeDetectorRef,
+    private readonly _cdr: ChangeDetectorRef,
+    private readonly _dateService: DateService,
   ) {
     this.detailDocumentReceipt$ = this._documentReceiptService.detailDocumentReceipt$;
     this.activeMeasureUnits$ = this._measureUnitSerivce.activeMeasureUnits$;
@@ -55,8 +57,8 @@ export class DetailDocumentReceiptComponent implements OnInit {
     this.activeResources$ = this._resourceService.activeResources$;
   }
 
-  errorMessage: string | null = null;
   isLoader: boolean = true;
+  tableResourcesError: string | null = null;
   serverNameError: string | null = null;
   updateResourceReceiptInput: UpdateResourceReceiptInput = new UpdateResourceReceiptInput();
 
@@ -98,30 +100,25 @@ export class DetailDocumentReceiptComponent implements OnInit {
         this.updateResourceReceiptInput.documentReceiptNumberCode =
           this.detailDocumentReceipt$.value.documentReceiptNumberCode;
 
-        this.updateResourceReceiptInput.date = new Date(
+        this.updateResourceReceiptInput.date = this._dateService.formatDate(
           this.detailDocumentReceipt$.value.documentReceiptDate,
-        )
-          .toISOString()
-          .substring(0, 10) as any;
+        );
 
         this.updateResourceReceiptInput.documentReceiptClientId =
           this.detailDocumentReceipt$.value.documentReceiptClientId;
 
         // Входящие ресурсы.
-        if (
-          this.updateResourceReceiptInput.modifyResourceReceiptInputs === null &&
-          this.detailDocumentReceipt$.value.items !== null
-        )
-          this.updateResourceReceiptInput.modifyResourceReceiptInputs =
-            this.detailDocumentReceipt$.value.items?.map((item) => {
-              let result: ModifyResourceReceiptInput = {
-                resourceReceiptId: item.resourceReceiptId,
-                resourceId: item.resourceId,
-                measureUnitId: item.measureUnitId,
-                resourceQuantity: item.resourceQuantity,
-              };
-              return result;
-            });
+        this.updateResourceReceiptInput.modifyResourceReceiptInputs =
+          this.detailDocumentReceipt$.value.items?.map((item) => {
+            let result: ModifyResourceReceiptInput = {
+              resourceReceiptId: item.resourceReceiptId,
+              resourceId: item.resourceId,
+              measureUnitId: item.measureUnitId,
+              resourceQuantity: item.resourceQuantity,
+            };
+
+            return result;
+          });
 
         this.isLoader = false;
       });
@@ -138,8 +135,8 @@ export class DetailDocumentReceiptComponent implements OnInit {
     // Добавляем новый обьект с начальными значениями.
     this.updateResourceReceiptInput.modifyResourceReceiptInputs.push({
       resourceReceiptId: 0,
-      resourceId: 0,
-      measureUnitId: 0,
+      resourceId: null,
+      measureUnitId: null,
       resourceQuantity: 0,
     });
   }
@@ -180,30 +177,10 @@ export class DetailDocumentReceiptComponent implements OnInit {
   }
 
   /**
-   *  Функция проверяет корректность выбранных значений ресурсов.
-   * @returns Признак проверки.
-   */
-  private hasInvalidResources() {
-  const items = this.updateResourceReceiptInput.modifyResourceReceiptInputs;
-  
-  if (!items || items.length === 0) return false;
-
-  return items.some(item => 
-    item.resourceReceiptId === 0 && (!item.resourceId || item.resourceId === 0)
-  );
-}
-
-  /**
    * Функция редактирует ресурс поступления.
    */
   public onUpdateDocumentReceipt() {
     this.serverNameError = null;
-    this.errorMessage = null;
-
-if (this.hasInvalidResources()) {
-    this.errorMessage = 'Пожалуйста, заполните все поля для добавленных ресурсов или удалите пустые строки.';
-    return;
-  }
 
     this._documentReceiptService.updateResourceReceipt(this.updateResourceReceiptInput).subscribe({
       next: (_) => {
@@ -216,9 +193,15 @@ if (this.hasInvalidResources()) {
       },
       error: (err) => {
         if (err.status === 400) {
-          this.serverNameError =
-            err.error.message ||
-            'Документ поступления с таким номером документа уже существует в системе.';
+          if (err.error.message.includes('номером') ||
+              err.error.message.includes('существует в системе')) {
+            this.serverNameError =
+              err.error.message ||
+              'Документ поступления с таким номером документа уже существует в системе.';
+          } else {
+            this.tableResourcesError = err.error.message || 'Ошибка в ресурсах поступления.';
+          }
+
           this._cdr.detectChanges();
         }
         console.error('Ошибка обновления документа поступления: ', err);
