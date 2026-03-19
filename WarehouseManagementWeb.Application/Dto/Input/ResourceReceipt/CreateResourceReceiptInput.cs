@@ -21,7 +21,7 @@
         public int ClientId { get; set; }
 
         /// <summary>
-        /// Список входящих ресурсов поступления.
+        /// Список входящих ресурсов в документ поступления.
         /// </summary>
         public ICollection<IncludeResourceReceiptInput>? IncludeResourceReceiptInputs { get; set; }
     }
