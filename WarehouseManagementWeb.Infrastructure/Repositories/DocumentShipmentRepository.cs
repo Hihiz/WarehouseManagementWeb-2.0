@@ -25,13 +25,37 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
 
         #region Публичные методы.
 
-        public Task<IEnumerable<ResourceShipmentListOutput>> GetResourceShipmentsAsync()
+        /// <inheritdoc />
+        public async Task<IEnumerable<ResourceShipmentListOutput>> GetResourceShipmentsAsync()
         {
-            throw new NotImplementedException();
+            IEnumerable<ResourceShipmentListOutput> result = await _db.DocumentShipments
+                 .AsNoTracking()
+                 .OrderByDescending(ds => ds.Date)
+                 .Select(ds => new ResourceShipmentListOutput
+                 {
+                     DocumentShipmentId = ds.Id,
+                     DocumentShipmenNumberCode = ds.NumberCode,
+                     DocumentShipmentDate = ds.Date,
+                     DocumentShipmentClientId = ds.ClientId,
+                     DocumentShipmentClientName = ds.ClientEntity!.Name,
+                     Items = ds.ResourceShipmentEntities!
+                     .OrderByDescending(rr => rr.Id)
+                     .Select(rs => new ResourceShipmentItemOutput
+                     {
+                         ResourceShipmentId = rs.Id,
+                         ResourceId = rs.ResourceId,
+                         ResourceTitle = rs.ResourceEntity!.Title,
+                         MeasureUnitId = rs.MeasureUnitId,
+                         MeasureUnitTitle = rs.MeasureUnitEntity!.Title,
+                         ResourceQuantity = rs.Quantity
+                     })
+                 }).ToListAsync();
+
+            return result!;
         }
 
         /// <inheritdoc />
-        public async Task<ResourceShipmentListOutput> GetResourceShipmentByDocumentShipmentIdAsync(
+        public async Task<ResourceShipmentListOutput?> GetResourceShipmentByDocumentShipmentIdAsync(
             int documentShipmentId)
         {
             ResourceShipmentListOutput? result = await _db.DocumentShipments
@@ -57,7 +81,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                       })
                   }).FirstOrDefaultAsync();
 
-            return result!;
+            return result;
         }
 
         /// <inheritdoc />
