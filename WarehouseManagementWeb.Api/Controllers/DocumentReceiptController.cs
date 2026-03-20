@@ -25,6 +25,8 @@ namespace WarehouseManagementWeb.Api.Controllers
             _documentReceiptService = documentReceiptService;
         }
 
+        #region Публичные методы.
+
         /// <summary>
         /// Метод получает список ресурсов поступления.
         /// </summary>
@@ -34,7 +36,7 @@ namespace WarehouseManagementWeb.Api.Controllers
         public async Task<IActionResult> GetResourceReceiptsAsync()
         {
             IEnumerable<ResourceReceiptListOutput> result = await _documentReceiptService.GetResourceReceiptsAsync();
-           
+
             return Ok(result);
         }
 
@@ -91,5 +93,11 @@ namespace WarehouseManagementWeb.Api.Controllers
 
             return Ok();
         }
+
+        #endregion
+
+        #region Приватные методы.
+
+        #endregion
     }
 }
