@@ -13,7 +13,7 @@
         /// <summary>
         /// Номер документа отгрузки.
         /// </summary>
-        public string? DocumentShipmenNumberCode { get; set; }
+        public string? DocumentShipmentNumberCode { get; set; }
 
         /// <summary>
         /// Дата документа отгрузки.
