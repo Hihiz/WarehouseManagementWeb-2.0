@@ -105,9 +105,12 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             return result;
         }
 
-        public Task CreateResourceShipmentAsync(DocumentShipmentEntity documentEntity)
+        /// <inheritdoc />
+        public async Task CreateResourceShipmentAsync(DocumentShipmentEntity documentEntity)
         {
-            throw new NotImplementedException();
+            await _db.DocumentShipments.AddAsync(documentEntity);
+
+            await _db.SaveChangesAsync();
         }
 
         public Task UpdateResourceShipmentAsync(DocumentShipmentEntity documentEntity)
