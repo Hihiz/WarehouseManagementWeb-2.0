@@ -36,9 +36,14 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<bool> CheckDocumentShipmentExistsByNumberCodeAsync(string documentShipmentNumberCode)
+        /// <inheritdoc />
+        public async Task<bool> CheckDocumentShipmentExistsByNumberCodeAsync(string documentShipmentNumberCode)
         {
-            throw new NotImplementedException();
+            bool result = await _db.DocumentShipments
+              .AsNoTracking()
+              .AnyAsync(ds => ds.NumberCode == documentShipmentNumberCode);
+
+            return result;
         }
 
         /// <inheritdoc />
