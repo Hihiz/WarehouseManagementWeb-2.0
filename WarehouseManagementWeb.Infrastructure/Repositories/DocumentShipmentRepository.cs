@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.ObjectPool;
 using WarehouseManagementWeb.Application.Dto.Output.ResourceShipment;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.DocumentShipment;
 using WarehouseManagementWeb.Domain.Entities;
@@ -31,9 +30,34 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<ResourceShipmentListOutput> GetResourceShipmentByDocumentShipmentIdAsync(int documentShipmentId)
+        /// <inheritdoc />
+        public async Task<ResourceShipmentListOutput> GetResourceShipmentByDocumentShipmentIdAsync(
+            int documentShipmentId)
         {
-            throw new NotImplementedException();
+            ResourceShipmentListOutput? result = await _db.DocumentShipments
+                  .AsNoTracking()
+                  .Where(ds => ds.Id == documentShipmentId)
+                  .Select(ds => new ResourceShipmentListOutput
+                  {
+                      DocumentShipmentId = ds.Id,
+                      DocumentShipmenNumberCode = ds.NumberCode,
+                      DocumentShipmentDate = ds.Date,
+                      DocumentShipmentClientId = ds.ClientId,
+                      DocumentShipmentClientName = ds.ClientEntity!.Name,
+                      Items = ds.ResourceShipmentEntities!
+                      .OrderByDescending(rr => rr.Id)
+                      .Select(rs => new ResourceShipmentItemOutput
+                      {
+                          ResourceShipmentId = rs.Id,
+                          ResourceId = rs.ResourceId,
+                          ResourceTitle = rs.ResourceEntity!.Title,
+                          MeasureUnitId = rs.MeasureUnitId,
+                          MeasureUnitTitle = rs.MeasureUnitEntity!.Title,
+                          ResourceQuantity = rs.Quantity
+                      })
+                  }).FirstOrDefaultAsync();
+
+            return result!;
         }
 
         /// <inheritdoc />
