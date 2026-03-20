@@ -174,9 +174,26 @@ namespace WarehouseManagementWeb.Application.Services.DocumentShipment
             }
         }
 
-        public Task ChangeStatusDocumentShipmentAsync(ChangeStatusDocumentShipmentInput input)
+        /// <inheritdoc />
+        public async Task ChangeStatusDocumentShipmentAsync(ChangeStatusDocumentShipmentInput input)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (input is null)
+                {
+                    throw new InvalidOperationException("Недопустимые данные документа отгрузки.");
+
+                }
+                await _documentShipmentRepository.ChangeStatusDocumentShipmentAsync(input.DocumentShipmentId,
+                    input.StatusEnum);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
         public Task RemoveDocumentShipmentAsync(int documentShipmentId)
