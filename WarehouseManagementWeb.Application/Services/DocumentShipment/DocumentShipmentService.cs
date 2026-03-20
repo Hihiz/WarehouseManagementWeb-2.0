@@ -196,9 +196,26 @@ namespace WarehouseManagementWeb.Application.Services.DocumentShipment
             }
         }
 
-        public Task RemoveDocumentShipmentAsync(int documentShipmentId)
+        /// <inheritdoc />
+        public async Task RemoveDocumentShipmentAsync(int documentShipmentId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (documentShipmentId <= 0)
+                {
+                    throw new InvalidOperationException("Недопустимый Id документа отгрузки. " +
+                                                        $"DocumentShipmentId: {documentShipmentId}.");
+                }
+
+                await _documentShipmentRepository.RemoveDocumentShipmentAsync(documentShipmentId);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
         #endregion
