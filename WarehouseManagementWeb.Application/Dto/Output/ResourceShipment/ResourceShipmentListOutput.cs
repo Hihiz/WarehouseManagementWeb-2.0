@@ -28,7 +28,7 @@
         /// <summary>
         /// Наименование клиента документа отгрузки.
         /// </summary>
-        public int DocumentShipmentClientName { get; set; }
+        public string? DocumentShipmentClientName { get; set; }
 
         /// <summary>
         /// Список входящих ресурсов в документ отгрузки.
