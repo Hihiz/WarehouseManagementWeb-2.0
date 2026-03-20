@@ -56,7 +56,6 @@ namespace WarehouseManagementWeb.Application.Interfaces.Repositories.DocumentShi
         /// </summary>
         /// <param name="documentShipmentId">Id документа отгрузки.</param>
         /// <param name="statusEnum">Новый статус документа отгрузки.</param>
-        /// <returns></returns>
         Task ChangeStatusDocumentShipmentAsync(int documentShipmentId, DocumentStatusEnum statusEnum);
 
         /// <summary>
