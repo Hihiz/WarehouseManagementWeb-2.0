@@ -18,6 +18,6 @@
         /// <summary>
         /// Количество ресурса.
         /// </summary>
-        public int Quantity { get; set; }
+        public int ResourceQuantity { get; set; }
     }
 }
