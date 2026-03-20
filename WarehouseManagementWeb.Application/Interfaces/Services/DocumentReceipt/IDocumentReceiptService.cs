@@ -19,7 +19,7 @@ namespace WarehouseManagementWeb.Application.Interfaces.Services.DocumentReceipt
         /// </summary>
         /// <param name="documentReceiptId">Id документа поступления.</param>
         /// <returns>Данные ресурса поступления.</returns>
-        Task<ResourceReceiptListOutput> GetResourceReceiptByDocumentReceiptIdAsync(int documentReceiptId);
+        Task<ResourceReceiptListOutput?> GetResourceReceiptByDocumentReceiptIdAsync(int documentReceiptId);
        
         /// <summary>
         ///  Метод создает документ поступления и добавляет ресурсы поступления.

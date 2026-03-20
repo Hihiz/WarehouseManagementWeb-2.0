@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using WarehouseManagementWeb.Application.Dto.Input.ResourceShipment;
+using WarehouseManagementWeb.Application.Dto.Output.Client;
 using WarehouseManagementWeb.Application.Dto.Output.ResourceShipment;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.DocumentShipment;
 using WarehouseManagementWeb.Application.Interfaces.Services.DocumentShipment;
@@ -63,6 +64,11 @@ namespace WarehouseManagementWeb.Application.Services.DocumentShipment
 
                 ResourceShipmentListOutput? result = await _documentShipmentRepository
                     .GetResourceShipmentByDocumentShipmentIdAsync(documentShipmentId);
+
+                if (result is null)
+                {
+                    return new ResourceShipmentListOutput();
+                }
 
                 return result;
             }
