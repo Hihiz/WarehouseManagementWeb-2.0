@@ -29,8 +29,7 @@ namespace WarehouseManagementWeb.Application.Interfaces.Services.DocumentShipmen
         /// <summary>
         /// Метод редактирует ресурсы отгрузки.
         /// </summary>    
-        /// <param name="input">Входная модель</param>
-        /// ресурсов поступлений.</param>
+        /// <param name="input">Входная модель</param>      
         Task UpdateResourceShipmentAsync(UpdateResourceShipmentInput input);
 
         /// <summary>
