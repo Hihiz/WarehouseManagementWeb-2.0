@@ -3,7 +3,7 @@
 namespace WarehouseManagementWeb.Application.Dto.Input.ResourceShipment
 {
     /// <summary>
-    /// Класс входной модели обновления статуса документа отгрузки.
+    /// Класс входной модели обновления статуса документа отгрузки. 
     /// </summary>
     public class ChangeStatusDocumentShipmentInput
     {

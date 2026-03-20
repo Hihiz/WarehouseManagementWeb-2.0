@@ -21,7 +21,7 @@
         public DateTime DocumentShipmentDate { get; set; }
 
         /// <summary>
-        ///  Id клиента документа отгрузки.
+        /// Id клиента документа отгрузки.
         /// </summary>
         public int DocumentShipmentClientId { get; set; }
 
