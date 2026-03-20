@@ -71,6 +71,18 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Метод редактирует ресурсы отгрузки.
+        /// </summary>    
+        /// <param name="input">Входная модель</param>
+        [HttpPut]
+        [Route("document-shipment")]
+        public async Task<IActionResult> UpdateResourceShipmentAsync([FromBody] UpdateResourceShipmentInput input)
+        {
+            await _documentShipmentService.UpdateResourceShipmentAsync(input);
+
+            return Ok();
+        }
 
         #endregion
 
