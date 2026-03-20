@@ -63,6 +63,12 @@ namespace WarehouseManagementWeb.Application.Services.DocumentReceipt
                 ResourceReceiptListOutput? result = await _documentReceiptRepository
                     .GetResourceReceiptByDocumentReceiptIdAsync(documentReceiptId);
 
+
+                if (result is null)
+                {
+                    return new ResourceReceiptListOutput();
+                }
+
                 return result;
             }
 

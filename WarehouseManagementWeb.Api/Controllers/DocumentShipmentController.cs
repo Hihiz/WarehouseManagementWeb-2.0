@@ -41,6 +41,21 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Метод получает ресурс отгрузки по Id документа отгрузки.
+        /// </summary>
+        /// <param name="documentShipmentId">Id документа отгрузки.</param>
+        /// <returns>Данные ресурса отгрузки.</returns>
+        [HttpGet]
+        [Route("document-shipment")]
+        public async Task<IActionResult> GetResourceShipmentByDocumentShipmentIdAsync([FromQuery] int documentShipmentId)
+        {
+            ResourceShipmentListOutput? result = await _documentShipmentService
+                .GetResourceShipmentByDocumentShipmentIdAsync(documentShipmentId);
+
+            return Ok(result);
+        }
+
         #endregion
 
         #region Приватные методы.
