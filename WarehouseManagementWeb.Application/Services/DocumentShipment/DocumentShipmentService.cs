@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using WarehouseManagementWeb.Application.Dto.Input.ResourceReceipt;
 using WarehouseManagementWeb.Application.Dto.Input.ResourceShipment;
 using WarehouseManagementWeb.Application.Dto.Output.ResourceShipment;
-using WarehouseManagementWeb.Application.Interfaces.Repositories.DocumentReceipt;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.DocumentShipment;
 using WarehouseManagementWeb.Application.Interfaces.Services.DocumentShipment;
 using WarehouseManagementWeb.Domain.Entities;
