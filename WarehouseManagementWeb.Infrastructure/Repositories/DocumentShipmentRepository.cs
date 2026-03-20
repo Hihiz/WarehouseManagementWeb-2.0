@@ -128,6 +128,10 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                                                     $"NumberCode: {documentEntity.NumberCode}.");
             }
 
+            entity.NumberCode = documentEntity.NumberCode;
+            entity.Date = documentEntity.Date;
+            entity.ClientId = documentEntity.ClientId;
+
             List<int> incomingIds = documentEntity.ResourceShipmentEntities
                 .Select(rs => rs.Id)
                 .ToList();
@@ -140,7 +144,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
 
             if (toResourceRemoveIds.Any())
             {
-                await _db.DocumentShipments
+                await _db.ResourceShipments
                     .Where(ds => toResourceRemoveIds.Contains(ds.Id))
                     .ExecuteDeleteAsync();
             }
@@ -200,7 +204,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             try
             {
                 await _db.ResourceShipments
-                    .Where(rr => rr.DocumentShipmentId == documentShipmentId)
+                    .Where(rs => rs.DocumentShipmentId == documentShipmentId)
                     .ExecuteDeleteAsync();
 
                 await _db.DocumentShipments
