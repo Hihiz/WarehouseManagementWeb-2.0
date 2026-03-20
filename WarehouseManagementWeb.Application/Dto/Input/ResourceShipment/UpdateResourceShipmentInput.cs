@@ -1,7 +1,7 @@
 ﻿namespace WarehouseManagementWeb.Application.Dto.Input.ResourceShipment
 {
     /// <summary>
-    /// Класс входной модели редактирования ресурсов документа отгрузки.
+    /// Класс входной модели редактирования ресурса документа отгрузки.
     /// </summary>
     public class UpdateResourceShipmentInput
     {       
