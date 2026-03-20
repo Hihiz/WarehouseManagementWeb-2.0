@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Frozen;
 using WarehouseManagementWeb.Application.Dto.Output.ResourceShipment;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.DocumentShipment;
 using WarehouseManagementWeb.Domain.Entities;
@@ -113,9 +114,64 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public Task UpdateResourceShipmentAsync(DocumentShipmentEntity documentEntity)
+        /// <inheritdoc />
+        public async Task UpdateResourceShipmentAsync(DocumentShipmentEntity documentEntity)
         {
-            throw new NotImplementedException();
+            DocumentShipmentEntity? entity = await _db.DocumentShipments
+                .Include(ds => ds.ResourceShipmentEntities)
+                .FirstOrDefaultAsync(ds => ds.Id == documentEntity.Id);
+
+            if (entity is null)
+            {
+                throw new InvalidOperationException("Ошибка при редактировании документа отгрузки. " +
+                                                    $"DocumentShipmentId: {documentEntity.Id}. " +
+                                                    $"NumberCode: {documentEntity.NumberCode}.");
+            }
+
+            List<int> incomingIds = documentEntity.ResourceShipmentEntities
+                .Select(rs => rs.Id)
+                .ToList();
+
+            // Если исключили ресурсы, то удаляем их из отгрузки.
+            List<int> toResourceRemoveIds = entity.ResourceShipmentEntities
+                .Where(rs => !incomingIds.Contains(rs.Id))
+                .Select(rs => rs.Id)
+                .ToList();
+
+            if (toResourceRemoveIds.Any())
+            {
+                await _db.DocumentShipments
+                    .Where(ds => toResourceRemoveIds.Contains(ds.Id))
+                    .ExecuteDeleteAsync();
+            }
+
+            foreach (var resourceShipment in documentEntity.ResourceShipmentEntities)
+            {
+                ResourceShipmentEntity? existResource = entity.ResourceShipmentEntities
+                    .FirstOrDefault(rs => rs.Id != 0 && rs.Id == resourceShipment.Id);
+
+                if (existResource is not null)
+                {
+                    // Обновляем существующие ресурсы.
+                    existResource.ResourceId = resourceShipment.ResourceId;
+                    existResource.MeasureUnitId = resourceShipment.MeasureUnitId;
+                    existResource.Quantity = resourceShipment.Quantity;
+                }
+
+                else
+                {
+                    // Если ресурс отгрузки не найден, то добавляем.
+                    entity.ResourceShipmentEntities!.Add(new ResourceShipmentEntity
+                    {
+                        DocumentShipmentId = entity.Id,
+                        ResourceId = resourceShipment.ResourceId,
+                        MeasureUnitId = resourceShipment.MeasureUnitId,
+                        Quantity = resourceShipment.Quantity
+                    });
+                }
+            }
+
+            await _db.SaveChangesAsync();
         }
 
         /// <inheritdoc />
