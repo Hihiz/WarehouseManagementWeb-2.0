@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseManagementWeb.Application.Dto.Output.ResourceReceipt;
+using WarehouseManagementWeb.Application.Dto.Output.ResourceShipment;
 using WarehouseManagementWeb.Application.Interfaces.Services.DocumentShipment;
 
 namespace WarehouseManagementWeb.Api.Controllers
@@ -24,6 +26,20 @@ namespace WarehouseManagementWeb.Api.Controllers
         }
 
         #region Публичные методы.
+
+        /// <summary>
+        /// Метод получает список ресурсов отгрузки.
+        /// </summary>
+        /// <returns>Список ресурсов отгрузки.</returns>
+        [HttpGet]
+        [Route("document-shipments")]
+        public async Task<IActionResult> GetResourceShipmentsAsync()
+        {
+            IEnumerable<ResourceShipmentListOutput> result = await _documentShipmentService
+                .GetResourceShipmentsAsync();
+
+            return Ok(result);
+        }
 
         #endregion
 
