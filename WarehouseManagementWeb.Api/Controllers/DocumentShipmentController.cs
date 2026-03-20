@@ -84,6 +84,20 @@ namespace WarehouseManagementWeb.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Метод обновляет статус документу отгрузки.
+        /// </summary>
+        /// <param name="input">Входная модель</param>
+        [HttpPatch]
+        [Route("change-status-document-shipment")]
+        public async Task<IActionResult> ChangeStatusDocumentShipmentAsync([FromBody] ChangeStatusDocumentShipmentInput
+            input)
+        {
+            await _documentShipmentService.ChangeStatusDocumentShipmentAsync(input);
+
+            return Ok();
+        }
+
         #endregion
 
         #region Приватные методы.
