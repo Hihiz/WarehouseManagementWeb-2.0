@@ -9,7 +9,7 @@ import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
  */
 @Component({
   selector: 'app-document-receipt.component',
-  imports: [NgClass, AsyncPipe, DatePipe],
+  imports: [AsyncPipe, DatePipe],
   templateUrl: './document-receipt.component.html',
   styleUrl: './document-receipt.component.css',
 })
