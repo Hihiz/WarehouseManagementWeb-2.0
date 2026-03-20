@@ -48,9 +48,31 @@ namespace WarehouseManagementWeb.Application.Services.DocumentShipment
             }
         }
 
-        public Task<ResourceShipmentListOutput?> GetResourceShipmentByDocumentShipmentIdAsync(int documentShipmentId)
+
+        /// <inheritdoc />
+        public async Task<ResourceShipmentListOutput?> GetResourceShipmentByDocumentShipmentIdAsync(
+            int documentShipmentId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (documentShipmentId <= 0)
+                {
+                    throw new InvalidOperationException("Недопустимый Id документа отгрузки. " +
+                                                        $"DocumentShipmentId: {documentShipmentId}.");
+                }
+
+                ResourceShipmentListOutput? result = await _documentShipmentRepository
+                    .GetResourceShipmentByDocumentShipmentIdAsync(documentShipmentId);
+
+                return result;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
         public Task CreateResourceShipmentAsync(CreateResourceShipmentInput input)
