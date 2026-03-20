@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.ObjectPool;
 using WarehouseManagementWeb.Application.Dto.Output.ResourceShipment;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.DocumentShipment;
 using WarehouseManagementWeb.Domain.Entities;
@@ -41,9 +42,14 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<bool> CheckDocumentShipmentExistsByIdAndNumberCodeAsync(int documentShipmentId, string documentShipmentNumberCode)
+        public async Task<bool> CheckDocumentShipmentExistsByIdAndNumberCodeAsync(int documentShipmentId,
+            string documentShipmentNumberCode)
         {
-            throw new NotImplementedException();
+            bool result = await _db.DocumentShipments
+                .AsNoTracking()
+                .AnyAsync(ds => ds.Id != documentShipmentId && ds.NumberCode == documentShipmentNumberCode);
+
+            return result;
         }
 
         public Task CreateResourceShipmentAsync(DocumentShipmentEntity documentEntity)
