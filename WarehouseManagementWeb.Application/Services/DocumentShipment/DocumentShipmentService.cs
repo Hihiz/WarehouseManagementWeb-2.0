@@ -125,9 +125,53 @@ namespace WarehouseManagementWeb.Application.Services.DocumentShipment
             }
         }
 
-        public Task UpdateResourceShipmentAsync(UpdateResourceShipmentInput input)
+        /// <inheritdoc />
+        public async Task UpdateResourceShipmentAsync(UpdateResourceShipmentInput input)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (input is null)
+                {
+                    throw new InvalidOperationException("Недопустимые данные ресурсов отгрузки.");
+                }
+
+                bool isDocumentShipmentExist = await _documentShipmentRepository
+                    .CheckDocumentShipmentExistsByIdAndNumberCodeAsync(input.DocumentShipmentId,
+                    input.DocumentShipmentNumberCode!);
+
+                if (isDocumentShipmentExist)
+                {
+                    throw new InvalidOperationException("Документ отгрузки с номером: " +
+                        $"'{input.DocumentShipmentNumberCode}' уже существует в системе.");
+                }
+
+                IsDuplicateResourceShipments(input.ModifyResourceShipmentInputs!);
+
+                DocumentShipmentEntity entity = new DocumentShipmentEntity
+                {
+                    Id = input.DocumentShipmentId,
+                    NumberCode = input.DocumentShipmentNumberCode!,
+                    Date = DateTime.SpecifyKind(input.DocumentShipmentDate, DateTimeKind.Utc),
+                    ClientId = input.DocumentShipmentClientId,
+                    ResourceShipmentEntities = input.ModifyResourceShipmentInputs!
+                    .Select(x => new ResourceShipmentEntity
+                    {
+                        Id = x.ResourceShipmentId,
+                        ResourceId = x.ResourceId,
+                        MeasureUnitId = x.MeasureUnitId,
+                        Quantity = x.ResourceQuantity
+                    }).ToList()
+                };
+
+                await _documentShipmentRepository.UpdateResourceShipmentAsync(entity);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw;
+            }
         }
 
         public Task ChangeStatusDocumentShipmentAsync(ChangeStatusDocumentShipmentInput input)
