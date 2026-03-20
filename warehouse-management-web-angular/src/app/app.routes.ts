@@ -15,6 +15,9 @@ import { CreateMeasureUnitComponent } from './directory/measure-unit/components/
 import { DocumentReceiptComponent } from './warehouse/document-receipt/components/document-receipt/document-receipt.component';
 import { DetailDocumentReceiptComponent } from './warehouse/document-receipt/components/detail-document-receipt/detail-document-receipt.component';
 import { CreateDocumentReceiptComponent } from './warehouse/document-receipt/components/create-document-receipt/create-document-receipt.component';
+import { DocumentShipmentComponent } from './warehouse/document-shipment/component/document-shipment/document-shipment.component';
+import { DetailDocumentShipmentComponent } from './warehouse/document-shipment/component/detail-document-shipment/detail-document-shipment.component';
+import { CreateDocumentShipmentComponent } from './warehouse/document-shipment/component/create-document-shipment/create-document-shipment.component';
 
 export const routes: Routes = [
   {
@@ -97,18 +100,36 @@ export const routes: Routes = [
   {
     path: 'document-receipts',
     component: DocumentReceiptComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
   },
 
   {
     path: 'detail-document-receipt',
     component: DetailDocumentReceiptComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
   },
-  
+
   {
     path: 'create-document-receipt',
     component: CreateDocumentReceiptComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
   },
+
+  // Роуты для DocumentShipment
+  {
+    path: 'document-shipments',
+    component: DocumentShipmentComponent,
+    canActivate: [authGuard],
+  },
+
+  {
+    path: 'detail-document-shipment',
+    component: DetailDocumentShipmentComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'create-document-shipment',
+    component: CreateDocumentShipmentComponent,
+    canActivate: [authGuard],
+  }
 ];
