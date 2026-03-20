@@ -49,7 +49,7 @@ namespace WarehouseManagementWeb.Api.Controllers
         [Route("document-receipt")]
         public async Task<IActionResult> GetResourceReceiptByDocumentReceiptIdAsync([FromQuery] int documentReceiptId)
         {
-            ResourceReceiptListOutput result = await _documentReceiptService
+            ResourceReceiptListOutput? result = await _documentReceiptService
                 .GetResourceReceiptByDocumentReceiptIdAsync(documentReceiptId);
 
             return Ok(result);
