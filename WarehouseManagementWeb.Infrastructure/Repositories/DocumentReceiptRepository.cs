@@ -57,7 +57,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<ResourceReceiptListOutput> GetResourceReceiptByDocumentReceiptIdAsync(
+        public async Task<ResourceReceiptListOutput?> GetResourceReceiptByDocumentReceiptIdAsync(
             int documentReceiptId)
         {
             ResourceReceiptListOutput? result = await _db.DocumentReceipts
@@ -83,7 +83,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                       })
                   }).FirstOrDefaultAsync();
 
-            return result!;
+            return result;
         }
 
         /// <inheritdoc />
