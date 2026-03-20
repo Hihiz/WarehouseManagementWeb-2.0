@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseManagementWeb.Application.Dto.Input.ResourceReceipt;
+using WarehouseManagementWeb.Application.Dto.Input.ResourceShipment;
 using WarehouseManagementWeb.Application.Dto.Output.ResourceReceipt;
 using WarehouseManagementWeb.Application.Dto.Output.ResourceShipment;
 using WarehouseManagementWeb.Application.Interfaces.Services.DocumentShipment;
@@ -55,6 +57,20 @@ namespace WarehouseManagementWeb.Api.Controllers
 
             return Ok(result);
         }
+
+        /// <summary>
+        ///  Метод создает документ отгрузки и добавляет ресурсы отгрузки.
+        /// </summary>
+        /// <param name="input">Входная модель</param>
+        [HttpPost]
+        [Route("document-shipment")]
+        public async Task<IActionResult> CreateResourceShipmentAsync([FromBody] CreateResourceShipmentInput input)
+        {
+            await _documentShipmentService.CreateResourceShipmentAsync(input);
+
+            return Ok();
+        }
+
 
         #endregion
 
