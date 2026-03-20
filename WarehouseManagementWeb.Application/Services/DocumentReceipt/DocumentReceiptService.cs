@@ -197,6 +197,11 @@ namespace WarehouseManagementWeb.Application.Services.DocumentReceipt
 
         #region Приватные методы.
 
+        /// <summary>
+        /// Метод проверяет дубликаты для ресурс + единица измрения.
+        /// </summary>
+        /// <param name="inputs">Список ресурсов.</param>
+        /// <returns>Признак проверки.</returns>
         private bool IsDuplicateResourceReceipts(IEnumerable<BaseResourceReceiptInput> inputs)
         {
             if (inputs is null || !inputs.Any())
