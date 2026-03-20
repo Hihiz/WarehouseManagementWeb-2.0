@@ -187,7 +187,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
 
             try
             {
-                int deletedResourceReceipts = await _db.ResourceReceipts
+                await _db.ResourceReceipts
                     .Where(rr => rr.DocumentReceiptId == documentReceiptId)
                     .ExecuteDeleteAsync();
 

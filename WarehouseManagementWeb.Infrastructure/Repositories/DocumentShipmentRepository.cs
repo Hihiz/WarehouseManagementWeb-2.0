@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Frozen;
+using System.Data;
 using WarehouseManagementWeb.Application.Dto.Output.ResourceShipment;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.DocumentShipment;
 using WarehouseManagementWeb.Domain.Entities;
@@ -192,9 +192,29 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public Task RemoveDocumentShipmentAsync(int documentShipmentId)
+        /// <inheritdoc />
+        public async Task RemoveDocumentShipmentAsync(int documentShipmentId)
         {
-            throw new NotImplementedException();
+            using var transaction = await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+
+            try
+            {
+                await _db.ResourceShipments
+                    .Where(rr => rr.DocumentShipmentId == documentShipmentId)
+                    .ExecuteDeleteAsync();
+
+                await _db.DocumentShipments
+                    .Where(dr => dr.Id == documentShipmentId)
+                    .ExecuteDeleteAsync();
+
+                await transaction.CommitAsync();
+            }
+
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         #endregion
