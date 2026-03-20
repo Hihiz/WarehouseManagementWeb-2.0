@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ResourceReceiptListOutput } from '../../models/output/resource-receipt-list-output';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, forkJoin, tap } from 'rxjs';
 import { DocumentReceiptSerivce } from '../../services/document-receipt.serivce';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MeasureUnitOutput } from '../../../../directory/measure-unit/models/output/measure-unit-output';
@@ -64,6 +64,22 @@ export class DetailDocumentReceiptComponent implements OnInit {
 
   ngOnInit() {
     this.checkUrlParams();
+
+      forkJoin([
+        this.getActiveMeasureUnits(),
+         this.getActiveClients(),
+         this.getActiveResources(),
+        this.getResourceReceiptByDocumentReceiptId(),
+      ]).subscribe({
+        next: () => {
+          this.isLoader = false;
+          this._cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Ошибка при загрузке данных:', err);
+          this.isLoader = false;
+        },
+      });
   }
 
   /**
@@ -71,17 +87,14 @@ export class DetailDocumentReceiptComponent implements OnInit {
    */
   private checkUrlParams() {
     this._activatedRoute.queryParams.subscribe((params) => {
-      const id = params['id'];
+      const id = params['id'];    
+      console.log(id);
       if (!id) {
-        this._router.navigate(['document-receipts']);
+        this._router.navigate(['/document-receipts']);
+        return;
       }
-
-      this.updateResourceReceiptInput.documentReceiptId = id;
-
-      this.getResourceReceiptByDocumentReceiptId();
-      this.getActiveClients();
-      this.getActiveMeasureUnits();
-      this.getActiveResources();
+      this.isLoader = true;
+      this.updateResourceReceiptInput.documentReceiptId = id;    
     });
   }
 
@@ -90,38 +103,36 @@ export class DetailDocumentReceiptComponent implements OnInit {
    * @param documentReceiptId Id документа поступления.
    */
   private getResourceReceiptByDocumentReceiptId() {
-    this.isLoader = true;
-
-    this._documentReceiptService
+    return this._documentReceiptService
       .getResourceReceiptByDocumentReceiptId(this.updateResourceReceiptInput.documentReceiptId)
-      .subscribe((_) => {
-        console.log('Детали документа поступления: ', this.detailDocumentReceipt$.value);
+      .pipe(
+        tap(() => {
+          console.log('Детали документа поступления: ', this.detailDocumentReceipt$.value);
 
-        this.updateResourceReceiptInput.documentReceiptNumberCode =
-          this.detailDocumentReceipt$.value.documentReceiptNumberCode;
+          this.updateResourceReceiptInput.documentReceiptNumberCode =
+            this.detailDocumentReceipt$.value.documentReceiptNumberCode;
 
-        this.updateResourceReceiptInput.date = this._dateService.formatDate(
-          this.detailDocumentReceipt$.value.documentReceiptDate,
-        );
+          this.updateResourceReceiptInput.date = this._dateService.formatDate(
+            this.detailDocumentReceipt$.value.documentReceiptDate,
+          );
 
-        this.updateResourceReceiptInput.documentReceiptClientId =
-          this.detailDocumentReceipt$.value.documentReceiptClientId;
+          this.updateResourceReceiptInput.documentReceiptClientId =
+            this.detailDocumentReceipt$.value.documentReceiptClientId;
 
-        // Входящие ресурсы.
-        this.updateResourceReceiptInput.modifyResourceReceiptInputs =
-          this.detailDocumentReceipt$.value.items?.map((item) => {
-            let result: ModifyResourceReceiptInput = {
-              resourceReceiptId: item.resourceReceiptId,
-              resourceId: item.resourceId,
-              measureUnitId: item.measureUnitId,
-              resourceQuantity: item.resourceQuantity,
-            };
+          // Входящие ресурсы.
+          this.updateResourceReceiptInput.modifyResourceReceiptInputs =
+            this.detailDocumentReceipt$.value.items?.map((item) => {
+              let result: ModifyResourceReceiptInput = {
+                resourceReceiptId: item.resourceReceiptId,
+                resourceId: item.resourceId,
+                measureUnitId: item.measureUnitId,
+                resourceQuantity: item.resourceQuantity,
+              };
 
-            return result;
-          });
-
-        this.isLoader = false;
-      });
+              return result;
+            });
+        }),
+      );
   }
 
   /**
@@ -153,27 +164,25 @@ export class DetailDocumentReceiptComponent implements OnInit {
    * Фукнция получает список активных ресурсов для заполнения выпадающего списка.
    */
   private getActiveResources() {
-    this._resourceService.getActiveResources().subscribe((_) => {
-      console.log('Получен список активных ресурсов: ', this.activeResources$.value);
-    });
+    return this._resourceService.getActiveResources().pipe(
+      tap(() => console.log('Получен список активных ресурсов: ', this.activeResources$.value)));
   }
 
   /**
    * Фукнция получает список активных единиц измерений для заполнения выпадающего списка.
    */
   private getActiveMeasureUnits() {
-    this._measureUnitSerivce.getActiveMeasureUnits().subscribe((_) => {
-      console.log('Получен список активных единиц измерений: ', this.activeMeasureUnits$.value);
-    });
+    return this._measureUnitSerivce.getActiveMeasureUnits().pipe(
+      tap(() =>console.log('Получен список активных единиц измерений: ', this.activeMeasureUnits$.value)));
   }
 
   /**
    * Фукнция получает список активных клиентов для заполнения выпадающего списка.
    */
   private getActiveClients() {
-    this._clientService.getActiveClients().subscribe((_) => {
-      console.log('Получен список активных клиентов: ', this.activeClients$.value);
-    });
+    return this._clientService.getActiveClients().pipe(
+        tap(() => console.log('Получен список активных клиентов: ', this.activeClients$.value)),
+      );
   }
 
   /**
@@ -193,8 +202,10 @@ export class DetailDocumentReceiptComponent implements OnInit {
       },
       error: (err) => {
         if (err.status === 400) {
-          if (err.error.message.includes('номером') ||
-              err.error.message.includes('существует в системе')) {
+          if (
+            err.error.message.includes('номером') ||
+            err.error.message.includes('существует в системе')
+          ) {
             this.serverNameError =
               err.error.message ||
               'Документ поступления с таким номером документа уже существует в системе.';
