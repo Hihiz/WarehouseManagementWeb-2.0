@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WarehouseManagementWeb.Application.Dto.Input.ResourceReceipt;
 using WarehouseManagementWeb.Application.Dto.Input.ResourceShipment;
-using WarehouseManagementWeb.Application.Dto.Output.ResourceReceipt;
 using WarehouseManagementWeb.Application.Dto.Output.ResourceShipment;
 using WarehouseManagementWeb.Application.Interfaces.Services.DocumentShipment;
 
@@ -94,6 +92,19 @@ namespace WarehouseManagementWeb.Api.Controllers
             input)
         {
             await _documentShipmentService.ChangeStatusDocumentShipmentAsync(input);
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Метод удаляет документ отгрузки.
+        /// </summary>
+        /// <param name="documentShipmentId">Id документа отгрузки.</param>
+        [HttpDelete]
+        [Route("document-shipment")]
+        public async Task<IActionResult> RemoveDocumentShipmentAsync([FromBody] int documentShipmentId)
+        {
+            await _documentShipmentService.RemoveDocumentShipmentAsync(documentShipmentId);
 
             return Ok();
         }
