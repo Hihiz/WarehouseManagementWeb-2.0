@@ -32,6 +32,8 @@ namespace WarehouseManagementWeb.Infrastructure.Data
 
         public DbSet<ResourceShipmentEntity> ResourceShipments { get; set; }
 
+        public DbSet<BalanceEntity> Balances { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
