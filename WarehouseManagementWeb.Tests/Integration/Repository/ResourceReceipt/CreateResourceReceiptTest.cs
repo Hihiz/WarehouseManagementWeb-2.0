@@ -7,7 +7,7 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
         [Fact]
         public async Task CreateResourceReceiptAsyncTest()
         {
-            // Act
+            // Arrange
             var client = new ClientEntity { Name = "Test" + Guid.NewGuid().ToString(), 
                 Address = "Тестовый адрес" + Guid.NewGuid().ToString() };
             await clientRepository.CreateClientAsync(client);
@@ -43,7 +43,7 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
                 Quantity = 120
             });
 
-            // Arrange & Assert
+            // Act & Assert.
             await resourceReceiptRepository.CreateResourceReceiptAsync(document);
         }
     }
