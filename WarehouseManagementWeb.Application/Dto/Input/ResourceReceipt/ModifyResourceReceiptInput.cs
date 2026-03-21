@@ -1,7 +1,7 @@
 ﻿namespace WarehouseManagementWeb.Application.Dto.Input.ResourceReceipt
 {
     /// <summary>
-    /// Класс входной модели редактирования ресурса поступления.
+    /// Класс входной модели редактирования ресурса документа поступления.
     /// </summary>
     public class ModifyResourceReceiptInput : BaseResourceReceiptInput
     {

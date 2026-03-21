@@ -50,7 +50,7 @@ namespace WarehouseManagementWeb.Application.Services.DocumentReceipt
         }
 
         /// <inheritdoc />
-        public async Task<ResourceReceiptListOutput> GetResourceReceiptByDocumentReceiptIdAsync(int documentReceiptId)
+        public async Task<ResourceReceiptListOutput?> GetResourceReceiptByDocumentReceiptIdAsync(int documentReceiptId)
         {
             try
             {
@@ -60,8 +60,14 @@ namespace WarehouseManagementWeb.Application.Services.DocumentReceipt
                                                         $"DocumentReceiptId: {documentReceiptId}.");
                 }
 
-                ResourceReceiptListOutput result = await _documentReceiptRepository
+                ResourceReceiptListOutput? result = await _documentReceiptRepository
                     .GetResourceReceiptByDocumentReceiptIdAsync(documentReceiptId);
+
+
+                if (result is null)
+                {
+                    return new ResourceReceiptListOutput();
+                }
 
                 return result;
             }
@@ -197,6 +203,11 @@ namespace WarehouseManagementWeb.Application.Services.DocumentReceipt
 
         #region Приватные методы.
 
+        /// <summary>
+        /// Метод проверяет дубликаты для ресурс + единица измрения.
+        /// </summary>
+        /// <param name="inputs">Список ресурсов.</param>
+        /// <returns>Признак проверки.</returns>
         private bool IsDuplicateResourceReceipts(IEnumerable<BaseResourceReceiptInput> inputs)
         {
             if (inputs is null || !inputs.Any())

@@ -6,8 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using WarehouseManagementWeb.Application.Interfaces.Repositories.Balance;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.Client;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.DocumentReceipt;
+using WarehouseManagementWeb.Application.Interfaces.Repositories.DocumentShipment;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.MeasureUnit;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.Resource;
 using WarehouseManagementWeb.Infrastructure.Data;
@@ -125,6 +127,8 @@ namespace WarehouseManagementWeb.Infrastructure
             services.AddScoped<IResourceRepository, ResourceRepository>();
             services.AddScoped<IMeasureUnitRepository, MeasureUnitRepository>();
             services.AddScoped<IDocumentReceiptRepository, DocumentReceiptRepository>();
+            services.AddScoped<IDocumentShipmentRepository, DocumentShipmentRepository>();
+            services.AddScoped<IBalanceRepository, BalanceRepository>();
         }
     }
 }

@@ -57,7 +57,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<ResourceReceiptListOutput> GetResourceReceiptByDocumentReceiptIdAsync(
+        public async Task<ResourceReceiptListOutput?> GetResourceReceiptByDocumentReceiptIdAsync(
             int documentReceiptId)
         {
             ResourceReceiptListOutput? result = await _db.DocumentReceipts
@@ -83,7 +83,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                       })
                   }).FirstOrDefaultAsync();
 
-            return result!;
+            return result;
         }
 
         /// <inheritdoc />
@@ -110,9 +110,55 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         /// <inheritdoc />
         public async Task CreateResourceReceiptAsync(DocumentReceiptEntity documentEntity)
         {
-            await _db.DocumentReceipts.AddAsync(documentEntity);
+            using var transaction = await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
 
-            await _db.SaveChangesAsync();
+            try
+            {
+                // Добавляем документ.
+                await _db.DocumentReceipts.AddAsync(documentEntity);
+
+                if (documentEntity.ResourceReceiptEntities is null ||
+                    !documentEntity.ResourceReceiptEntities.Any())
+                {
+                    await _db.SaveChangesAsync();
+                    return;
+                }
+
+                foreach (var item in documentEntity.ResourceReceiptEntities)
+                {
+                    BalanceEntity? exist = await _db.Balances
+                        .FirstOrDefaultAsync(b => b.ResourceId == item.ResourceId &&
+                                            b.MeasureUnitId == item.MeasureUnitId);
+
+                    // Если в балансе нет ресурса, то добавляем.
+                    if (exist is null)
+                    {
+                        await _db.Balances.AddAsync(new BalanceEntity
+                        {
+                            ResourceId = item.ResourceId,
+                            MeasureUnitId = item.MeasureUnitId,
+                            Quantity = item.Quantity
+                        });
+                    }
+
+                    // Существующему ресурсу добавляем количество.
+                    else if (exist is not null)
+                    {
+                        exist.Quantity += item.Quantity;
+                    }
+                }
+
+                await _db.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+
+            catch
+            {
+                await transaction.RollbackAsync();
+
+                throw;
+            }
         }
 
         /// <inheritdoc />
@@ -187,7 +233,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
 
             try
             {
-                int deletedResourceReceipts = await _db.ResourceReceipts
+                await _db.ResourceReceipts
                     .Where(rr => rr.DocumentReceiptId == documentReceiptId)
                     .ExecuteDeleteAsync();
 

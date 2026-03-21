@@ -19,7 +19,7 @@ namespace WarehouseManagementWeb.Application.Interfaces.Repositories.DocumentRec
         /// </summary>
         /// <param name="documentReceiptId">Id документа поступления.</param>
         /// <returns>Данные ресурса поступления.</returns>
-        Task<ResourceReceiptListOutput> GetResourceReceiptByDocumentReceiptIdAsync(int documentReceiptId);
+        Task<ResourceReceiptListOutput?> GetResourceReceiptByDocumentReceiptIdAsync(int documentReceiptId);
 
         /// <summary>
         /// Метод проверяет существование документа поступления по номеру документа.
