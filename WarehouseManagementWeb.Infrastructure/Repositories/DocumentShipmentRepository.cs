@@ -129,6 +129,12 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
 
                     // Вычитаем количество. 
                     balance.Quantity -= item.Quantity;
+                    
+                    if (balance.Quantity < 0)
+                    {
+                        throw new InvalidOperationException("Ошибка отгрузки: " +
+                            "на складе недостаточное количество выбранного ресурса.");
+                    }
                 }
 
                 await _db.SaveChangesAsync();
