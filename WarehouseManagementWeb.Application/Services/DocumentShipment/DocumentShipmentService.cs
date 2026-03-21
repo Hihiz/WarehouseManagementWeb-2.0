@@ -91,6 +91,11 @@ namespace WarehouseManagementWeb.Application.Services.DocumentShipment
                     throw new InvalidOperationException("Недопустимые данные ресурсов отгрузки.");
                 }
 
+                if (input.IncludeResourceShipmentInputs is null || !input.IncludeResourceShipmentInputs.Any())
+                {
+                    throw new InvalidOperationException("Документ отгрузки не содержит отгружаемых ресурсов.");
+                }
+
                 bool isDocumentShipmentExist = await _documentShipmentRepository
                     .CheckDocumentShipmentExistsByNumberCodeAsync(input.DocumentShipmentNumberCode!);
 
@@ -101,8 +106,6 @@ namespace WarehouseManagementWeb.Application.Services.DocumentShipment
                 }
 
                 IsDuplicateResourceShipments(input.IncludeResourceShipmentInputs!);
-
-                input.IncludeResourceShipmentInputs ??= new List<IncludeResourceShipmentInput>();
 
                 DocumentShipmentEntity entity = new DocumentShipmentEntity
                 {
