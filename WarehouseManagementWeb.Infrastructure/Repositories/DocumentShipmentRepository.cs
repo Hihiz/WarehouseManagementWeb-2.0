@@ -109,9 +109,39 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         /// <inheritdoc />
         public async Task CreateResourceShipmentAsync(DocumentShipmentEntity documentEntity)
         {
-            await _db.DocumentShipments.AddAsync(documentEntity);
+            using var transaction = await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
 
-            await _db.SaveChangesAsync();
+            try
+            {
+                // Добавляем документ.
+                await _db.DocumentShipments.AddAsync(documentEntity);
+
+                foreach (var item in documentEntity.ResourceShipmentEntities)
+                {
+                    BalanceEntity? balance = await _db.Balances
+                        .FirstOrDefaultAsync(b => b.ResourceId == item.ResourceId
+                                            && b.MeasureUnitId == item.MeasureUnitId);
+
+                    if (balance is null)
+                    {
+                        throw new InvalidOperationException($"Ресурс ID:{item.ResourceId} отсутствует на складе.");
+                    }
+
+                    // Вычитаем количество. 
+                    balance.Quantity -= item.Quantity;
+                }
+
+                await _db.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+
+            catch
+            {
+                await transaction.RollbackAsync();
+
+                throw;
+            }
         }
 
         /// <inheritdoc />
