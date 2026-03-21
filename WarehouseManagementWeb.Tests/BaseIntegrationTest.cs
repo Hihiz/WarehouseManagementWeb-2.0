@@ -16,8 +16,10 @@ namespace WarehouseManagementWeb.Tests
 
         protected internal readonly ClientRepository clientRepository;
         protected internal readonly DocumentReceiptRepository resourceReceiptRepository;
+        protected internal readonly DocumentShipmentRepository documentShipmentRepository;
         protected internal readonly MeasureUnitRepository measureUnitRepository;
         protected internal readonly ResourceRepository resourceRepository;
+        protected internal readonly ApplicationDbContext applicationDbContext;
 
         /// <summary>
         /// Конструктор.
@@ -33,10 +35,12 @@ namespace WarehouseManagementWeb.Tests
 
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
             optionsBuilder.UseNpgsql(appConfiguration.GetConnectionString("DefaultConnection"));
-            var applicationDbContext = new ApplicationDbContext(optionsBuilder.Options);
+            //var applicationDbContext = new ApplicationDbContext(optionsBuilder.Options);
+             applicationDbContext = new ApplicationDbContext(optionsBuilder.Options);
 
             clientRepository = new ClientRepository(applicationDbContext);
             resourceReceiptRepository = new DocumentReceiptRepository(applicationDbContext);
+            documentShipmentRepository = new DocumentShipmentRepository(applicationDbContext);
             measureUnitRepository = new MeasureUnitRepository(applicationDbContext);
             resourceRepository = new ResourceRepository(applicationDbContext);
 
