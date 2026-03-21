@@ -10,18 +10,18 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.DocumentShipment
             // Arrange
             var client = new ClientEntity
             {
-                Name = "Клиент для отгрузки " + Guid.NewGuid().ToString(),
-                Address = "Тестовый адрес" + Guid.NewGuid().ToString()
+                Name = "Клиент для отгрузки " + Guid.NewGuid().ToString()[1..5],
+                Address = "Тестовый адрес" + Guid.NewGuid().ToString()[1..5]
             };
             await clientRepository.CreateClientAsync(client);
 
-            var resource1 = new ResourceEntity { Title = "Кирпич М100 " + Guid.NewGuid().ToString() };
-            var resource2 = new ResourceEntity { Title = "Цемент М500 " + Guid.NewGuid().ToString() };
+            var resource1 = new ResourceEntity { Title = "Кирпич М100 " + Guid.NewGuid().ToString()[1..5] };
+            var resource2 = new ResourceEntity { Title = "Цемент М500 " + Guid.NewGuid().ToString()[1..5] };
             await resourceRepository.CreateResourceAsync(resource1);
             await resourceRepository.CreateResourceAsync(resource2);
 
-            var unitPiece = new MeasureUnitEntity { Title = "шт" + Guid.NewGuid().ToString() };
-            var unitKg = new MeasureUnitEntity { Title = "кг" + Guid.NewGuid().ToString() };
+            var unitPiece = new MeasureUnitEntity { Title = "шт" + Guid.NewGuid().ToString()[1..5] };
+            var unitKg = new MeasureUnitEntity { Title = "кг" + Guid.NewGuid().ToString()[1..5] };
             await measureUnitRepository.CreateMeasureUnitAsync(unitPiece);
             await measureUnitRepository.CreateMeasureUnitAsync(unitKg);
 
@@ -42,7 +42,7 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.DocumentShipment
 
             var document = new DocumentShipmentEntity
             {
-                NumberCode = "test Number Code" + Guid.NewGuid().ToString(),
+                NumberCode = "test Number Code" + Guid.NewGuid().ToString()[1..5],
                 ClientId = client.Id,
                 ResourceShipmentEntities = new List<ResourceShipmentEntity>
                 {

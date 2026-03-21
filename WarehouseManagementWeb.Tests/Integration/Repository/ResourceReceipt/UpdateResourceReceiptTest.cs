@@ -10,28 +10,28 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
             // Arrange
             var client = new ClientEntity
             {
-                Name = "Клиент для обновления",
-                Address = "Тестовый адрес"
+                Name = "Клиент для обновления" + Guid.NewGuid().ToString()[..5],
+                Address = "Тестовый адрес" + Guid.NewGuid().ToString()[..5]
             };
             await clientRepository.CreateClientAsync(client);
 
-            var resource1 = new ResourceEntity { Title = "Кирпич М100" };
-            var resource2 = new ResourceEntity { Title = "Цемент М500" };
-            var resource3 = new ResourceEntity { Title = "Арматура 12мм" };
+            var resource1 = new ResourceEntity { Title = "Кирпич М100" + Guid.NewGuid().ToString()[1..5] };
+            var resource2 = new ResourceEntity { Title = "Цемент М500" + Guid.NewGuid().ToString()[1..5] };
+            var resource3 = new ResourceEntity { Title = "Арматура 12мм" + Guid.NewGuid().ToString()[1..5] };
 
             await resourceRepository.CreateResourceAsync(resource1);
             await resourceRepository.CreateResourceAsync(resource2);
             await resourceRepository.CreateResourceAsync(resource3);
 
-            var muPiece = new MeasureUnitEntity { Title = "шт" };
-            var muKg = new MeasureUnitEntity { Title = "кг" };
+            var muPiece = new MeasureUnitEntity { Title = "шт" + Guid.NewGuid().ToString()[1..5] };
+            var muKg = new MeasureUnitEntity { Title = "кг" + Guid.NewGuid().ToString()[1..5] };
 
             await measureUnitRepository.CreateMeasureUnitAsync(muPiece);
             await measureUnitRepository.CreateMeasureUnitAsync(muKg);
 
             var originalDocument = new DocumentReceiptEntity
             {
-                NumberCode = "NumberCode",
+                NumberCode = "NumberCode" + Guid.NewGuid().ToString()[1..5],
                 Date = DateTime.UtcNow,
                 ClientId = client.Id,
                 ResourceReceiptEntities = new List<ResourceReceiptEntity>()
@@ -53,11 +53,10 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
 
             await resourceReceiptRepository.CreateResourceReceiptAsync(originalDocument);
 
-            // Act
             var updateDocument = new DocumentReceiptEntity
             {
                 Id = originalDocument.Id,
-                NumberCode = "UPDATED NumberCode",
+                NumberCode = "UPDATED NumberCode" + Guid.NewGuid().ToString()[1..5],
                 Date = DateTime.UtcNow,
                 ClientId = client.Id,
                 ResourceReceiptEntities = new List<ResourceReceiptEntity>()
@@ -78,7 +77,7 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
                 Quantity = 300
             });
 
-            // Act
+            // Act & Assert.
             await resourceReceiptRepository.UpdateResourceReceiptAsync(updateDocument);
         }
     }
