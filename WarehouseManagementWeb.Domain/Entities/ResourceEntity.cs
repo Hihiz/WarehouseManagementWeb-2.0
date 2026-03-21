@@ -31,5 +31,10 @@ namespace WarehouseManagementWeb.Domain.Entities
         /// Список ресурсов отгрузки, которые связанны с ресурсом.
         /// </summary>
         public ICollection<ResourceShipmentEntity>? ResourceShipmentEntities { get; set; }
+
+        /// <summary>
+        /// Список баланса, которые связанны с ресурсом.
+        /// </summary>
+        public ICollection<BalanceEntity>? BalanceEntities { get; set; }
     }
 }
