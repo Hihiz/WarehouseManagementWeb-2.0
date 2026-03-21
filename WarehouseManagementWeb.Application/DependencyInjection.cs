@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using WarehouseManagementWeb.Application.Interfaces.Services.Balance;
 using WarehouseManagementWeb.Application.Interfaces.Services.Client;
 using WarehouseManagementWeb.Application.Interfaces.Services.DocumentReceipt;
 using WarehouseManagementWeb.Application.Interfaces.Services.DocumentShipment;
 using WarehouseManagementWeb.Application.Interfaces.Services.MeasureUnit;
 using WarehouseManagementWeb.Application.Interfaces.Services.Resource;
+using WarehouseManagementWeb.Application.Services.Balance;
 using WarehouseManagementWeb.Application.Services.Client;
 using WarehouseManagementWeb.Application.Services.DocumentReceipt;
 using WarehouseManagementWeb.Application.Services.DocumentShipment;
@@ -40,6 +42,7 @@ namespace WarehouseManagementWeb.Application
             services.AddScoped<IMeasureUnitService, MeasureUnitService>();
             services.AddScoped<IDocumentReceiptService, DocumentReceiptService>();
             services.AddScoped<IDocumentShipmentService, DocumentShipmentService>();
+            services.AddScoped<IBalanceService, BalanceService>();
         }
     }
 }
