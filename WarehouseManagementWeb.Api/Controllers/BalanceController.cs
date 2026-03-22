@@ -30,7 +30,7 @@ namespace WarehouseManagementWeb.Api.Controllers
         /// </summary>
         /// <returns>Список доступных ресурсов баланса.</returns>
         [HttpGet]
-        [Route("balance")]
+        [Route("balances")]
         public async Task<IActionResult> GetAvailableBalancesAsync() =>
             Ok(await _balanceService.GetAvailableBalancesAsync());
 
