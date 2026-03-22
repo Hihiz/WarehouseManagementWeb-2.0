@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using WarehouseManagementWeb.Application.Dto.Input.ResourceShipment;
-using WarehouseManagementWeb.Application.Dto.Output.Client;
 using WarehouseManagementWeb.Application.Dto.Output.ResourceShipment;
 using WarehouseManagementWeb.Application.Interfaces.Repositories.DocumentShipment;
 using WarehouseManagementWeb.Application.Interfaces.Services.DocumentShipment;
 using WarehouseManagementWeb.Domain.Entities;
+using WarehouseManagementWeb.Domain.Enums;
 
 namespace WarehouseManagementWeb.Application.Services.DocumentShipment
 {
@@ -112,6 +112,9 @@ namespace WarehouseManagementWeb.Application.Services.DocumentShipment
                     NumberCode = input.DocumentShipmentNumberCode!,
                     Date = DateTime.SpecifyKind(input.DocumentShipmentDate, DateTimeKind.Utc),
                     ClientId = input.DocumentShipmentClientId,
+                    DocumentShipmentStatusEnum = input.IsSetActiveStatus
+                        ? DocumentStatusEnum.Active
+                        : DocumentStatusEnum.Inactive,
                     ResourceShipmentEntities = input.IncludeResourceShipmentInputs!
                     .Select(x => new ResourceShipmentEntity
                     {
@@ -160,6 +163,9 @@ namespace WarehouseManagementWeb.Application.Services.DocumentShipment
                     NumberCode = input.DocumentShipmentNumberCode!,
                     Date = DateTime.SpecifyKind(input.DocumentShipmentDate, DateTimeKind.Utc),
                     ClientId = input.DocumentShipmentClientId,
+                    DocumentShipmentStatusEnum = input.IsSetActiveStatus
+                        ? DocumentStatusEnum.Active
+                        : DocumentStatusEnum.Inactive,
                     ResourceShipmentEntities = input.ModifyResourceShipmentInputs!
                     .Select(x => new ResourceShipmentEntity
                     {
@@ -171,28 +177,6 @@ namespace WarehouseManagementWeb.Application.Services.DocumentShipment
                 };
 
                 await _documentShipmentRepository.UpdateResourceShipmentAsync(entity);
-            }
-
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-
-                throw;
-            }
-        }
-
-        /// <inheritdoc />
-        public async Task ChangeStatusDocumentShipmentAsync(ChangeStatusDocumentShipmentInput input)
-        {
-            try
-            {
-                if (input is null)
-                {
-                    throw new InvalidOperationException("Недопустимые данные документа отгрузки.");
-
-                }
-                await _documentShipmentRepository.ChangeStatusDocumentShipmentAsync(input.DocumentShipmentId,
-                    input.StatusEnum);
             }
 
             catch (Exception ex)
