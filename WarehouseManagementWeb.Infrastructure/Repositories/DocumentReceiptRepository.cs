@@ -121,6 +121,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                     !documentEntity.ResourceReceiptEntities.Any())
                 {
                     await _db.SaveChangesAsync();
+                    await transaction.CommitAsync();
                     return;
                 }
 
