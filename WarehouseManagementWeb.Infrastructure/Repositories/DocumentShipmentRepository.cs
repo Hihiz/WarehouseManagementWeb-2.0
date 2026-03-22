@@ -35,10 +35,11 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                  .Select(ds => new ResourceShipmentListOutput
                  {
                      DocumentShipmentId = ds.Id,
-                     DocumentShipmenNumberCode = ds.NumberCode,
+                     DocumentShipmentNumberCode = ds.NumberCode,
                      DocumentShipmentDate = ds.Date,
                      DocumentShipmentClientId = ds.ClientId,
                      DocumentShipmentClientName = ds.ClientEntity!.Name,
+                     DocumentStatusEnum = ds.DocumentShipmentStatusEnum,
                      Items = ds.ResourceShipmentEntities!
                      .OrderByDescending(rr => rr.Id)
                      .Select(rs => new ResourceShipmentItemOutput
@@ -65,10 +66,11 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                   .Select(ds => new ResourceShipmentListOutput
                   {
                       DocumentShipmentId = ds.Id,
-                      DocumentShipmenNumberCode = ds.NumberCode,
+                      DocumentShipmentNumberCode = ds.NumberCode,
                       DocumentShipmentDate = ds.Date,
                       DocumentShipmentClientId = ds.ClientId,
                       DocumentShipmentClientName = ds.ClientEntity!.Name,
+                      DocumentStatusEnum = ds.DocumentShipmentStatusEnum,
                       Items = ds.ResourceShipmentEntities!
                       .OrderByDescending(rr => rr.Id)
                       .Select(rs => new ResourceShipmentItemOutput
@@ -129,7 +131,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
 
                     // Вычитаем количество. 
                     balance.Quantity -= item.Quantity;
-                    
+
                     if (balance.Quantity < 0)
                     {
                         throw new InvalidOperationException("Ошибка отгрузки: " +
@@ -167,6 +169,11 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
             entity.NumberCode = documentEntity.NumberCode;
             entity.Date = documentEntity.Date;
             entity.ClientId = documentEntity.ClientId;
+
+            if (documentEntity.DocumentShipmentStatusEnum is not DocumentStatusEnum.Undefined)
+            {
+                entity.DocumentShipmentStatusEnum = documentEntity.DocumentShipmentStatusEnum;
+            }
 
             List<int> incomingIds = documentEntity.ResourceShipmentEntities
                 .Select(rs => rs.Id)
@@ -210,24 +217,6 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                     });
                 }
             }
-
-            await _db.SaveChangesAsync();
-        }
-
-        /// <inheritdoc />
-        public async Task ChangeStatusDocumentShipmentAsync(int documentShipmentId, DocumentStatusEnum statusEnum)
-        {
-            DocumentShipmentEntity? entity = await _db.DocumentShipments
-                .FirstOrDefaultAsync(ds => ds.Id == documentShipmentId);
-
-            if (entity is null)
-            {
-                throw new InvalidOperationException("Ошибка при обновлении статуса документа отгрузки. " +
-                                                   $"DocumentShipmentId: {documentShipmentId}. " +
-                                                   $"Status: {statusEnum}.");
-            }
-
-            entity.DocumentShipmentStatusEnum = statusEnum;
 
             await _db.SaveChangesAsync();
         }
