@@ -1,4 +1,6 @@
-﻿namespace WarehouseManagementWeb.Application.Dto.Input.ResourceShipment
+﻿using WarehouseManagementWeb.Domain.Enums;
+
+namespace WarehouseManagementWeb.Application.Dto.Input.ResourceShipment
 {
     /// <summary>
     /// Класс входной модели редактирования ресурса документа отгрузки.
@@ -24,6 +26,11 @@
         ///  Id клиента документа отгрузки.
         /// </summary>
         public int DocumentShipmentClientId { get; set; }
+
+        /// <summary>
+        /// Нужно ли подписать документ отгрузки.
+        /// </summary>
+        public bool IsSetActiveStatus { get; set; }
 
         /// <summary>
         /// Список входящих ресурсов в документ отгрузки.

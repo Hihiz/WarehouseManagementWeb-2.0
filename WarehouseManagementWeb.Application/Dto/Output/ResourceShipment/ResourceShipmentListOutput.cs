@@ -1,4 +1,6 @@
-﻿namespace WarehouseManagementWeb.Application.Dto.Output.ResourceShipment
+﻿using WarehouseManagementWeb.Domain.Enums;
+
+namespace WarehouseManagementWeb.Application.Dto.Output.ResourceShipment
 {
     /// <summary>
     /// Класс выходной модели ресурса документа отгрузки.
@@ -13,7 +15,7 @@
         /// <summary>
         /// Номер документа отгрузки.
         /// </summary>
-        public string? DocumentShipmenNumberCode { get; set; }
+        public string? DocumentShipmentNumberCode { get; set; }
 
         /// <summary>
         /// Дата документа отгрузки.
@@ -29,6 +31,11 @@
         /// Наименование клиента документа отгрузки.
         /// </summary>
         public string? DocumentShipmentClientName { get; set; }
+
+        /// <summary>
+        /// Статус документа отгрузки в значении перечисления.
+        /// </summary>
+        public DocumentStatusEnum DocumentStatusEnum { get; set; }
 
         /// <summary>
         /// Список входящих ресурсов в документ отгрузки.
