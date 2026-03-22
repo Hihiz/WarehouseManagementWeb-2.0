@@ -1,6 +1,5 @@
 ﻿using WarehouseManagementWeb.Application.Dto.Output.ResourceShipment;
 using WarehouseManagementWeb.Domain.Entities;
-using WarehouseManagementWeb.Domain.Enums;
 
 namespace WarehouseManagementWeb.Application.Interfaces.Repositories.DocumentShipment
 {
@@ -50,13 +49,6 @@ namespace WarehouseManagementWeb.Application.Interfaces.Repositories.DocumentShi
         /// <param name="documentEntity">Модель документа отгрузки.</param>
         /// ресурсов поступлений.</param>
         Task UpdateResourceShipmentAsync(DocumentShipmentEntity documentEntity);
-
-        /// <summary>
-        /// Метод обновляет статус документу отгрузки.
-        /// </summary>
-        /// <param name="documentShipmentId">Id документа отгрузки.</param>
-        /// <param name="statusEnum">Новый статус документа отгрузки.</param>
-        Task ChangeStatusDocumentShipmentAsync(int documentShipmentId, DocumentStatusEnum statusEnum);
 
         /// <summary>
         /// Метод удаляет документ отгрузки.
