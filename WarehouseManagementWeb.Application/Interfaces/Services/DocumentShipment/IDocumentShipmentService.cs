@@ -33,12 +33,6 @@ namespace WarehouseManagementWeb.Application.Interfaces.Services.DocumentShipmen
         Task UpdateResourceShipmentAsync(UpdateResourceShipmentInput input);
 
         /// <summary>
-        /// Метод обновляет статус документу отгрузки.
-        /// </summary>
-        /// <param name="input">Входная модель</param>
-        Task ChangeStatusDocumentShipmentAsync(ChangeStatusDocumentShipmentInput input);
-
-        /// <summary>
         /// Метод удаляет документ отгрузки.
         /// </summary>
         /// <param name="documentShipmentId">Id документа отгрузки.</param>
