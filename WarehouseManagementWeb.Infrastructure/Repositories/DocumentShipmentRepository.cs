@@ -171,70 +171,173 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         /// <inheritdoc />
         public async Task UpdateResourceShipmentAsync(DocumentShipmentEntity documentEntity)
         {
-            DocumentShipmentEntity? entity = await _db.DocumentShipments
-                .Include(ds => ds.ResourceShipmentEntities)
-                .FirstOrDefaultAsync(ds => ds.Id == documentEntity.Id);
+            using var transaction = await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
 
-            if (entity is null)
+            try
             {
-                throw new InvalidOperationException("Ошибка при редактировании документа отгрузки. " +
-                                                    $"DocumentShipmentId: {documentEntity.Id}. " +
-                                                    $"NumberCode: {documentEntity.NumberCode}.");
-            }
+                DocumentShipmentEntity? entity = await _db.DocumentShipments
+                                .Include(ds => ds.ResourceShipmentEntities)
+                                .FirstOrDefaultAsync(ds => ds.Id == documentEntity.Id);
 
-            entity.NumberCode = documentEntity.NumberCode;
-            entity.Date = documentEntity.Date;
-            entity.ClientId = documentEntity.ClientId;
-
-            if (documentEntity.DocumentShipmentStatusEnum is not DocumentStatusEnum.Undefined)
-            {
-                entity.DocumentShipmentStatusEnum = documentEntity.DocumentShipmentStatusEnum;
-            }
-
-            List<int> incomingIds = documentEntity.ResourceShipmentEntities
-                .Select(rs => rs.Id)
-                .ToList();
-
-            // Если исключили ресурсы, то удаляем их из отгрузки.
-            List<int> toResourceRemoveIds = entity.ResourceShipmentEntities
-                .Where(rs => !incomingIds.Contains(rs.Id))
-                .Select(rs => rs.Id)
-                .ToList();
-
-            if (toResourceRemoveIds.Any())
-            {
-                await _db.ResourceShipments
-                    .Where(ds => toResourceRemoveIds.Contains(ds.Id))
-                    .ExecuteDeleteAsync();
-            }
-
-            foreach (var resourceShipment in documentEntity.ResourceShipmentEntities)
-            {
-                ResourceShipmentEntity? existResource = entity.ResourceShipmentEntities
-                    .FirstOrDefault(rs => rs.Id != 0 && rs.Id == resourceShipment.Id);
-
-                if (existResource is not null)
+                if (entity is null)
                 {
-                    // Обновляем существующие ресурсы.
-                    existResource.ResourceId = resourceShipment.ResourceId;
-                    existResource.MeasureUnitId = resourceShipment.MeasureUnitId;
-                    existResource.Quantity = resourceShipment.Quantity;
+                    throw new InvalidOperationException("Ошибка при редактировании документа отгрузки. " +
+                                                        $"DocumentShipmentId: {documentEntity.Id}. " +
+                                                        $"NumberCode: {documentEntity.NumberCode}.");
                 }
 
-                else
+                entity.NumberCode = documentEntity.NumberCode;
+                entity.Date = documentEntity.Date;
+                entity.ClientId = documentEntity.ClientId;
+
+                if (documentEntity.DocumentShipmentStatusEnum is not DocumentStatusEnum.Undefined)
                 {
-                    // Если ресурс отгрузки не найден, то добавляем.
-                    entity.ResourceShipmentEntities!.Add(new ResourceShipmentEntity
+                    entity.DocumentShipmentStatusEnum = documentEntity.DocumentShipmentStatusEnum;
+                }
+
+                List<int> incominResourceIds = documentEntity.ResourceShipmentEntities
+                 .Select(k => k.ResourceId)
+                 .Distinct()
+                 .ToList();
+
+                List<int> incominMeasureUnitIds = documentEntity.ResourceShipmentEntities
+                    .Select(k => k.MeasureUnitId)
+                    .Distinct()
+                    .ToList();
+
+                List<int> existingResourceIds = entity.ResourceShipmentEntities
+                    .Select(k => k.ResourceId)
+                    .Distinct()
+                    .ToList();
+
+                List<int> existingMeasureUnitIds = entity.ResourceShipmentEntities
+                   .Select(k => k.MeasureUnitId)
+                   .Distinct()
+                   .ToList();
+
+                List<int> allResourceIds = incominResourceIds.Union(existingResourceIds)
+                    .ToList();
+                List<int> allMeasureUnitIds = incominMeasureUnitIds.Union(existingMeasureUnitIds)
+                  .ToList();
+
+                Dictionary<(int, int), BalanceEntity> balanceDict = await _db.Balances
+                    .Where(b => allResourceIds.Contains(b.ResourceId) &&
+                                allMeasureUnitIds.Contains(b.MeasureUnitId))
+                    .ToDictionaryAsync(b => (b.ResourceId, b.MeasureUnitId), b => b);
+
+                List<int> incomingResourceshipmentIds = documentEntity.ResourceShipmentEntities
+                    .Select(rs => rs.Id)
+                    .ToList();
+
+                // Если исключили ресурсы, то удаляем их из отгрузки.
+                List<ResourceShipmentEntity> resourcesToRemove = entity.ResourceShipmentEntities
+                    .Where(rs => !incomingResourceshipmentIds.Contains(rs.Id))
+                    .ToList();
+
+                if (resourcesToRemove.Any())
+                {
+                    foreach (var resource in resourcesToRemove)
                     {
-                        DocumentShipmentId = entity.Id,
-                        ResourceId = resourceShipment.ResourceId,
-                        MeasureUnitId = resourceShipment.MeasureUnitId,
-                        Quantity = resourceShipment.Quantity
-                    });
+                        // Вычитаем количество входящих ресурсов в поступление.
+                        BalanceEntity balance = GetExistingBalance(balanceDict, resource.ResourceId,
+                            resource.MeasureUnitId);
+
+                        balance.Quantity += resource.Quantity;
+
+                        _db.ResourceShipments.Remove(resource);
+                    }
                 }
+
+                foreach (var resourceShipment in documentEntity.ResourceShipmentEntities)
+                {
+                    ResourceShipmentEntity? existResource = entity.ResourceShipmentEntities
+                        .FirstOrDefault(rs => rs.Id != 0 && rs.Id == resourceShipment.Id);
+
+                    if (existResource is not null)
+                    {
+                        // Если изменилось только количество ресурса.
+                        if (resourceShipment.ResourceId == existResource.ResourceId &&
+                            resourceShipment.MeasureUnitId == existResource.MeasureUnitId)
+                        {
+                            // Разница между новым и существующим количеством.
+                            int diff = resourceShipment.Quantity - existResource.Quantity;
+
+                            if (diff != 0)
+                            {
+                                BalanceEntity balance = GetExistingBalance(balanceDict,
+                                    resourceShipment.ResourceId, resourceShipment.MeasureUnitId);
+
+                                balance.Quantity -= diff;
+
+                                if (balance.Quantity < 0)
+                                {
+                                    throw new InvalidOperationException(
+                                        $"Недостаточно ресурса у товара: {resourceShipment.ResourceEntity!.Title}.");
+                                }
+                            }
+                        }
+
+                        else
+                        {
+                            // Возвращаем количество ресурса.
+                            BalanceEntity oldBalance = GetExistingBalance(balanceDict, existResource.ResourceId,
+                                existResource.MeasureUnitId);
+
+                            oldBalance.Quantity += existResource.Quantity;
+
+                            // Вычитаем новый ресурс с баланса.
+                            BalanceEntity newBalance = GetExistingBalance(balanceDict, resourceShipment.ResourceId,
+                                resourceShipment.MeasureUnitId);
+
+                            newBalance.Quantity -= resourceShipment.Quantity;
+
+                            if (newBalance.Quantity < 0)
+                            {
+                                throw new InvalidOperationException(
+                                    $"Недостаточно добавленного ресурса Id: {resourceShipment.ResourceId}.");
+                            }
+                        }
+
+                        // Обновляем существующие ресурсы.
+                        existResource.ResourceId = resourceShipment.ResourceId;
+                        existResource.MeasureUnitId = resourceShipment.MeasureUnitId;
+                        existResource.Quantity = resourceShipment.Quantity;
+                    }
+
+                    else
+                    {
+                        // Если ресурс отгрузки не найден, то добавляем.
+                        entity.ResourceShipmentEntities!.Add(new ResourceShipmentEntity
+                        {
+                            DocumentShipmentId = entity.Id,
+                            ResourceId = resourceShipment.ResourceId,
+                            MeasureUnitId = resourceShipment.MeasureUnitId,
+                            Quantity = resourceShipment.Quantity
+                        });
+
+                        BalanceEntity balance = GetExistingBalance(balanceDict, resourceShipment.ResourceId,
+                            resourceShipment.MeasureUnitId);
+
+                        balance.Quantity -= resourceShipment.Quantity;
+
+                        if (balance.Quantity < 0)
+                        {
+                            throw new InvalidOperationException(
+                                $"Недостаточно ресурса Id: {resourceShipment.ResourceId}.");
+                        }
+                    }
+                }
+
+                await _db.SaveChangesAsync();
+
+                await transaction.CommitAsync();
             }
 
-            await _db.SaveChangesAsync();
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         /// <inheritdoc />
@@ -244,6 +347,39 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
 
             try
             {
+                DocumentShipmentEntity? entity = await _db.DocumentShipments
+                    .Include(ds => ds.ResourceShipmentEntities)
+                    .FirstOrDefaultAsync(ds => ds.Id == documentShipmentId);
+
+                if (entity is null)
+                {
+                    throw new InvalidOperationException("Документ отгрузк не найден. " +
+                                                        $"DocumentShipmentId: {documentShipmentId} не найден.");
+                }
+
+                List<int> resourceIds = entity.ResourceShipmentEntities
+                    .Select(rs => rs.ResourceId)
+                    .Distinct()
+                    .ToList();
+
+                List<int> measureUnitIds = entity.ResourceShipmentEntities
+                    .Select(rs => rs.MeasureUnitId)
+                    .Distinct()
+                    .ToList();
+
+                Dictionary<(int, int), BalanceEntity> balanceDict = await _db.Balances
+                    .Where(rr => resourceIds.Contains(rr.ResourceId) &&
+                                 measureUnitIds.Contains(rr.MeasureUnitId))
+                    .ToDictionaryAsync(rr => (rr.ResourceId, rr.MeasureUnitId), rr => rr);
+
+                foreach (var item in entity.ResourceShipmentEntities!)
+                {
+                    BalanceEntity b = GetExistingBalance(balanceDict, item.ResourceId, item.MeasureUnitId);
+
+                    // Возаращаем количество к балансу.
+                    b.Quantity += item.Quantity;
+                }
+
                 await _db.ResourceShipments
                     .Where(rs => rs.DocumentShipmentId == documentShipmentId)
                     .ExecuteDeleteAsync();
@@ -252,6 +388,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                     .Where(dr => dr.Id == documentShipmentId)
                     .ExecuteDeleteAsync();
 
+                await _db.SaveChangesAsync();
                 await transaction.CommitAsync();
             }
 
@@ -265,6 +402,27 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         #endregion
 
         #region Приватные методы.
+
+        /// <summary>
+        /// Метод получает баланс.
+        /// </summary>
+        /// <param name="dict">Словарь балансов.</param>
+        /// <param name="resourceId">Id ресурса.</param>
+        /// <param name="measureUnitId">Id единица измерения.</param>
+        /// <returns>Найденный баланс.</returns>
+        private BalanceEntity GetExistingBalance(Dictionary<(int, int), BalanceEntity> dict,
+            int resourceId, int measureUnitId)
+        {
+            (int, int) key = (resourceId, measureUnitId);
+
+            if (!dict.TryGetValue(key, out var balance))
+            {
+                throw new InvalidOperationException(
+                    $"Ресурс Id: {resourceId} полностью отсутствует на балансе. Отгрузка невозможна.");
+            }
+
+            return balance!;
+        }
 
         #endregion
     }
