@@ -10,7 +10,7 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.DocumentShipment
             // Arrange
             var client = new ClientEntity
             {
-                Name = "Клиент для отгрузки " + Guid.NewGuid().ToString()[1..5],
+                Name = "Клиент для отгрузки " + Guid.NewGuid().ToString()[1..3],
                 Address = "Тестовый адрес" + Guid.NewGuid().ToString()[1..5]
             };
             await clientRepository.CreateClientAsync(client);
