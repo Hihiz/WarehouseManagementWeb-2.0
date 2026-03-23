@@ -102,7 +102,7 @@ export const httpRequestInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
 
   const accessToken = localStorage.getItem('utoken');
-
+console.log(accessToken);
    if (accessToken) {
     req = req.clone({
       setHeaders: { Authorization: `Bearer ${accessToken}` },
