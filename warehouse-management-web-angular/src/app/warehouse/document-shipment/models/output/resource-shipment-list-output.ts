@@ -1,3 +1,4 @@
+import { DocumentStatusEnum } from '../../../enums/document-status-enum';
 import { ResourceShipmentItemOutput } from './resource-shipment-item-output';
 
 /**
@@ -28,6 +29,11 @@ export class ResourceShipmentListOutput {
    * Наименование клиента документа отгрузки.
    */
   documentShipmentClientName: string = '';
+
+  /**
+   * Статус документа отгрузки в значении перечисления.
+   */
+  documentStatusEnum: DocumentStatusEnum = 0;
 
   /**
    * Список входящих ресурсов в документ отгрузки.
