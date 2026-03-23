@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ResourceReceiptListOutput } from '../../models/output/resource-receipt-list-output';
 import { BehaviorSubject } from 'rxjs';
-import { DocumentReceiptSerivce } from '../../services/document-receipt.serivce';;
+import { DocumentReceiptSerivce } from '../../services/document-receipt.serivce';
 import { Router } from '@angular/router';
-import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
+
 /**
  * Класс компонента документов поступлений.
  */
@@ -24,9 +25,12 @@ export class DocumentReceiptComponent implements OnInit {
   constructor(
     private readonly _documentReceiptService: DocumentReceiptSerivce,
     private readonly _router: Router,
+    private readonly _cdr: ChangeDetectorRef
   ) {
     this.documentReceipts$ = this._documentReceiptService.documentReceipts$;
   }
+
+  isLoader: boolean = true;
 
   ngOnInit() {
   this.getResourceReceipts();
@@ -36,16 +40,19 @@ export class DocumentReceiptComponent implements OnInit {
    * Функция получает список ресурсов поступления.
    */
   private getResourceReceipts() {
-    this._documentReceiptService.getResourceReceipts().subscribe((_) =>
-        console.log('Получен список ресурсов поступления: ', this.documentReceipts$.value),
-      );
+    this._documentReceiptService.getResourceReceipts().subscribe((_) => {
+      console.log('Получен список ресурсов поступления: ', this.documentReceipts$.value);
+      
+      this.isLoader = false;
+      this._cdr.detectChanges();
+    });
   }
 
   /**
    * Функция получает ресурс поступления по Id документа поступления.
    * @param documentReceiptId Выбранный Id документа поступления.
    */
-  public  onGetResourceReceiptByDocumentReceiptId(documentReceiptId: number) {
+  public onGetResourceReceiptByDocumentReceiptId(documentReceiptId: number) {
     this._router.navigate(['/detail-document-receipt'], {
       queryParams: {
         id: documentReceiptId,
