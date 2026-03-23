@@ -118,19 +118,35 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                 // Добавляем документ.
                 await _db.DocumentShipments.AddAsync(documentEntity);
 
+                List<int> resourceIds = documentEntity.ResourceShipmentEntities
+                    .Select(k => k.ResourceId)
+                    .Distinct()
+                    .ToList();
+
+                List<int> measureUnitIds = documentEntity.ResourceShipmentEntities
+                    .Select(k => k.MeasureUnitId)
+                    .Distinct()
+                    .ToList();
+
+                Dictionary<(int, int), BalanceEntity> existingBalances = await _db.Balances
+                    .Where(b => resourceIds.Contains(b.ResourceId) && measureUnitIds.Contains(b.MeasureUnitId))
+                    .ToDictionaryAsync(
+                            b => (b.ResourceId, b.MeasureUnitId),
+                            b => b);
+
                 foreach (var item in documentEntity.ResourceShipmentEntities)
                 {
-                    BalanceEntity? balance = await _db.Balances
-                        .FirstOrDefaultAsync(b => b.ResourceId == item.ResourceId
-                                            && b.MeasureUnitId == item.MeasureUnitId);
+                    (int, int) key = (item.ResourceId, item.MeasureUnitId);
 
-                    if (balance is null)
+                    bool isExists = existingBalances.TryGetValue(key, out var balance);
+
+                    if (!isExists)
                     {
-                        throw new InvalidOperationException($"Ресурс ID:{item.ResourceId} отсутствует на складе.");
+                        throw new InvalidOperationException($"Ресурс Id:{item.ResourceId} отсутствует на складе.");
                     }
 
                     // Вычитаем количество. 
-                    balance.Quantity -= item.Quantity;
+                    balance!.Quantity -= item.Quantity;
 
                     if (balance.Quantity < 0)
                     {
