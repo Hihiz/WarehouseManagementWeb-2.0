@@ -23,6 +23,10 @@ export class UpdateResourceShipmentInput {
    * Id клиента документа отгрузки.
    */
   documentShipmentClientId: number = 0;
+  /**
+   * Нужно ли подписать документ отгрузки.
+   */
+  isSetActiveStatus: boolean = false;
 
   /**
    * Список входящих ресурсов в документ отгрузки.

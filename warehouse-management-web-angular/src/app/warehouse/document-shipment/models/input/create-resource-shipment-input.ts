@@ -16,6 +16,12 @@ export class CreateResourceShipmentInput {
    * Id клиента документа отгрузки.
    */
   documentShipmentClientId: number | null = null;
+
+  /**
+   * Нужно ли подписать документ отгрузки.
+   */
+  isSetActiveStatus: boolean = false;
+
   /**
    * Список входящих ресурсов в документ отгрузки.
    */
