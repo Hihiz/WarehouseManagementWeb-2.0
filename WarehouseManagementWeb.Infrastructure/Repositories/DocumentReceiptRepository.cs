@@ -125,27 +125,47 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
                     return;
                 }
 
+                List<int> resourceIds = documentEntity.ResourceReceiptEntities
+                    .Select(k => k.ResourceId)
+                    .Distinct()
+                    .ToList();
+
+                List<int> measureUnitIds = documentEntity.ResourceReceiptEntities
+                    .Select(k => k.MeasureUnitId)
+                    .Distinct()
+                    .ToList();
+
+                Dictionary<(int, int), BalanceEntity> existingBalances = await _db.Balances
+                    .Where(b => resourceIds.Contains(b.ResourceId) && measureUnitIds.Contains(b.MeasureUnitId))
+                    .ToDictionaryAsync(
+                            b => (b.ResourceId, b.MeasureUnitId),
+                            b => b);
+
                 foreach (var item in documentEntity.ResourceReceiptEntities)
                 {
-                    BalanceEntity? exist = await _db.Balances
-                        .FirstOrDefaultAsync(b => b.ResourceId == item.ResourceId &&
-                                            b.MeasureUnitId == item.MeasureUnitId);
+                    (int, int) key = (item.ResourceId, item.MeasureUnitId);
+
+                    bool isExists = existingBalances.TryGetValue(key, out var balance);
 
                     // Если в балансе нет ресурса, то добавляем.
-                    if (exist is null)
+                    if (!isExists)
                     {
-                        await _db.Balances.AddAsync(new BalanceEntity
+                        BalanceEntity newBalance = new BalanceEntity
                         {
                             ResourceId = item.ResourceId,
                             MeasureUnitId = item.MeasureUnitId,
                             Quantity = item.Quantity
-                        });
+                        };
+
+                        await _db.Balances.AddAsync(newBalance);
+
+                        existingBalances[key] = newBalance;
                     }
 
                     // Существующему ресурсу добавляем количество.
-                    else if (exist is not null)
+                    else if (isExists)
                     {
-                        exist.Quantity += item.Quantity;
+                        balance!.Quantity += item.Quantity;
                     }
                 }
 
