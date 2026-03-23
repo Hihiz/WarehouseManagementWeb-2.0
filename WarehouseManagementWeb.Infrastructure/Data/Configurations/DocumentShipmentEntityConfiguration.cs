@@ -44,7 +44,7 @@ namespace WarehouseManagementWeb.Infrastructure.Data.Configurations
                 .HasConversion(
                     v => v.ToString().ToLower(),
                     v => Enum.Parse<DocumentStatusEnum>(v, true))
-                .HasDefaultValue(DocumentStatusEnum.Active)
+                .HasDefaultValue(DocumentStatusEnum.Inactive)
                 .HasComment("Статус документа отгрузки в значении перечисления.")
                 .IsRequired();
 

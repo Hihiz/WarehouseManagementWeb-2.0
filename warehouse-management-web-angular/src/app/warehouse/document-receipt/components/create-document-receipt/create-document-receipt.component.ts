@@ -100,7 +100,7 @@ export class CreateDocumentReceiptComponent implements OnInit {
     this.createResourceReceiptInput.includeResourceReceiptInputs.push({
       resourceId: null,
       measureUnitId: null,
-      resourceQuantity: 0,
+      resourceQuantity: null,
     });
   }
 
@@ -142,7 +142,7 @@ export class CreateDocumentReceiptComponent implements OnInit {
   }
 
   /**
-   * Функция переходит к списку единиц измерений.
+   * Функция переходит к списку документов поступлений.
    */
   public onGetDocumentReceipts() {
     this._router.navigate(['/document-receipts']);

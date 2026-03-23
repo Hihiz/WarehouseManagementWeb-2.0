@@ -1,1 +1,70 @@
-<p>document-shipment.component works!</p>
+<div>
+  <h3>Список документов отгрузок</h3>
+
+  @if (isLoader) {
+    <p class="text-center">Загрузка данных документов отгрузок...</p>
+  } @else {
+    <div class="elem-bottom">
+      <a class="btn btn-success" (click)="onCreateResourceShipment()">Добавить</a>
+    </div>
+
+    <table class="table table-sm table-striped table-bordered border-dark">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Номер</th>
+          <th>Дата отгрузки</th>
+          <th>Клиент</th>
+          <th>Ресурс</th>
+          <th>Единица измерения</th>
+          <th>Кол-во</th>
+          <th>Статус</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (document of documentShipments$ | async; track document.documentShipmentId; let i = $index) {
+         @let isStatusActive = document.documentStatusEnum.toString() === 'Active';
+            <tr
+            [ngClass]="{
+                'table-danger': !isStatusActive, 
+                'table-success': isStatusActive}"
+            (click)="onGetResourceShipmentByDocumentShipmentId(document.documentShipmentId)"
+          >
+            <td>{{ i + 1 }}</td>
+            <td>{{ document.documentShipmentNumberCode }}</td>
+            <td>{{ document.documentShipmentDate | date: 'dd.MM.yyy HH:mm' : 'UTC' }}</td>
+            <td>{{ document.documentShipmentClientName }}</td>
+            <td>
+              @for (item of document.items; track item.resourceShipmentId) {
+                <div class="p-2 border-bottom border-secondary">
+                  {{ item.resourceTitle }}
+                </div>
+              }
+            </td>
+            <td>
+              @for (item of document.items; track item.resourceShipmentId) {
+                <div class="p-2 border-bottom border-secondary">
+                  {{ item.measureUnitTitle }}
+                </div>
+              }
+            </td>
+
+            <td  class="align-middle">
+              @for (item of document.items; track item.resourceShipmentId) {
+                <div class="p-2 border-bottom border-secondary">
+                  {{ item.resourceQuantity }}
+                </div>
+              }
+            </td>
+            <td class="align-middle text-center">
+                <span class="badge" [ngClass]="{ 'bg-danger': !isStatusActive,  'bg-success': isStatusActive}">
+                 {{ isStatusActive ? 'Подписан' : 'Не подписан' }}
+              </span>
+             
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

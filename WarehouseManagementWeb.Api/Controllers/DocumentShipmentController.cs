@@ -48,7 +48,8 @@ namespace WarehouseManagementWeb.Api.Controllers
         /// <returns>Данные ресурса отгрузки.</returns>
         [HttpGet]
         [Route("document-shipment")]
-        public async Task<IActionResult> GetResourceShipmentByDocumentShipmentIdAsync([FromQuery] int documentShipmentId)
+        public async Task<IActionResult> GetResourceShipmentByDocumentShipmentIdAsync(
+            [FromQuery] int documentShipmentId)
         {
             ResourceShipmentListOutput? result = await _documentShipmentService
                 .GetResourceShipmentByDocumentShipmentIdAsync(documentShipmentId);
@@ -78,20 +79,6 @@ namespace WarehouseManagementWeb.Api.Controllers
         public async Task<IActionResult> UpdateResourceShipmentAsync([FromBody] UpdateResourceShipmentInput input)
         {
             await _documentShipmentService.UpdateResourceShipmentAsync(input);
-
-            return Ok();
-        }
-
-        /// <summary>
-        /// Метод обновляет статус документу отгрузки.
-        /// </summary>
-        /// <param name="input">Входная модель</param>
-        [HttpPatch]
-        [Route("change-status-document-shipment")]
-        public async Task<IActionResult> ChangeStatusDocumentShipmentAsync([FromBody] ChangeStatusDocumentShipmentInput
-            input)
-        {
-            await _documentShipmentService.ChangeStatusDocumentShipmentAsync(input);
 
             return Ok();
         }

@@ -15,5 +15,5 @@ export class IncludeResourceReceiptInput {
   /**
    * Количество ресурса.
    */
-  resourceQuantity: number = 0;
+  resourceQuantity: number | null = null;
 }

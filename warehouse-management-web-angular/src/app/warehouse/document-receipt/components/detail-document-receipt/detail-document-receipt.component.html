@@ -74,7 +74,7 @@
             required
             name="clientId"
           >
-            <option [value]="null" disabled>Выберите поставщика</option>
+            <option [value]="0" disabled>Выберите поставщика</option>
             @for (client of activeClients$ | async; track client.id) {
               <option [value]="client.id">
                 {{ client.name }}
@@ -96,8 +96,7 @@
             type="datetime-local"
             name="date"
             [(ngModel)]="updateResourceReceiptInput.date"
-            placeholder="Выберите дату поступления"
-            required
+            placeholder="Выберите дату поступления"     
           />
         </div>
       </div>

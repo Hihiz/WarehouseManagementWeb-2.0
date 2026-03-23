@@ -15,5 +15,5 @@ export enum DocumentStatusEnum {
   /**
    * Статус не подписанного документа.
    */
-  archived = 2,
+  inActive = 2,
 }
