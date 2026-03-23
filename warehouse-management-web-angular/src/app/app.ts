@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, signal } from '@angular/core';
 import { RouterOutlet, RouterLinkWithHref, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { UserSignInOutput } from './auth/models/output/user-sign-in-output';
@@ -18,7 +18,8 @@ export class App {
 
   constructor(
     private readonly _authService: AuthService,
-    private router: Router
+    private readonly router: Router,
+    private readonly _cdr: ChangeDetectorRef,
   ) {
     this.userSignIn$ = _authService.userSignIn$;
   }
@@ -28,15 +29,15 @@ export class App {
    */
   public onSendLogout() {
     this._authService.logout().subscribe({
-      next: () => {        
+      next: () => {
         console.log(`Пользователь: ${this.userSignIn$.value.email} успешно вышел из аккаунта.`);
-      
         this.router.navigate(['/signin']);
+        this._cdr.detectChanges();
       },
       error: (error) => {
         console.error('Ошибка при выходе из аккаунта: ', error);
-
         this.router.navigate(['/signin']);
+        this._cdr.detectChanges();
       },
     });
   }
