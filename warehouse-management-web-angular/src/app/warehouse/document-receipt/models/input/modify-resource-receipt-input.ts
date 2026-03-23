@@ -20,5 +20,5 @@ export class ModifyResourceReceiptInput {
   /**
    * Количество ресурса.
    */
-  resourceQuantity: number = 0;
+  resourceQuantity: number | null = null;
 }
