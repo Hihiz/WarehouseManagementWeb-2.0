@@ -285,7 +285,7 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
 
                         else
                         {
-                            // Вычитаем старый ресурс с баланса
+                            // Вычитаем старый ресурс с баланса.
                             BalanceEntity oldBalance = await GetOrCreateBalanceAsync(balanceDict,
                                 existResource.ResourceId, existResource.MeasureUnitId);
 
