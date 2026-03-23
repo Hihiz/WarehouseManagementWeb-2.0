@@ -342,14 +342,47 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
 
             try
             {
+                DocumentReceiptEntity? entity = await _db.DocumentReceipts
+                    .Include(x => x.ResourceReceiptEntities)
+                    .FirstOrDefaultAsync(x => x.Id == documentReceiptId);
+
+                List<int> resourceIds = entity!.ResourceReceiptEntities
+                  .Select(k => k.ResourceId)
+                  .Distinct()
+                  .ToList();
+
+                List<int> measureUnitIds = entity.ResourceReceiptEntities
+                    .Select(k => k.MeasureUnitId)
+                    .Distinct()
+                    .ToList();
+
+                Dictionary<(int, int), BalanceEntity> balanceDict = await _db.Balances
+                   .Where(rr => resourceIds.Contains(rr.ResourceId) &&
+                                measureUnitIds.Contains(rr.MeasureUnitId))
+                   .ToDictionaryAsync(rr => (rr.ResourceId, rr.MeasureUnitId), rr => rr);
+
+                foreach (var item in entity.ResourceReceiptEntities!)
+                {
+                    BalanceEntity b = GetBalance(balanceDict, item.ResourceId, item.MeasureUnitId);
+
+                    // Вычитаем с баланса.
+                    b.Quantity -= item.Quantity;
+
+                    if (b.Quantity < 0)
+                    {
+                        throw new InvalidOperationException("Остаток отрицательный.");
+                    }
+                }
+
                 await _db.ResourceReceipts
-                    .Where(rr => rr.DocumentReceiptId == documentReceiptId)
-                    .ExecuteDeleteAsync();
+                   .Where(rr => rr.DocumentReceiptId == documentReceiptId)
+                   .ExecuteDeleteAsync();
 
                 await _db.DocumentReceipts
                     .Where(dr => dr.Id == documentReceiptId)
                     .ExecuteDeleteAsync();
 
+                await _db.SaveChangesAsync();
                 await transaction.CommitAsync();
             }
 
