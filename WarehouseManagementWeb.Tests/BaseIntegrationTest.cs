@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Bogus;
+using Microsoft.EntityFrameworkCore;
 using WarehouseManagementWeb.Infrastructure.Data;
 using WarehouseManagementWeb.Infrastructure.Repositories;
 
@@ -8,10 +8,10 @@ namespace WarehouseManagementWeb.Tests
     /// <summary>
     /// Базовый класс интеграционных тестов.
     /// </summary>
-    public class BaseIntegrationTest 
-        //: IAsyncLifetime
+    [Collection("Database collection")]
+    public class BaseIntegrationTest : IAsyncLifetime, IClassFixture<DatabaseFixture>
     {
-        private readonly IConfiguration appConfiguration;
+        private readonly DatabaseFixture _fixture;
 
         protected internal readonly ClientRepository clientRepository;
         protected internal readonly DocumentReceiptRepository resourceReceiptRepository;
@@ -19,24 +19,20 @@ namespace WarehouseManagementWeb.Tests
         protected internal readonly MeasureUnitRepository measureUnitRepository;
         protected internal readonly ResourceRepository resourceRepository;
         protected internal readonly ApplicationDbContext applicationDbContext;
-        
-        //private NpgsqlConnection _connection;
-        //private Respawner _respawner;
+        protected internal Faker faker;
 
         /// <summary>
         /// Конструктор.
         /// </summary>
-        public BaseIntegrationTest()
+        public BaseIntegrationTest(DatabaseFixture fixture)
         {
-            var builder = new ConfigurationBuilder()
-                        .SetBasePath(Directory.GetCurrentDirectory())
-                        .AddJsonFile("appsettings.json");
+            _fixture = fixture;
 
-            appConfiguration = builder.Build();
-
+            faker = new Faker("ru");
 
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseNpgsql(appConfiguration.GetConnectionString("DefaultConnection"));
+            optionsBuilder.UseNpgsql(_fixture.ConnectionString);
+
             applicationDbContext = new ApplicationDbContext(optionsBuilder.Options);
 
             clientRepository = new ClientRepository(applicationDbContext);
@@ -44,46 +40,16 @@ namespace WarehouseManagementWeb.Tests
             documentShipmentRepository = new DocumentShipmentRepository(applicationDbContext);
             measureUnitRepository = new MeasureUnitRepository(applicationDbContext);
             resourceRepository = new ResourceRepository(applicationDbContext);
-
         }
 
-        //public async Task InitializeAsync()
-        //{
-        //    if (_connection == null)
-        //    {
-        //        _connection = new NpgsqlConnection(
-        //            appConfiguration.GetConnectionString("DefaultConnection"));
+        public async Task InitializeAsync()
+        {
+            await _fixture.ResetDatabaseAsync();
+        }
 
-        //        await _connection.OpenAsync();
-        //    }
-
-        //    if (_respawner == null)
-        //    {
-        //        _respawner = await Respawner.CreateAsync(_connection, new RespawnerOptions
-        //        {
-        //            DbAdapter = DbAdapter.Postgres,
-        //            SchemasToInclude = new[] { "warehouse", "directory" },
-
-        //            TablesToIgnore = new Table[]
-        //            {
-        //                new Table("directory", "measure_units"),
-        //                new Table("directory", "resources"),
-        //                new Table("directory", "clients"),
-        //                new Table("warehouse", "balances"),
-        //                new Table("warehouse", "balances"),
-        //            }
-        //        });
-        //    }
-
-        //    await _respawner.ResetAsync(_connection);
-        //}
-
-        //public async Task DisposeAsync()
-        //{
-        //    await applicationDbContext.DisposeAsync();
-
-        //    if (_connection != null)
-        //        await _connection.DisposeAsync();
-        //}
+        public async Task DisposeAsync()
+        {
+            await applicationDbContext.DisposeAsync();
+        }
     }
 }
