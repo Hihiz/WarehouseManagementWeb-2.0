@@ -1,6 +1,4 @@
-﻿using WarehouseManagementWeb.Domain.Entities;
-
-namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
+﻿namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
 {
     public class GetClientByIdTest : BaseIntegrationTest
     {
@@ -9,18 +7,27 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
         [Fact]
         public async Task GetClientByIdAsyncTest()
         {
-            // Act
-            var client = new ClientEntity
-            {
-                Name = "Test" + Guid.NewGuid().ToString(),
-                Address = "Тестовый адрес" + Guid.NewGuid().ToString()
-            };
-            await clientRepository.CreateClientAsync(client);
+            // Arrange
+            var client = await SeedClientAsync();
 
-            // Arrange & Assert
+            // Act
             var result = await clientRepository.GetClientByIdAsync(client.Id);
 
+            // Assert
             Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task GetClientByIdAsyncNullTest()
+        {
+            // Arrange
+            var notFoundClient = int.MaxValue;
+
+            // Act
+            var result = await clientRepository.GetClientByIdAsync(notFoundClient);
+
+            // Assert
+            Assert.Null(result);
         }
     }
 }

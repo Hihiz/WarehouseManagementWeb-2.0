@@ -7,46 +7,41 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
     {
         public CreateClientTest(DatabaseFixture fixture) : base(fixture) { }
 
-
         [Fact]
         public async Task CreateClientAsyncTest()
         {
             // Arrange
-            var name = Guid.NewGuid().ToString();
-
             var client = new ClientEntity
             {
-                Name = name,
-                Address = "Test Address",
+                Name = faker.Company.CompanyName(),
+                Address = faker.Address.FullAddress(),
             };
 
             // Act & Assert
             await clientRepository.CreateClientAsync(client);
+
+            // Проверка, что клиент создан
+            var actualClient = await clientRepository.GetClientByIdAsync(client.Id);
+            Assert.NotNull(actualClient);
+            Assert.Equal(client.Name, actualClient.Name);
+            Assert.Equal(client.Address, actualClient.Address);
         }
 
         [Fact]
         public async Task CreateClientAsyncDuplicateNameTest()
         {
             // Arrange
-            var name = Guid.NewGuid().ToString();
+            var existingClient = await SeedClientAsync();
 
-            var client1 = new ClientEntity
+            var duplicateClient = new ClientEntity
             {
-                Name = name,
-                Address = "Test Address1",
-            };
-
-            await clientRepository.CreateClientAsync(client1);
-
-            var client2 = new ClientEntity
-            {
-                Name = name,
-                Address = "Test Address2",
+                Name = existingClient.Name,
+                Address = faker.Address.FullAddress(),
             };
 
             // Act & Assert
             await Assert.ThrowsAsync<DbUpdateException>(
-                    async () => await clientRepository.CreateClientAsync(client2));
+                async () => await clientRepository.CreateClientAsync(duplicateClient));
         }
     }
 }
