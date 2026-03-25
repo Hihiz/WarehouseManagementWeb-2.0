@@ -4,6 +4,8 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
 {
     public class RemoveClientTest : BaseIntegrationTest
     {
+        public RemoveClientTest(DatabaseFixture fixture) : base(fixture) { }
+
         [Fact]
         public async Task RemoveClientAsyncTest()
         {

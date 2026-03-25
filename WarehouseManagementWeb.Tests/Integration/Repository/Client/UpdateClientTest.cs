@@ -5,6 +5,9 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
 {
     public class UpdateClientTest : BaseIntegrationTest
     {
+        public UpdateClientTest(DatabaseFixture fixture) : base(fixture) { }
+
+
         [Fact]
         public async Task UpdateClientAsyncTest()
         {

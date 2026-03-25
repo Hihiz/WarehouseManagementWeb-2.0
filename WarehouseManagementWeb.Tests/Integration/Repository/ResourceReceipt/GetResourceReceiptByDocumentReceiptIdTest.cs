@@ -4,48 +4,52 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
 {
     public class GetResourceReceiptByDocumentReceiptIdTest : BaseIntegrationTest
     {
+        public GetResourceReceiptByDocumentReceiptIdTest(DatabaseFixture fixture) : base(fixture) { }
+
         [Fact]
         public async Task GetResourceReceiptByDocumentReceiptIdAsyncTest()
         {
             // Arrange          
             var client = new ClientEntity
             {
-                Name = "Test" + Guid.NewGuid().ToString(),
-                Address = "Тестовый адрес" + Guid.NewGuid().ToString()
+                Name = faker.Company.CompanyName(),
+                Address = faker.Address.FullAddress()
             };
             await clientRepository.CreateClientAsync(client);
 
-            var mu1 = new MeasureUnitEntity { Title = "Кирпич М100" + Guid.NewGuid().ToString() };
-            var mu2 = new MeasureUnitEntity { Title = "Цемент М500" + Guid.NewGuid().ToString() };
-            await measureUnitRepository.CreateMeasureUnitAsync(mu1);
-            await measureUnitRepository.CreateMeasureUnitAsync(mu2);
-
-            var resource1 = new ResourceEntity { Title = "Кирпич М100" + Guid.NewGuid().ToString() };
-            var resource2 = new ResourceEntity { Title = "Цемент М500" + Guid.NewGuid().ToString() };
+            var resource1 = new ResourceEntity { Title = faker.Commerce.ProductName() };
+            var resource2 = new ResourceEntity { Title = faker.Commerce.ProductName() };
             await resourceRepository.CreateResourceAsync(resource1);
             await resourceRepository.CreateResourceAsync(resource2);
 
-            var document = new DocumentReceiptEntity
-            {
-                NumberCode = "NumberCode" + Guid.NewGuid().ToString(),
-                Date = DateTime.UtcNow,
-                ClientId = client.Id,
-                ResourceReceiptEntities = new List<ResourceReceiptEntity>()
-            };
+            var unitPiece = new MeasureUnitEntity { Title = "шт" };
+            var unitKg = new MeasureUnitEntity { Title = "кг" };
+            await measureUnitRepository.CreateMeasureUnitAsync(unitPiece);
+            await measureUnitRepository.CreateMeasureUnitAsync(unitKg);
 
-            document.ResourceReceiptEntities.Add(new ResourceReceiptEntity
-            {
-                ResourceId = resource2.Id,
-                MeasureUnitId = mu2.Id,
-                Quantity = 850
-            });
-            document.ResourceReceiptEntities.Add(new ResourceReceiptEntity
+            var balance1 = new BalanceEntity
             {
                 ResourceId = resource1.Id,
-                MeasureUnitId = mu1.Id,
-                Quantity = 120
-            });
+                MeasureUnitId = unitPiece.Id,
+                Quantity = 100
+            };
+            await applicationDbContext.Balances.AddRangeAsync(balance1);
+            await applicationDbContext.SaveChangesAsync();
 
+            var document = new DocumentReceiptEntity
+            {
+                NumberCode = faker.Random.AlphaNumeric(5).ToUpper(),
+                ClientId = client.Id,
+                ResourceReceiptEntities = new List<ResourceReceiptEntity>
+                {
+                    new ResourceReceiptEntity
+                    {
+                        ResourceId = resource1.Id,
+                        MeasureUnitId = unitPiece.Id,
+                        Quantity = 100
+                    }
+                }
+            };
 
             await resourceReceiptRepository.CreateResourceReceiptAsync(document);
 
@@ -54,6 +58,21 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
 
             // Assert
             Assert.NotNull(result);
+            Assert.Equal(1, document.Id);
+            Assert.Equal(200, balance1.Quantity);
+        }
+
+        [Fact]
+        public async Task GetResourceReceiptByDocumentReceiptIdAsyncNotFoundTest()
+        {
+            // Act
+            var documentId = 0;
+                
+            // Arrange
+            var result = await resourceReceiptRepository.GetResourceReceiptByDocumentReceiptIdAsync(documentId);
+
+            // Assert
+            Assert.Null(result);
         }
     }
 }
