@@ -53,6 +53,18 @@ namespace WarehouseManagementWeb.Tests
             await applicationDbContext.DisposeAsync();
         }
 
+        public BalanceEntity GetBalance(List<BalanceEntity> balances, int resourceId, int measureUnitId)
+        {
+            return balances.FirstOrDefault(b => b.ResourceId == resourceId &&
+                                           b.MeasureUnitId == measureUnitId)!;
+        }
+
+        public ResourceReceiptEntity GetResourceReceipt(List<ResourceReceiptEntity> resoruceReceipt, int resourceId, int measureUnitId)
+        {
+            return resoruceReceipt.FirstOrDefault(b => b.ResourceId == resourceId &&
+                                           b.MeasureUnitId == measureUnitId)!;
+        }
+
         protected internal async Task<ClientEntity> SeedClientAsync(string? name = null)
         {
             var client = new ClientEntity
