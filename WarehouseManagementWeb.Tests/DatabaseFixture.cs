@@ -6,6 +6,9 @@ using WarehouseManagementWeb.Infrastructure.Data;
 
 namespace WarehouseManagementWeb.Tests
 {
+    /// <summary>
+    /// Класс фикстуры.
+    /// </summary>
     public class DatabaseFixture : IAsyncLifetime
     {
         private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder("postgres:15-alpine")

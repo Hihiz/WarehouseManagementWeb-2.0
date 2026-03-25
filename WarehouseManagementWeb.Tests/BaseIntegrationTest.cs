@@ -10,7 +10,7 @@ namespace WarehouseManagementWeb.Tests
     /// Базовый класс интеграционных тестов.
     /// </summary>
     [Collection("Database collection")]
-    public class BaseIntegrationTest : IAsyncLifetime, IClassFixture<DatabaseFixture>
+    public class BaseIntegrationTest : IAsyncLifetime
     {
         private readonly DatabaseFixture _fixture;
 
