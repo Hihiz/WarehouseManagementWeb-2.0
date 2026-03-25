@@ -1,6 +1,4 @@
-﻿using WarehouseManagementWeb.Domain.Entities;
-
-namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
+﻿namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
 {
     public class CheckClientExistsByNameAndIdTest : BaseIntegrationTest
     {
@@ -10,25 +8,11 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
         public async Task CheckClientExistsByNameAndIdAsyncTest()
         {
             // Arrange
-            var name1 = Guid.NewGuid().ToString();
-            var name2 = Guid.NewGuid().ToString();
-
-            var client1 = new ClientEntity
-            {
-                Name = name1,
-                Address = "Test Address1"
-            };
-            await clientRepository.CreateClientAsync(client1);
-
-            var client2 = new ClientEntity
-            {
-                Name = name2,
-                Address = "Test Address2"
-            };
-            await clientRepository.CreateClientAsync(client2);
+            var client1 = await SeedClientAsync();
+            var client2 = await SeedClientAsync();
 
             // Act
-            var updatedName = "updated name";
+            var updatedName = faker.Company.CompanyName();
             var result = await clientRepository.CheckClientExistsByNameAndIdAsync(client2.Id, updatedName);
 
             // Assert
@@ -39,25 +23,13 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
         public async Task CheckClientExistsByNameAndIdDuplicateNameAsyncTest()
         {
             // Arrange
-            var name1 = Guid.NewGuid().ToString();
-            var name2 = Guid.NewGuid().ToString();
+            var client1 = await SeedClientAsync();
+            var client2 = await SeedClientAsync();
 
-            var client1 = new ClientEntity
-            {
-                Name = name1,
-                Address = "Test Address1"
-            };
-            await clientRepository.CreateClientAsync(client1);
-
-            var client2 = new ClientEntity
-            {
-                Name = name2,
-                Address = "Test Address2"
-            };
-            await clientRepository.CreateClientAsync(client2);
+            client2.Name = client1.Name;
 
             // Act
-            bool result = await clientRepository.CheckClientExistsByNameAndIdAsync(client2.Id, name1);
+            bool result = await clientRepository.CheckClientExistsByNameAndIdAsync(client2.Id, client2.Name);
 
             // Assert
             Assert.True(result);

@@ -1,37 +1,32 @@
-﻿using System.Xml.Linq;
-using WarehouseManagementWeb.Domain.Entities;
-
-namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
+﻿namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
 {
     public class CheckClientExistsByNameTest : BaseIntegrationTest
     {
-
         public CheckClientExistsByNameTest(DatabaseFixture fixture) : base(fixture) { }
-
 
         [Fact]
         public async Task CheckClientExistsByNameIsExistsAsyncTest()
         {
-            // Act
-            var client = new ClientEntity
-            {
-                Name = "Test" + Guid.NewGuid().ToString()[..5],
-                Address = "Тестовый адрес" + Guid.NewGuid().ToString()
-            };
-            await clientRepository.CreateClientAsync(client);
+            // Arrange
+            var client = await SeedClientAsync();
 
+            // Act
             var result = await clientRepository.CheckClientExistsByNameAsync(client.Name);
 
+            // Assert
             Assert.True(result);
         }
 
         [Fact]
         public async Task CheckClientExistsByNameIsNotExistsAsyncTest()
         {
-            string clientTitle = "Test" + Guid.NewGuid().ToString()[..5];
+            // Arrange
+            string clientName = faker.Company.CompanyName();
 
-            var result = await clientRepository.CheckClientExistsByNameAsync(clientTitle);
+            // Act
+            var result = await clientRepository.CheckClientExistsByNameAsync(clientName);
 
+            // Assert
             Assert.False(result);
         }
     }
