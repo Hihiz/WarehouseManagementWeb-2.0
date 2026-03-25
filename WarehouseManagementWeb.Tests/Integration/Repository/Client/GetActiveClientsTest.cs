@@ -2,6 +2,8 @@
 {
     public class GetActiveClientsTest : BaseIntegrationTest
     {
+        public GetActiveClientsTest(DatabaseFixture fixture) : base(fixture) { }
+
         [Fact]
         public async Task GetActiveClientsAsyncTest()
         {

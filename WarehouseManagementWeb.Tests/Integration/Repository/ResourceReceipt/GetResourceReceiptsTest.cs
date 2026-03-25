@@ -2,6 +2,9 @@
 {
     public class GetResourceReceiptsTest : BaseIntegrationTest
     {
+
+        public GetResourceReceiptsTest(DatabaseFixture fixture) : base(fixture) { }
+
         [Fact]
         public async Task GetResourceReceiptsAsyncTest()
         {

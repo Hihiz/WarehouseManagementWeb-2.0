@@ -5,6 +5,10 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
 {
     public class CheckClientExistsByNameTest : BaseIntegrationTest
     {
+
+        public CheckClientExistsByNameTest(DatabaseFixture fixture) : base(fixture) { }
+
+
         [Fact]
         public async Task CheckClientExistsByNameIsExistsAsyncTest()
         {

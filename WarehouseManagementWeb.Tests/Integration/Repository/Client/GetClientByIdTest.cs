@@ -4,6 +4,8 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
 {
     public class GetClientByIdTest : BaseIntegrationTest
     {
+        public GetClientByIdTest(DatabaseFixture fixture) : base(fixture) { }
+
         [Fact]
         public async Task GetClientByIdAsyncTest()
         {

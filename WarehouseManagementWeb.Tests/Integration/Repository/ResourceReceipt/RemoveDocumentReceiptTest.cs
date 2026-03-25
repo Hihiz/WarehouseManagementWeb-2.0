@@ -5,6 +5,9 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
 {
     public class RemoveDocumentReceiptTest : BaseIntegrationTest
     {
+        public RemoveDocumentReceiptTest(DatabaseFixture fixture) : base(fixture) { }
+
+
         [Fact]
         public async Task RemoveDocumentReceiptAsyncTest()
         {
