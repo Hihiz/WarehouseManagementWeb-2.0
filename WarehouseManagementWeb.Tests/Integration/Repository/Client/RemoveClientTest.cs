@@ -1,6 +1,4 @@
-﻿using WarehouseManagementWeb.Domain.Entities;
-
-namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
+﻿namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
 {
     public class RemoveClientTest : BaseIntegrationTest
     {
@@ -10,20 +8,14 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
         public async Task RemoveClientAsyncTest()
         {
             // Arrange
-            var name = Guid.NewGuid().ToString();
+            var client = await SeedClientAsync();
 
-            var client = new ClientEntity
-            {
-                Name = name,
-                Address = "Test Address",
-            };
+            // Act
+            await clientRepository.RemoveClientAsync(client.Id);
 
-            await clientRepository.CreateClientAsync(client);
-
-            var removedId = client.Id;
-
-            // Act & Assert
-            await clientRepository.RemoveClientAsync(removedId);
+            // Assert
+            var removeClient = await clientRepository.GetClientByIdAsync(client.Id);
+            Assert.Null(removeClient);
         }
 
         [Fact]
