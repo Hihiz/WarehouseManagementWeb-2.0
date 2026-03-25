@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Bogus;
+using Microsoft.EntityFrameworkCore;
+using WarehouseManagementWeb.Domain.Entities;
 using WarehouseManagementWeb.Infrastructure.Data;
 using WarehouseManagementWeb.Infrastructure.Repositories;
 
@@ -8,10 +9,10 @@ namespace WarehouseManagementWeb.Tests
     /// <summary>
     /// Базовый класс интеграционных тестов.
     /// </summary>
-    public class BaseIntegrationTest 
-        //: IAsyncLifetime
+    [Collection("Database collection")]
+    public class BaseIntegrationTest : IAsyncLifetime, IClassFixture<DatabaseFixture>
     {
-        private readonly IConfiguration appConfiguration;
+        private readonly DatabaseFixture _fixture;
 
         protected internal readonly ClientRepository clientRepository;
         protected internal readonly DocumentReceiptRepository resourceReceiptRepository;
@@ -19,24 +20,20 @@ namespace WarehouseManagementWeb.Tests
         protected internal readonly MeasureUnitRepository measureUnitRepository;
         protected internal readonly ResourceRepository resourceRepository;
         protected internal readonly ApplicationDbContext applicationDbContext;
-        
-        //private NpgsqlConnection _connection;
-        //private Respawner _respawner;
+        protected internal Faker faker;
 
         /// <summary>
         /// Конструктор.
         /// </summary>
-        public BaseIntegrationTest()
+        public BaseIntegrationTest(DatabaseFixture fixture)
         {
-            var builder = new ConfigurationBuilder()
-                        .SetBasePath(Directory.GetCurrentDirectory())
-                        .AddJsonFile("appsettings.json");
+            _fixture = fixture;
 
-            appConfiguration = builder.Build();
-
+            faker = new Faker("ru");
 
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseNpgsql(appConfiguration.GetConnectionString("DefaultConnection"));
+            optionsBuilder.UseNpgsql(_fixture.ConnectionString);
+
             applicationDbContext = new ApplicationDbContext(optionsBuilder.Options);
 
             clientRepository = new ClientRepository(applicationDbContext);
@@ -44,46 +41,61 @@ namespace WarehouseManagementWeb.Tests
             documentShipmentRepository = new DocumentShipmentRepository(applicationDbContext);
             measureUnitRepository = new MeasureUnitRepository(applicationDbContext);
             resourceRepository = new ResourceRepository(applicationDbContext);
-
         }
 
-        //public async Task InitializeAsync()
-        //{
-        //    if (_connection == null)
-        //    {
-        //        _connection = new NpgsqlConnection(
-        //            appConfiguration.GetConnectionString("DefaultConnection"));
+        public async Task InitializeAsync()
+        {
+            await _fixture.ResetDatabaseAsync();
+        }
 
-        //        await _connection.OpenAsync();
-        //    }
+        public async Task DisposeAsync()
+        {
+            await applicationDbContext.DisposeAsync();
+        }
 
-        //    if (_respawner == null)
-        //    {
-        //        _respawner = await Respawner.CreateAsync(_connection, new RespawnerOptions
-        //        {
-        //            DbAdapter = DbAdapter.Postgres,
-        //            SchemasToInclude = new[] { "warehouse", "directory" },
+        protected internal async Task<ClientEntity> SeedClientAsync(string? name = null)
+        {
+            var client = new ClientEntity
+            {
+                Name = name ?? faker.Company.CompanyName(),
+                Address = faker.Address.FullAddress()
+            };
+            await clientRepository.CreateClientAsync(client);
 
-        //            TablesToIgnore = new Table[]
-        //            {
-        //                new Table("directory", "measure_units"),
-        //                new Table("directory", "resources"),
-        //                new Table("directory", "clients"),
-        //                new Table("warehouse", "balances"),
-        //                new Table("warehouse", "balances"),
-        //            }
-        //        });
-        //    }
+            return client;
+        }
 
-        //    await _respawner.ResetAsync(_connection);
-        //}
+        protected internal async Task<ResourceEntity> SeedResourceAsync(string? title = null)
+        {
+            var resource = new ResourceEntity { Title = title ?? faker.Commerce.ProductName() };
 
-        //public async Task DisposeAsync()
-        //{
-        //    await applicationDbContext.DisposeAsync();
+            await resourceRepository.CreateResourceAsync(resource);
 
-        //    if (_connection != null)
-        //        await _connection.DisposeAsync();
-        //}
+            return resource;
+        }
+
+        protected internal async Task<MeasureUnitEntity> SeedMeasureUnitAsync(string? title = null)
+        {
+            var unit = new MeasureUnitEntity { Title = title ?? faker.Commerce.ProductName() };
+            await measureUnitRepository.CreateMeasureUnitAsync(unit);
+
+            return unit;
+        }
+
+        protected internal async Task<BalanceEntity> SeedBalancesAsync(ResourceEntity resource, MeasureUnitEntity unit,
+            int quantity)
+        {
+            var balance = new BalanceEntity
+            {
+                ResourceId = resource.Id,
+                MeasureUnitId = unit.Id,
+                Quantity = quantity
+            };
+
+            await applicationDbContext.Balances.AddAsync(balance);
+            await applicationDbContext.SaveChangesAsync();
+
+            return balance;
+        }
     }
 }

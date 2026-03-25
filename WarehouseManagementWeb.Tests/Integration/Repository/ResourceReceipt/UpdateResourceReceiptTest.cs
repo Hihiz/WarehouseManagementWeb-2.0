@@ -4,6 +4,8 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
 {
     public class UpdateResourceReceiptTest : BaseIntegrationTest
     {
+        public UpdateResourceReceiptTest(DatabaseFixture fixture) : base(fixture) { }
+
         [Fact]
         public async Task UpdateResourceReceiptAsyncTest()
         {
