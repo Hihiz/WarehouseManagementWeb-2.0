@@ -7,45 +7,45 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
     {
         public UpdateClientTest(DatabaseFixture fixture) : base(fixture) { }
 
-
         [Fact]
         public async Task UpdateClientAsyncTest()
         {
             // Arrange
-            var name = Guid.NewGuid().ToString();
-
-            var client = new ClientEntity
-            {
-                Name = name,
-                Address = "Test Address",
-            };
-
-            await clientRepository.CreateClientAsync(client);
+            var client = await SeedClientAsync();
 
             var updatedName = Guid.NewGuid().ToString();
+            var updatedAddress = faker.Address.FullAddress();
 
             var updatedClient = new ClientEntity
             {
                 Id = client.Id,
                 Name = updatedName,
-                Address = "New Address",
+                Address = updatedAddress,
             };
 
-            // Act & Assert
+            // Act
             await clientRepository.UpdateClientAsync(updatedClient);
+
+           // Assert
+             var actualClient = await clientRepository.GetClientByIdAsync(client.Id);
+            Assert.NotNull(actualClient);
+            Assert.Equal(updatedName, actualClient.Name);
+            Assert.Equal(updatedAddress, actualClient.Address);
         }
 
         [Fact]
         public async Task UpdateClientAsyncNotFoundTest()
         {
             // Arrange
-            var notExistId = Int32.MaxValue;
+            var notExistId = int.MaxValue;
+            var clientName = faker.Company.CompanyName();
+            var clientAddress = faker.Address.FullAddress();
 
             var client = new ClientEntity
             {
                 Id = notExistId,
-                Name = "Test Name",
-                Address = "Test Address",
+                Name = clientName,
+                Address = clientAddress,
             };
 
             // Act & Assert
@@ -57,33 +57,19 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
         public async Task UpdateClientAsyncDuplicateNameTest()
         {
             // Arrange
-            var name1 = Guid.NewGuid().ToString();
-            var name2 = Guid.NewGuid().ToString();
-
-            var client1 = new ClientEntity
-            {
-                Name = name1,
-                Address = "Test Address1",
-            };
-            await clientRepository.CreateClientAsync(client1);
-
-            var client2 = new ClientEntity
-            {
-                Name = name2,
-                Address = "Test Address2",
-            };
-            await clientRepository.CreateClientAsync(client2);
+            var client1 = await SeedClientAsync();
+            var client2 = await SeedClientAsync();
 
             var updatedClient1 = new ClientEntity
             {
                 Id = client1.Id,
-                Name = name2,
-                Address = "Updated Address1",
+                Name = client2.Name,
+                Address = faker.Address.FullAddress(),
             };
 
             // Act & Assert          
             await Assert.ThrowsAsync<DbUpdateException>(
-                    async () => await clientRepository.UpdateClientAsync(updatedClient1));
+                async () => await clientRepository.UpdateClientAsync(updatedClient1));
         }
     }
 }
