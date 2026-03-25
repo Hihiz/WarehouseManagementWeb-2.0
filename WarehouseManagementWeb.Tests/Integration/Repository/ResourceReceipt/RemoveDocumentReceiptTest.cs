@@ -12,90 +12,59 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
         public async Task RemoveDocumentReceiptAsyncTest()
         {
             // Arrange
-            // 1. Клиент
-            var client = new ClientEntity
+            var client = await SeedClientAsync();
+
+            var resource1 = await SeedResourceAsync();
+            var resource2 = await SeedResourceAsync();
+
+            var unitKg = await SeedMeasureUnitAsync("кг");
+            var unitPiece = await SeedMeasureUnitAsync("шт");
+
+            var document = new DocumentReceiptEntity
             {
-                Name = "Клиент для теста удаления " + Guid.NewGuid().ToString()[..8],
-                Address = "Тестовый адрес"
+                NumberCode = faker.Random.AlphaNumeric(5),
+                Date = DateTime.UtcNow,
+                ClientId = client.Id,
+                ResourceReceiptEntities = new List<ResourceReceiptEntity>()
             };
-            await clientRepository.CreateClientAsync(client);
 
-            // 2. Ресурсы
-            var resource1 = new ResourceEntity { Title = "Кирпич М100 " + Guid.NewGuid().ToString()[..4] };
-            var resource2 = new ResourceEntity { Title = "Цемент М500 " + Guid.NewGuid().ToString()[..4] };
-            await resourceRepository.CreateResourceAsync(resource1);
-            await resourceRepository.CreateResourceAsync(resource2);
-
-            // 3. Единицы измерения
-            var unitPiece = new MeasureUnitEntity { Title = "ште" };
-            var unitKg = new MeasureUnitEntity { Title = "кге" };
-            await measureUnitRepository.CreateMeasureUnitAsync(unitPiece);
-            await measureUnitRepository.CreateMeasureUnitAsync(unitKg);
-
-            // 4. Начальный баланс на складе (до поступления)
-            var initialBalance1 = new BalanceEntity
-            {
-                ResourceId = resource1.Id,
-                MeasureUnitId = unitPiece.Id,
-                Quantity = 200  // было 200 шт
-            };
-            var initialBalance2 = new BalanceEntity
+            document.ResourceReceiptEntities.Add(new ResourceReceiptEntity
             {
                 ResourceId = resource2.Id,
                 MeasureUnitId = unitKg.Id,
-                Quantity = 800  // было 800 кг
-            };
-            await applicationDbContext.Balances.AddRangeAsync(initialBalance1, initialBalance2);
-
-            // 5. Создаём документ поступления (чтобы потом его удалить)
-            var document = new DocumentReceiptEntity
+                Quantity = 850
+            });
+            document.ResourceReceiptEntities.Add(new ResourceReceiptEntity
             {
-                NumberCode = "POSTUP-" + Guid.NewGuid().ToString()[..8],
-                Date = DateTime.UtcNow,
-                ClientId = client.Id,
-                ResourceReceiptEntities = new List<ResourceReceiptEntity>
-                {
-                    new ResourceReceiptEntity
-                    {
-                        ResourceId = resource1.Id,
-                        MeasureUnitId = unitPiece.Id,
-                        Quantity = 120
-                    },
-                    new ResourceReceiptEntity
-                    {
-                        ResourceId = resource2.Id,
-                        MeasureUnitId = unitKg.Id,
-                        Quantity = 300
-                    }
-                }
-            };
+                ResourceId = resource1.Id,
+                MeasureUnitId = unitPiece.Id,
+                Quantity = 120
+            });
 
+           
             await resourceReceiptRepository.CreateResourceReceiptAsync(document);
 
-            
-            // Act — удаляем документ поступления
+            // Act
             await resourceReceiptRepository.RemoveDocumentReceiptAsync(document.Id);
 
-            // Assert — проверяем результат после удаления
+            // Assert
+            var resourcesIds = new int[] { resource1.Id, resource2.Id };
+            var measureUnitIds = new int[] { unitKg.Id, unitPiece.Id };
 
-            // 1. Документ удалён
-            var deletedDocument = await applicationDbContext.DocumentReceipts
-                .FirstOrDefaultAsync(d => d.Id == document.Id);
-            Assert.Null(deletedDocument);
+            var balances = await applicationDbContext.Balances.Where(b => resourcesIds.Contains(b.ResourceId) &&
+                measureUnitIds.Contains(b.MeasureUnitId)).ToListAsync();
 
-            // 2. Все строки ресурсов удалены
-            var remainingResources = await applicationDbContext.ResourceReceipts
-                .CountAsync(rr => rr.DocumentReceiptId == document.Id);
-            Assert.Equal(0, remainingResources);
+            Assert.Equal(2, balances.Count);
 
-            // 3. Баланс вернулся к исходному состоянию (ресурсы "вернулись" на склад)
-            var balanceAfterRemove1 = await applicationDbContext.Balances
-                .FirstAsync(b => b.ResourceId == resource1.Id && b.MeasureUnitId == unitPiece.Id);
-            var balanceAfterRemove2 = await applicationDbContext.Balances
-                .FirstAsync(b => b.ResourceId == resource2.Id && b.MeasureUnitId == unitKg.Id);
+            var balance1 = GetBalance(balances, resource1.Id, unitPiece.Id);
+            var balance2 = GetBalance(balances, resource2.Id, unitKg.Id);
 
-            Assert.Equal(200, balanceAfterRemove1.Quantity); // 320 - 120 = 200
-            Assert.Equal(800, balanceAfterRemove2.Quantity); // 1100 - 300 = 800
+            Assert.Equal(0, balance1.Quantity);
+            Assert.Equal(0, balance2.Quantity);
+
+            var removedDocument = await applicationDbContext.DocumentReceipts.FirstOrDefaultAsync(d => d.Id == document.Id);
+            Assert.Null(removedDocument);
+
         }
     }
 }
