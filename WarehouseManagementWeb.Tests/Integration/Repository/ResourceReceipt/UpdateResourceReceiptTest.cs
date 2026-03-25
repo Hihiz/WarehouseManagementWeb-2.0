@@ -1,4 +1,5 @@
-﻿using WarehouseManagementWeb.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using WarehouseManagementWeb.Domain.Entities;
 
 namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
 {
@@ -10,30 +11,18 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
         public async Task UpdateResourceReceiptAsyncTest()
         {
             // Arrange
-            var client = new ClientEntity
-            {
-                Name = "Клиент для обновления" + Guid.NewGuid().ToString()[..5],
-                Address = "Тестовый адрес" + Guid.NewGuid().ToString()[..5]
-            };
-            await clientRepository.CreateClientAsync(client);
+            var client = await SeedClientAsync();
 
-            var resource1 = new ResourceEntity { Title = "Кирпич М100" + Guid.NewGuid().ToString()[1..5] };
-            var resource2 = new ResourceEntity { Title = "Цемент М500" + Guid.NewGuid().ToString()[1..5] };
-            var resource3 = new ResourceEntity { Title = "Арматура 12мм" + Guid.NewGuid().ToString()[1..5] };
+            var resource1 = await SeedResourceAsync();
+            var resource2 = await SeedResourceAsync();
+            var resource3 = await SeedResourceAsync();
 
-            await resourceRepository.CreateResourceAsync(resource1);
-            await resourceRepository.CreateResourceAsync(resource2);
-            await resourceRepository.CreateResourceAsync(resource3);
-
-            var muPiece = new MeasureUnitEntity { Title = "шт" + Guid.NewGuid().ToString()[1..5] };
-            var muKg = new MeasureUnitEntity { Title = "кг" + Guid.NewGuid().ToString()[1..5] };
-
-            await measureUnitRepository.CreateMeasureUnitAsync(muPiece);
-            await measureUnitRepository.CreateMeasureUnitAsync(muKg);
+            var unitKg = await SeedMeasureUnitAsync("кг");
+            var unitPiece = await SeedMeasureUnitAsync("шт");
 
             var originalDocument = new DocumentReceiptEntity
             {
-                NumberCode = "NumberCode" + Guid.NewGuid().ToString()[1..5],
+                NumberCode = faker.Random.AlphaNumeric(5),
                 Date = DateTime.UtcNow,
                 ClientId = client.Id,
                 ResourceReceiptEntities = new List<ResourceReceiptEntity>()
@@ -42,14 +31,14 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
             originalDocument.ResourceReceiptEntities.Add(new ResourceReceiptEntity
             {
                 ResourceId = resource1.Id,
-                MeasureUnitId = muPiece.Id,
+                MeasureUnitId = unitKg.Id,
                 Quantity = 100
             });
 
             originalDocument.ResourceReceiptEntities.Add(new ResourceReceiptEntity
             {
                 ResourceId = resource2.Id,
-                MeasureUnitId = muKg.Id,
+                MeasureUnitId = unitPiece.Id,
                 Quantity = 500
             });
 
@@ -58,7 +47,7 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
             var updateDocument = new DocumentReceiptEntity
             {
                 Id = originalDocument.Id,
-                NumberCode = "UPDATED NumberCode" + Guid.NewGuid().ToString()[1..5],
+                NumberCode = faker.Random.AlphaNumeric(5),
                 Date = DateTime.UtcNow,
                 ClientId = client.Id,
                 ResourceReceiptEntities = new List<ResourceReceiptEntity>()
@@ -66,21 +55,54 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
 
             updateDocument.ResourceReceiptEntities.Add(new ResourceReceiptEntity
             {
-                Id = originalDocument.ResourceReceiptEntities.First().Id,
+                Id = 1,
                 ResourceId = resource1.Id,
-                MeasureUnitId = muPiece.Id,
+                MeasureUnitId = unitPiece.Id,
                 Quantity = 150
             });
 
             updateDocument.ResourceReceiptEntities.Add(new ResourceReceiptEntity
             {
                 ResourceId = resource3.Id,
-                MeasureUnitId = muKg.Id,
+                MeasureUnitId = unitPiece.Id,
                 Quantity = 300
             });
 
-            // Act & Assert.
+            // Act
             await resourceReceiptRepository.UpdateResourceReceiptAsync(updateDocument);
+
+            // Assert 
+            var resourcesIds = new int[] { resource1.Id, resource2.Id, resource3.Id };
+            var measureUnitIds = new int[] { unitKg.Id, unitPiece.Id };
+
+            var balances = await applicationDbContext.Balances.Where(b => resourcesIds.Contains(b.ResourceId) &&
+                measureUnitIds.Contains(b.MeasureUnitId)).ToListAsync();
+
+            Assert.Equal(4, balances.Count);
+
+            var balance1 = GetBalance(balances, resource1.Id, unitPiece.Id);
+            var balance2 = GetBalance(balances, resource2.Id, unitKg.Id);
+            var balance3 = GetBalance(balances, resource3.Id, unitPiece.Id);
+            var balance4 = GetBalance(balances, resource2.Id, unitPiece.Id);
+
+            Assert.Equal(150, balance1.Quantity);
+            Assert.Null(balance2);
+            Assert.Equal(300, balance3.Quantity);
+            Assert.Equal(0, balance4.Quantity);
+
+            Assert.Equal(originalDocument.ResourceReceiptEntities.First().Quantity, balance1.Quantity);
+
+            var documentQuantity1 = GetResourceReceipt(updateDocument.ResourceReceiptEntities.ToList(), resource1.Id,
+                unitPiece.Id);
+            var documentQuantity2 = GetResourceReceipt(updateDocument.ResourceReceiptEntities.ToList(), resource3.Id,
+                unitPiece.Id);
+            var documentQuantity3 = GetResourceReceipt(updateDocument.ResourceReceiptEntities.ToList(), resource2.Id,
+                unitPiece.Id);
+
+            Assert.Equal(documentQuantity1.Quantity, balance1.Quantity);
+            Assert.Equal(documentQuantity2.Quantity, balance3.Quantity);
+
+            Assert.Null(documentQuantity3);
         }
     }
 }
