@@ -29,22 +29,24 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.DocumentShipment
             {
                 NumberCode = faker.Random.AlphaNumeric(5).ToUpper(),
                 ClientId = client.Id,
-                ResourceShipmentEntities = new List<ResourceShipmentEntity>
-            {
-                new ResourceShipmentEntity
-                {
-                    ResourceId = resource1.Id,
-                    MeasureUnitId = unitPiece.Id,
-                    Quantity = 80
-                },
-                new ResourceShipmentEntity
-                {
-                    ResourceId = resource2.Id,
-                    MeasureUnitId = unitKg.Id,
-                    Quantity = 190
-                }
-            }
+                ResourceShipmentEntities = new List<ResourceShipmentEntity>()
             };
+
+            var resourceReceipt1 = new ResourceShipmentEntity
+            {
+                ResourceId = resource1.Id,
+                MeasureUnitId = unitPiece.Id,
+                Quantity = 80
+            };
+            var resourceReceipt2 = new ResourceShipmentEntity
+            {
+                ResourceId = resource2.Id,
+                MeasureUnitId = unitKg.Id,
+                Quantity = 190
+            };
+
+            document.ResourceShipmentEntities.Add(resourceReceipt1);
+            document.ResourceShipmentEntities.Add(resourceReceipt2);
 
             await documentShipmentRepository.CreateResourceShipmentAsync(document);
 
@@ -58,14 +60,14 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.DocumentShipment
                 {
                     new ResourceShipmentEntity
                     {
-                        Id = 1,
+                        Id = resourceReceipt1.Id,
                         ResourceId = resource1.Id,
                         MeasureUnitId = unitPiece.Id,
                         Quantity = 90
                     },
                     new ResourceShipmentEntity
                     {
-                         Id = 2,
+                         Id = resourceReceipt2.Id,
                         ResourceId = resource2.Id,
                         MeasureUnitId = unitPiece.Id,
                         Quantity = 190

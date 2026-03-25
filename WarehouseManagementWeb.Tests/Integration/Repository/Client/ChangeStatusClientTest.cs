@@ -12,34 +12,29 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.Client
         public async Task ChangeStatusClientAsyncTest()
         {
             // Arrange
-            var name = Guid.NewGuid().ToString();
-
-            var client = new ClientEntity
-            {
-                Name = name,
-                Address = "Test Address",
-                ClientStatusEnum = DirectoryStatusEnum.Archived
-            };
-
-            await clientRepository.CreateClientAsync(client);
-
+            var client = await SeedClientAsync();
             var clientId = client.Id;
             var updatedStatus = DirectoryStatusEnum.Active;
 
-            // Act & Assert
+            // Act
             await clientRepository.ChangeStatusClientAsync(clientId, updatedStatus);
+
+            // Assert
+            var actualClient = await clientRepository.GetClientByIdAsync(clientId);
+            Assert.NotNull(actualClient);
+            Assert.Equal(updatedStatus, actualClient.ClientStatusEnum);
         }
 
         [Fact]
         public async Task ChangeStatusClientNotFoundTest()
         {
             // Arrange
-            var notExistId = Int32.MaxValue;
+            var notExistId = int.MaxValue;
             var updatedStatus = DirectoryStatusEnum.Archived;
 
             // Act & Assert
             await Assert.ThrowsAsync<InvalidOperationException>(
-                    async () => await clientRepository.ChangeStatusClientAsync(notExistId, updatedStatus));
+                async () => await clientRepository.ChangeStatusClientAsync(notExistId, updatedStatus));
         }
     }
 }
