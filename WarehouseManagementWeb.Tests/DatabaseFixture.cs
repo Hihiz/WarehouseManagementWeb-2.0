@@ -29,7 +29,6 @@ namespace WarehouseManagementWeb.Tests
             await using var context = new ApplicationDbContext(options);
             await context.Database.MigrateAsync();
 
-
             _dbConnection = new NpgsqlConnection(ConnectionString);
             await _dbConnection.OpenAsync();
 

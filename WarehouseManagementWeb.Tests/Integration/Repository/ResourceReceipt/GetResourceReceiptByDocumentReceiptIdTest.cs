@@ -10,35 +10,17 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
         public async Task GetResourceReceiptByDocumentReceiptIdAsyncTest()
         {
             // Arrange          
-            var client = new ClientEntity
-            {
-                Name = faker.Company.CompanyName(),
-                Address = faker.Address.FullAddress()
-            };
-            await clientRepository.CreateClientAsync(client);
+            var client = await SeedClientAsync();
 
-            var resource1 = new ResourceEntity { Title = faker.Commerce.ProductName() };
-            var resource2 = new ResourceEntity { Title = faker.Commerce.ProductName() };
-            await resourceRepository.CreateResourceAsync(resource1);
-            await resourceRepository.CreateResourceAsync(resource2);
+            var resource1 = await SeedResourceAsync();
+            var resource2 = await SeedResourceAsync();
 
-            var unitPiece = new MeasureUnitEntity { Title = "шт" };
-            var unitKg = new MeasureUnitEntity { Title = "кг" };
-            await measureUnitRepository.CreateMeasureUnitAsync(unitPiece);
-            await measureUnitRepository.CreateMeasureUnitAsync(unitKg);
-
-            var balance1 = new BalanceEntity
-            {
-                ResourceId = resource1.Id,
-                MeasureUnitId = unitPiece.Id,
-                Quantity = 100
-            };
-            await applicationDbContext.Balances.AddRangeAsync(balance1);
-            await applicationDbContext.SaveChangesAsync();
+            var unitKg = await SeedMeasureUnitAsync("кг");
+            var unitPiece = await SeedMeasureUnitAsync("шт");
 
             var document = new DocumentReceiptEntity
             {
-                NumberCode = faker.Random.AlphaNumeric(5).ToUpper(),
+                NumberCode = faker.Random.AlphaNumeric(5),
                 ClientId = client.Id,
                 ResourceReceiptEntities = new List<ResourceReceiptEntity>
                 {
@@ -59,7 +41,8 @@ namespace WarehouseManagementWeb.Tests.Integration.Repository.ResourceReceipt
             // Assert
             Assert.NotNull(result);
             Assert.Equal(1, document.Id);
-            Assert.Equal(200, balance1.Quantity);
+            Assert.Equal(1, document.ResourceReceiptEntities.Count);
+            Assert.Equal(100, document.ResourceReceiptEntities.First().Quantity);
         }
 
         [Fact]
