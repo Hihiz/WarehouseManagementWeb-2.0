@@ -7,7 +7,7 @@ using WarehouseManagementWeb.Application.Services.DocumentShipment;
 namespace WarehouseManagementWeb.Tests.Unit.Service.DocumentShipment
 {
     /// <summary>
-    /// Базовый класс юнит тестов сервис дкументов отгрузок.
+    /// Базовый класс юнит тестов сервиса документов отгрузок.
     /// </summary>
     public class BaseDocumentShipmentTest
     {
