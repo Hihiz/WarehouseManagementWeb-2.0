@@ -222,7 +222,7 @@ namespace WarehouseManagementWeb.Application.Services.DocumentShipment
         {
             if (inputs is null || !inputs.Any())
             {
-                return false; ;
+                throw new InvalidOperationException("Недопустимые данные ресурсов отгрузки.");
             }
 
             bool isDuplicates = inputs
