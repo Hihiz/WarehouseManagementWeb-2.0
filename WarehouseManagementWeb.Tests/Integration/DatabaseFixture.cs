@@ -4,7 +4,7 @@ using Respawn;
 using Testcontainers.PostgreSql;
 using WarehouseManagementWeb.Infrastructure.Data;
 
-namespace WarehouseManagementWeb.Tests
+namespace WarehouseManagementWeb.Tests.Integration
 {
     /// <summary>
     /// Класс фикстуры.

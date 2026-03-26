@@ -4,7 +4,7 @@ using WarehouseManagementWeb.Domain.Entities;
 using WarehouseManagementWeb.Infrastructure.Data;
 using WarehouseManagementWeb.Infrastructure.Repositories;
 
-namespace WarehouseManagementWeb.Tests
+namespace WarehouseManagementWeb.Tests.Integration
 {
     /// <summary>
     /// Базовый класс интеграционных тестов.
@@ -20,6 +20,7 @@ namespace WarehouseManagementWeb.Tests
         protected internal readonly MeasureUnitRepository measureUnitRepository;
         protected internal readonly ResourceRepository resourceRepository;
         protected internal readonly ApplicationDbContext applicationDbContext;
+   
         protected internal Faker faker;
 
         /// <summary>
@@ -59,7 +60,8 @@ namespace WarehouseManagementWeb.Tests
                                            b.MeasureUnitId == measureUnitId)!;
         }
 
-        public ResourceReceiptEntity GetResourceReceipt(List<ResourceReceiptEntity> resoruceReceipt, int resourceId, int measureUnitId)
+        public ResourceReceiptEntity GetResourceReceipt(List<ResourceReceiptEntity> resoruceReceipt, int resourceId,
+            int measureUnitId)
         {
             return resoruceReceipt.FirstOrDefault(b => b.ResourceId == resourceId &&
                                            b.MeasureUnitId == measureUnitId)!;

@@ -37,6 +37,11 @@ namespace WarehouseManagementWeb.Application.Services.Client
             {
                 IEnumerable<ClientOutput> clients = await _clientRepository.GetClientsAsync();
 
+                if (clients is null || !clients.Any())
+                {
+                    return new ClientListByStatusOutput();
+                }
+
                 List<ClientOutput> activeClients = new List<ClientOutput>(clients.Count(
                     c => c.ClientStatusEnum == DirectoryStatusEnum.Active));
 
