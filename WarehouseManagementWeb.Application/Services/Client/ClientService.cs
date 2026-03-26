@@ -11,7 +11,7 @@ namespace WarehouseManagementWeb.Application.Services.Client
     /// <summary>
     /// Класс реализует методы сервиса клиентов.
     /// </summary>
-    public class ClientService : IClientService
+    public class ClientService : IClientService test
     {
         private readonly IClientRepository _clientRepository;
         private readonly ILogger<ClientService> _logger;
