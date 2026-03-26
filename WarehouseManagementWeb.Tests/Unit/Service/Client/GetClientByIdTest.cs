@@ -1,6 +1,5 @@
 ﻿using Moq;
 using WarehouseManagementWeb.Application.Dto.Output.Client;
-using WarehouseManagementWeb.Domain.Entities;
 
 namespace WarehouseManagementWeb.Tests.Unit.Service.Client
 {
