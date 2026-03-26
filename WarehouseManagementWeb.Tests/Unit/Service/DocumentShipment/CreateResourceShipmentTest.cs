@@ -55,7 +55,7 @@ namespace WarehouseManagementWeb.Tests.Unit.Service.DocumentShipment
         {
             // Arrange
             var input = new CreateResourceShipmentInput
-            {        
+            {
                 IncludeResourceShipmentInputs = new List<IncludeResourceShipmentInput>
                 {
                       new IncludeResourceShipmentInput()
@@ -73,16 +73,9 @@ namespace WarehouseManagementWeb.Tests.Unit.Service.DocumentShipment
                 }
             };
 
-            mockDocumentShipmentRepository
-                .Setup(repo => repo.CheckDocumentShipmentExistsByNumberCodeAsync(input.DocumentShipmentNumberCode))
-                .ReturnsAsync(false);
-
             // Act & Assert
-            //await Assert.ThrowsAsync<InvalidOperationException>(
-            //    () => documentShipmentService.CreateResourceShipmentAsync(input));
-
-       
-                await documentShipmentService.CreateResourceShipmentAsync(input);
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => documentShipmentService.CreateResourceShipmentAsync(input));
 
             mockDocumentShipmentRepository.Verify(r => r.CreateResourceShipmentAsync(
                 It.IsAny<DocumentShipmentEntity>()), Times.Never);
