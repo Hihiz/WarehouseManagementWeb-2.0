@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, debounceTime, filter, Subject, tap, throwError } from 'rxjs';
 import { UserSignInOutput } from '../models/output/user-sign-in-output';
 import { UserSignUpOutput } from '../models/output/user-sign-up-output';
 import { HttpClient } from '@angular/common/http';
@@ -7,6 +7,7 @@ import { UserSignUpInput } from '../models/input/user-sign-up-input';
 import { environment } from '../../core/core-urls/environment';
 import { UserSignInInput } from '../models/input/user-sign-in-input';
 import { TokenInput } from '../models/input/token-input';
+import { Router } from '@angular/router';
 
 /**
  * Класс сервиса аутентификации пользователей.
@@ -16,14 +17,45 @@ import { TokenInput } from '../models/input/token-input';
 })
 export class AuthService {
   public userSignUp$ = new BehaviorSubject<UserSignUpOutput>(new UserSignUpOutput());
-  public userSignIn$ = new BehaviorSubject<UserSignInOutput>(new UserSignInOutput());
+  public userSignIn$ = new BehaviorSubject<UserSignInOutput | null>(null);
+
+  private storageEvent$ = new Subject<StorageEvent>();
 
   /**
    * Конструктор.
    * @param _httpClient HttpClient.
    */
-  constructor(private readonly _httpClient: HttpClient) {
+  constructor(
+    private readonly _httpClient: HttpClient,
+    private readonly _router: Router,
+  ) {
     this.restoreUser();
+    this.initStorageEventListener();
+  }
+
+  /**
+   * Функция подписывается на событие "storage".
+   * Для синхронизации состояния пользователя между вкладками браузера.
+   */
+  private initStorageEventListener() {
+    window.addEventListener('storage', (event) => {
+      this.storageEvent$.next(event);
+    });
+
+    this.storageEvent$
+      .pipe(
+        filter((e) => e.key === 'utoken'),
+        debounceTime(50),
+      )
+      .subscribe((e) => {
+        if (e.newValue === null) {
+          this.userSignIn$.next(null);
+          this._router.navigate(['/signin']);
+        } else if (e.newValue && e.newValue !== e.oldValue) {
+          this.restoreUser();
+          this._router.navigate(['/']);
+        }
+      });
   }
 
   /**
@@ -102,6 +134,8 @@ export class AuthService {
       user.email = email;
 
       this.userSignIn$.next(user);
+    } else {
+      this.userSignIn$.next(null);
     }
   }
 
@@ -113,7 +147,7 @@ export class AuthService {
     localStorage.removeItem('urefresh-token');
     localStorage.removeItem('uemail');
 
-    this.userSignIn$.next(new UserSignInOutput());
+    this.userSignIn$.next(null);
   }
 
   /**
