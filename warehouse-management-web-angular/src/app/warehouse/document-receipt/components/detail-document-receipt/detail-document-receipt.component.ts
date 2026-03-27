@@ -64,7 +64,6 @@ export class DetailDocumentReceiptComponent implements OnInit {
 
   ngOnInit() {
     this.checkUrlParams();
-
     forkJoin([
       this.getActiveMeasureUnits(),
       this.getActiveClients(),

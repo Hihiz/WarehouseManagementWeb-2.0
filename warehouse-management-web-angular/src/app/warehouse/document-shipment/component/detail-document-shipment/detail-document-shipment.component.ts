@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { BehaviorSubject, forkJoin, tap } from 'rxjs';
+import { BehaviorSubject, forkJoin, switchMap, tap } from 'rxjs';
 import { ResourceShipmentListOutput } from '../../models/output/resource-shipment-list-output';
 import { ClientOutput } from '../../../../directory/client/models/output/client-output';
 import { BalanceOutput } from '../../../balance/models/output/balance-output';
@@ -62,40 +62,19 @@ export class DetailDocumentShipmentComponent implements OnInit {
   ngOnInit() {
     this.checkUrlParams();
 
-    forkJoin([
-      this.getActiveClients(),
-      this.getBalances(),
-      this.getResourceShipmentByDocumentShipmentId(),
-    ]).subscribe({
-      next: () => {
-        // Входящие ресурсы в отгрузку.
-        this.updateDocumentShipmentInput.modifyResourceShipmentInputs =
-          this.detailDocumentShipment$.value.items.map((item) => {
-            // Ищем подходящий баланс по resourceId и measureUnitId
-            const matchingBalance = this.balances$.value.find(
-              b => b.resourceId === item.resourceId && b.measureUnitId === item.measureUnitId,
-            );
-            const result: ModifyResourceShipmentInput = {
-              resourceShipmentId: item.resourceShipmentId,
-              resourceId: item.resourceId,
-              measureUnitId: item.measureUnitId,
-              resourceQuantity: item.resourceQuantity,
-              _selectedBalance: matchingBalance!,
-              _balanceId: matchingBalance?.id.toString()!,
-              _startBalanceQuantity: item.resourceQuantity
-            };
-
-            return result;
-          });
-
-        this.isLoader = false;
-        this._cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Ошибка при загрузке данных: ', err);
-        this.isLoader = false;
-      },
-    });
+    forkJoin([this.getActiveClients(), this.getBalances()])
+      .pipe(switchMap(() => this.getResourceShipmentByDocumentShipmentId()))
+      .subscribe({
+        next: () => {
+          this.isLoader = false;
+          this._cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Ошибка при загрузке данных: ', err);
+          this.isLoader = false;
+          this._cdr.detectChanges();
+        },
+      });
   }
 
   /**
@@ -112,17 +91,18 @@ export class DetailDocumentShipmentComponent implements OnInit {
       this.updateDocumentShipmentInput.documentShipmentId = id;
     });
   }
-  
+
   /**
    * Функция возврвщает максимальное доступное количетсво баланса.
    * @param input Входная модель.
    * @returns Максимальное количество ресурса.
    */
-public getMaxQuantity(input: ModifyResourceShipmentInput): number {
-  const available = input._selectedBalance?.availableQuantity || 0;
-  const original = input._startBalanceQuantity;
-  return original + available;
-}
+  public getMaxQuantity(input: ModifyResourceShipmentInput): number {
+    const available = input._selectedBalance?.availableQuantity || 0;
+    const original = input._startBalanceQuantity;
+    return original + available;
+  }
+
   /**
    * Функция получает ресурс отгрузки по Id документа отгрузки.
    * @returns Данные ресурса отгрузки.
@@ -144,6 +124,31 @@ public getMaxQuantity(input: ModifyResourceShipmentInput): number {
           );
           this.updateDocumentShipmentInput.documentShipmentClientId =
             this.detailDocumentShipment$.value.documentShipmentClientId;
+
+          // Входящие ресурсы в отгрузку.
+          this.updateDocumentShipmentInput.modifyResourceShipmentInputs =
+            this.detailDocumentShipment$.value.items.map((item) => {
+              // Ищем подходящий баланс по resourceId и measureUnitId
+              let matchingBalance = this.balances$.value.find(
+                (b) => b.resourceId === item.resourceId && b.measureUnitId === item.measureUnitId,
+              );
+              if (!matchingBalance) {
+                this.tableResourcesError = `Ошибка: Баланс для ресурса Id ${item.resourceId} не найден!`;
+                throw new Error(`Ошибка: Баланс для ресурса Id ${item.resourceId} не найден!`);
+              }
+
+              const result: ModifyResourceShipmentInput = {
+                resourceShipmentId: item.resourceShipmentId,
+                resourceId: item.resourceId,
+                measureUnitId: item.measureUnitId,
+                resourceQuantity: item.resourceQuantity,
+                _selectedBalance: matchingBalance!,
+                _balanceId: matchingBalance.id.toString(),
+                _startBalanceQuantity: item.resourceQuantity,
+              };
+
+              return result;
+            });
         }),
       );
   }
@@ -204,7 +209,7 @@ public getMaxQuantity(input: ModifyResourceShipmentInput): number {
       resourceQuantity: null,
       _selectedBalance: null,
       _balanceId: null,
-      _startBalanceQuantity: 0
+      _startBalanceQuantity: 0,
     });
   }
 
