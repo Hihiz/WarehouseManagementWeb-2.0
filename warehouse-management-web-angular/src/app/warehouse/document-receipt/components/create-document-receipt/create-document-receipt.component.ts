@@ -3,14 +3,13 @@ import { FormsModule } from '@angular/forms';
 import { CreateResourceReceiptInput } from '../../models/input/create-resource-receipt-input';
 import { DocumentReceiptSerivce } from '../../services/document-receipt.serivce';
 import { Router } from '@angular/router';
-import { __read } from 'tslib';
 import { MeasureUnitOutput } from '../../../../directory/measure-unit/models/output/measure-unit-output';
 import { ClientOutput } from '../../../../directory/client/models/output/client-output';
 import { ResourceOutput } from '../../../../directory/resource/models/output/resource-output';
 import { MeasureUnitService } from '../../../../directory/measure-unit/services/measure-unit.service';
 import { ClientService } from '../../../../directory/client/services/client.service';
 import { ResourceService } from '../../../../directory/resource/services/resource.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, forkJoin, tap } from 'rxjs';
 import { AsyncPipe, NgClass } from '@angular/common';
 import { DateService } from '../../../../helpers/date.service';
 
@@ -54,38 +53,54 @@ export class CreateDocumentReceiptComponent implements OnInit {
   ngOnInit() {
     this.createResourceReceiptInput.date = this._dateService.getDateNow();
 
-    this.getActiveClients();
-    this.getActiveMeasureUnits();
-    this.getActiveResources();
-
-    this.isLoader = false;
+    forkJoin([
+      this.getActiveClients(),
+      this.getActiveMeasureUnits(),
+      this.getActiveResources(),
+    ]).subscribe({
+      next: () => {
+        this.isLoader = false;
+        this._cdr.detectChanges();
+      },
+      error: (err) => {
+        console.log('Ошибка при загрузке данных: ', err);
+        this.isLoader = false;
+           this._cdr.detectChanges();
+      },
+    });
   }
 
   /**
    * Фукнция получает список активных ресурсов для заполнения выпадающего списка.
    */
   private getActiveResources() {
-    this._resourceService.getActiveResources().subscribe((_) => {
-      console.log('Получен список активных ресурсов: ', this.activeResources$.value);
-    });
+    return this._resourceService.getActiveResources().pipe(
+      tap(() => {
+        console.log('Получен список активных ресурсов: ', this.activeResources$.value);
+      }),
+    );
   }
 
   /**
    * Фукнция получает список активных единиц измерений для заполнения выпадающего списка.
    */
   private getActiveMeasureUnits() {
-    this._measureUnitSerivce.getActiveMeasureUnits().subscribe((_) => {
-      console.log('Получен список активных единиц измерений: ', this.activeMeasureUnits$.value);
-    });
+    return this._measureUnitSerivce.getActiveMeasureUnits().pipe(
+      tap(() => {
+        console.log('Получен список активных единиц измерений: ', this.activeMeasureUnits$.value);
+      }),
+    );
   }
 
   /**
    * Фукнция получает список активных клиентов для заполнения выпадающего списка.
    */
   private getActiveClients() {
-    this._clientService.getActiveClients().subscribe((_) => {
-      console.log('Получен список активных клиентов: ', this.activeClients$.value);
-    });
+    return this._clientService.getActiveClients().pipe(
+      tap(() => {
+        console.log('Получен список активных клиентов: ', this.activeClients$.value);
+      }),
+    );
   }
 
   /**
@@ -125,8 +140,10 @@ export class CreateDocumentReceiptComponent implements OnInit {
       },
       error: (err) => {
         if (err.status === 400) {
-          if (err.error.message.includes('номером') ||
-              err.error.message.includes('существует в системе')) {
+          if (
+            err.error.message.includes('номером') ||
+            err.error.message.includes('существует в системе')
+          ) {
             this.serverNameError =
               err.error.message ||
               'Документ поступления с таким номером документа уже существует в системе.';

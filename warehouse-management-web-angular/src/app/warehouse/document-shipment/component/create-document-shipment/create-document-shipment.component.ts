@@ -108,7 +108,8 @@ export class CreateDocumentShipmentComponent implements OnInit {
   private getBalances() {
     return this._balanceService
       .getAvailableBalances()
-      .pipe(tap(() => console.log('Получен список баланса: ', this.balances$.value)));
+      .pipe(
+        tap(() => console.log('Получен список баланса: ', this.balances$.value)));
   }
 
   /**
