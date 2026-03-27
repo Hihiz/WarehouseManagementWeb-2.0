@@ -17,12 +17,10 @@ import { Router, RouterLink } from '@angular/router';
  * Класс компонента аутентификации пользователей.
  */
 export class SigninComponent implements OnInit {
-  public userSignIn$ = new BehaviorSubject<UserSignInOutput>(new UserSignInOutput());
+  public userSignIn$ = new BehaviorSubject<UserSignInOutput | null>(null);
 
   userSignInInput: UserSignInInput = new UserSignInInput();
   errorMessage: string = '';
-
-  tests: any = null;
 
   /**
    * Конструктор.

@@ -1,6 +1,6 @@
-import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import {  HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
+import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../../auth/services/auth.service';
 import { Router } from '@angular/router';
 
@@ -100,10 +100,10 @@ import { Router } from '@angular/router';
 export const httpRequestInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
-
   const accessToken = localStorage.getItem('utoken');
-console.log(accessToken);
-   if (accessToken) {
+
+  if (accessToken) {
+     console.log(accessToken);
     req = req.clone({
       setHeaders: { Authorization: `Bearer ${accessToken}` },
     });
