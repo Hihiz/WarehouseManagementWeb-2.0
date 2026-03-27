@@ -1,43 +1,43 @@
-import { ChangeDetectorRef, Component, signal } from '@angular/core';
+import { Component, Signal, signal } from '@angular/core';
 import { RouterOutlet, RouterLinkWithHref, Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
 import { UserSignInOutput } from './auth/models/output/user-sign-in-output';
 import { AuthService } from './auth/services/auth.service';
-import { AsyncPipe } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLinkWithHref, AsyncPipe],
+  imports: [RouterOutlet, RouterLinkWithHref],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class App {
   protected readonly title = signal('warehouse-management-web-angular');
 
-  public readonly userSignIn$: BehaviorSubject<UserSignInOutput>;
+  public user: Signal<UserSignInOutput | null | undefined>;
 
   constructor(
     private readonly _authService: AuthService,
     private readonly router: Router,
-    private readonly _cdr: ChangeDetectorRef,
   ) {
-    this.userSignIn$ = _authService.userSignIn$;
+    this.user = toSignal(this._authService.userSignIn$);
   }
+
+  userEmail: string = '';
 
   /**
    * Функция выходит из аккаунта пользователя.
    */
   public onSendLogout() {
+    this.userEmail = this.user()?.email!;
+    
     this._authService.logout().subscribe({
       next: () => {
-        console.log(`Пользователь: ${this.userSignIn$.value.email} успешно вышел из аккаунта.`);
+        console.log(`Пользователь: ${this.userEmail} успешно вышел из аккаунта.`);
         this.router.navigate(['/signin']);
-        this._cdr.detectChanges();
       },
       error: (error) => {
         console.error('Ошибка при выходе из аккаунта: ', error);
         this.router.navigate(['/signin']);
-        this._cdr.detectChanges();
       },
     });
   }
