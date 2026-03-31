@@ -45,7 +45,7 @@ export class SigninComponent implements OnInit {
       next: (_) => {
         console.log('Пользователь аутентифицирован: ', this.userSignIn$.value);
 
-        this._router.navigate(['/clients']);
+        this._router.navigate(['/']);
       },
       error: (error) => {
         console.log('Ошибка при прохождении аутентификации: ', error);
