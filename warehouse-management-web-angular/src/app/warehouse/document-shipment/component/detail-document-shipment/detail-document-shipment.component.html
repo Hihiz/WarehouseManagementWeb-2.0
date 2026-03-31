@@ -11,15 +11,17 @@
       #updateDocumentShipmentForm="ngForm"
       (ngSubmit)="updateDocumentShipmentForm.form.valid && onUpdateResourceShipment()"
       novalidate>
-      <div class="elem-bottom mb-3">
-        
+
+<fieldset [disabled]="isFormBlocked">
+
+<div class="elem-bottom mb-3"> 
         @if (isStatusActive) {
           <button type="button" (click)="onUpdateResourceShipment(false)" class="btn me-2 btn-warning">Отозвать подпись</button>
         }
         
         @if (!isStatusActive) {
             <button class="btn btn-success me-2" type="submit">Сохранить</button>
-            <button type="submit" class="btn-success btn me-2">Сохранить и подписать</button> 
+            <button type="button" (click)="onUpdateResourceShipment(true)" class="btn-success btn me-2">Сохранить и подписать</button> 
             <button type="button" (click)="onRemoveDocumentShipment()" class="btn btn-danger me-2">Удалить</button>
         }
       </div>
@@ -214,6 +216,7 @@
           </tbody>
         </table>
       </div>
+</fieldset>
     </form>
     <a class="btn btn-primary" (click)="onGetResourceShipments()">Назад</a>
   </div>

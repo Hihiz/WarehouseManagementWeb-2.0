@@ -53,6 +53,7 @@ export class DetailDocumentShipmentComponent implements OnInit {
     this.detailDocumentShipment$ = this._documentShipmentService.detailDocumentShipment$;
   }
 
+  isFormBlocked = false;
   isStatusActive: boolean = false;
   tableResourcesError: string | null = null;
   serverNameError: string | null = null;
@@ -98,7 +99,12 @@ export class DetailDocumentShipmentComponent implements OnInit {
    * @returns Максимальное количество ресурса.
    */
   public getMaxQuantity(input: ModifyResourceShipmentInput): number {
-    const available = input._selectedBalance?.availableQuantity || 0;
+    if (input._selectedBalance === null) {
+       this.tableResourcesError = 'Ошибка: Баланс не выбран!';
+       throw new Error('Ошибка: Баланс не выбран!');
+    }
+
+    const available = input._selectedBalance.availableQuantity;
     const original = input._startBalanceQuantity;
     return original + available;
   }
@@ -134,6 +140,7 @@ export class DetailDocumentShipmentComponent implements OnInit {
               );
               if (!matchingBalance) {
                 this.tableResourcesError = `Ошибка: Баланс для ресурса Id ${item.resourceId} не найден!`;
+                this.isFormBlocked = true;
                 throw new Error(`Ошибка: Баланс для ресурса Id ${item.resourceId} не найден!`);
               }
 
