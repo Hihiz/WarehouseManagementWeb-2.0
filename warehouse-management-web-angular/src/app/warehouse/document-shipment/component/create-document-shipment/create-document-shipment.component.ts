@@ -146,8 +146,6 @@ this.createResourceShipmentInput.isSetActiveStatus = isSetActive;
       .subscribe({
         next: (_) => {
           console.log('Документ отгрузки создан');
-          this.createResourceShipmentInput = new CreateResourceShipmentInput();
-
           this.onGetDocumentShipments();
         },
         error: (err) => {
