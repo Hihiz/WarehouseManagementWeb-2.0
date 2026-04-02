@@ -25,7 +25,7 @@ export class DocumentReceiptComponent implements OnInit {
   constructor(
     private readonly _documentReceiptService: DocumentReceiptSerivce,
     private readonly _router: Router,
-    private readonly _cdr: ChangeDetectorRef
+    private readonly _cdr: ChangeDetectorRef,
   ) {
     this.documentReceipts$ = this._documentReceiptService.documentReceipts$;
   }
@@ -33,7 +33,7 @@ export class DocumentReceiptComponent implements OnInit {
   isLoader: boolean = true;
 
   ngOnInit() {
-  this.getResourceReceipts();
+    this.getResourceReceipts();
   }
 
   /**
@@ -42,7 +42,7 @@ export class DocumentReceiptComponent implements OnInit {
   private getResourceReceipts() {
     this._documentReceiptService.getResourceReceipts().subscribe((_) => {
       console.log('Получен список ресурсов поступления: ', this.documentReceipts$.value);
-      
+
       this.isLoader = false;
       this._cdr.detectChanges();
     });
