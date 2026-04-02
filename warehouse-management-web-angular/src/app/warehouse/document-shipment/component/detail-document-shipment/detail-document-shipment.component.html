@@ -1,219 +1,259 @@
 @if (isLoader) {
-      <div class="text-center py-5">
-        <p>Загрузка данных документа отгрузки...</p>
-    </div>
+  <div class="text-center py-5">
+    <p>Загрузка данных документа отгрузки...</p>
+  </div>
 } @else {
-   <div class="container-fluid">
+  <div class="container-fluid">
     <h3>Редактирование документа отгрузки</h3>
     <form
       method="post"
       name="form"
       #updateDocumentShipmentForm="ngForm"
       (ngSubmit)="updateDocumentShipmentForm.form.valid && onUpdateResourceShipment()"
-      novalidate>
-      <div class="elem-bottom mb-3">
-        
-        @if (isStatusActive) {
-          <button type="button" (click)="onUpdateResourceShipment(false)" class="btn me-2 btn-warning">Отозвать подпись</button>
-        }
-        
-        @if (!isStatusActive) {
+      novalidate
+    >
+      <fieldset [disabled]="isFormBlocked">
+        <div class="elem-bottom mb-3">
+          @if (isStatusActive) {
+            <button
+              type="button"
+              (click)="onUpdateResourceShipment(false)"
+              class="btn me-2 btn-warning"
+            >
+              Отозвать подпись
+            </button>
+          }
+
+          @if (!isStatusActive) {
             <button class="btn btn-success me-2" type="submit">Сохранить</button>
-            <button type="submit" class="btn-success btn me-2">Сохранить и подписать</button> 
-            <button type="button" (click)="onRemoveDocumentShipment()" class="btn btn-danger me-2">Удалить</button>
+            <button
+              type="button"
+              (click)="onUpdateResourceShipment(true)"
+              class="btn-success btn me-2"
+            >
+              Сохранить и подписать
+            </button>
+            <button type="button" (click)="onRemoveDocumentShipment()" class="btn btn-danger me-2">
+              Удалить
+            </button>
+          }
+        </div>
+
+        @if (isStatusActive) {
+          <small class="text-muted">Документ подписан, редактирование запрещено</small>
         }
-      </div>
 
-@if (isStatusActive) {
-        <small class="text-muted">Документ подписан, редактирование запрещено</small>
-      }
-
-      <div  class="row align-items-center mb-3">
-        <div class="col-md-1">
-          <label class="col-form-label">Номер документа:</label>
-        </div>
-        <div class="col-md-3">
-          <input
-            class="form-control"
-            type="text"
-            name="numberCode"
-            [(ngModel)]="updateDocumentShipmentInput.documentShipmentNumberCode"
-            placeholder="Введите номер документа отгрузки"
-            required
-            #numberCode="ngModel"
-            minlength="3"
-            maxlength="100"
-            [disabled]="isStatusActive"
-            [ngClass]="{
-              'is-invalid':
-                (updateDocumentShipmentForm.submitted && numberCode.errors) || serverNameError,
-           }"
-            (input)="serverNameError = null"
-          />
-
-          @if (numberCode.errors && updateDocumentShipmentForm.submitted) {
-            <div class="invalid-feedback">
-              @if (numberCode.errors['required']) { Номер документа отгрузки не заполнен}
-              @if (numberCode.errors['minlength']) { Номер документа отгрузки слишком короткий}
-              @if (numberCode.errors['maxlength']) {Номер документа отгрузки слишком длинный}
-            </div>
-          }
-
-          @if (serverNameError) {
-            <span class="invalid-feedback">{{ serverNameError }}</span>
-          }
-        </div>
-      </div>
-
-      <div class="row align-items-center mb-3">
-        <div class="col-md-1">
-          <label class="col-form-label">Клиент:</label>
-        </div>
-        <div class="col-md-3">
-          <select
-            class="form-select"
-            [(ngModel)]="updateDocumentShipmentInput.documentShipmentClientId"
-            name="clientId"
-            #client="ngModel"
-            required
-            [disabled]="isStatusActive"
-            [ngClass]="{ 'is-invalid': updateDocumentShipmentForm.submitted && client.errors }"
-          >
-            <option [value]="null" disabled>Выберите клиента</option>
-            @for (c of activeClients$ | async; track c.id) {
-              <option [value]="c.id">
-                {{ c.name }}
-              </option>
-            } @empty {
-              <option disabled>Клиенты отсутствуют</option>
-            }
-          </select>
-
-          @if (client.errors && updateDocumentShipmentForm.submitted) {
-            <div class="invalid-feedback">
-              @if (client.errors['required']) {Клиент не выбран}
-            </div>
-          }
-        </div>
-      </div>
-
-      <div class="row align-items-center mb-3">
-        <div class="col-md-1">
-          <label class="col-form-label">Дата:</label>
-        </div>
-        <div class="col-md-3">
-          <input
-            class="form-control"
-            type="datetime-local"
-            name="date"
-            [(ngModel)]="updateDocumentShipmentInput.documentShipmentDate"
-            [disabled]="isStatusActive"
-            placeholder="Выберите дату отгрузки"
-          />
-        </div>
-      </div>
-
-      <div class="mt-4">
-        <div class="d-flex align-items-center mb-2">
-          <h4 class="me-3 mb-0">Доступные ресурсы к отгрузке</h4>
-          <button
-          [hidden]="isStatusActive"
-            type="button"
-            class="btn btn-sm btn-outline-primary"         
-            (click)="onIncludeResourceShipment()"
-          
-          >
-            + Добавить ресурс
-          </button>
-        </div>
-
-        @if (tableResourcesError) {
-          <div class="alert alert-danger">
-            {{ tableResourcesError }}
+        <div class="row align-items-center mb-3">
+          <div class="col-md-1">
+            <label class="col-form-label">Номер документа:</label>
           </div>
-        }
+          <div class="col-md-3">
+            <input
+              class="form-control"
+              type="text"
+              name="numberCode"
+              [(ngModel)]="updateDocumentShipmentInput.documentShipmentNumberCode"
+              placeholder="Введите номер документа отгрузки"
+              required
+              #numberCode="ngModel"
+              minlength="3"
+              maxlength="100"
+              [disabled]="isStatusActive"
+              [ngClass]="{
+                'is-invalid':
+                  (updateDocumentShipmentForm.submitted && numberCode.errors) || serverNameError,
+              }"
+              (input)="serverNameError = null"
+            />
 
-        <table class="table table-sm table-bordered border-dark align-middle">
-          <thead class="table-light">
-            <tr>
-              <th>Ресурс (Доступно на складе)</th>
-              <th>Кол-во</th>
-              <th [hidden]="isStatusActive" class="text-center">Удалить</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (input of updateDocumentShipmentInput.modifyResourceShipmentInputs; track input; let i = $index) {
-              <tr>
-                <td>
-                  <select
-                    class="form-select form-select-sm"
-                    [name]="'resourse-' + $index"
-                    [(ngModel)]="input._balanceId"
-                    (ngModelChange)="onBalanceChange(input, $event)"
-                    #resource="ngModel"
-                    required
-                    [disabled]="isStatusActive"
-                    [ngClass]="{ 'is-invalid': updateDocumentShipmentForm.submitted && resource.errors }"
-                    (input)="tableResourcesError = null"
-                  >
-                  <option [value]="null" disabled>Выберите ресурс...</option>
-                  @for (balance of balances$ | async; track balance.id) {
-                    <option [value]="balance.id">
-                      {{ balance.resourceTitle }} ({{ balance.measureUnitTitle }}) - Доступно: {{ balance.availableQuantity }}
-                    </option>
-                    }
-                  </select>
-
-                   @if (updateDocumentShipmentForm.submitted && resource.errors) {
-                    <div class="invalid-feedback">
-                      @if (resource.errors['required']) {  Выберите ресурс}                     
-                    </div>
-                  }
-                </td>
-               <td>
-                  <input
-                    class="form-control form-control-sm"
-                    type="number"
-                    [(ngModel)]="input.resourceQuantity"
-                    [name]="'quantity-' + $index"
-                    placeholder="Кол-во"
-                    min="1"
-                    [max]="getMaxQuantity(input)"
-                    required
-                    #quantity="ngModel"
-                    [disabled]="isStatusActive"
-                    [ngClass]="{ 'is-invalid': updateDocumentShipmentForm.submitted && quantity.errors }"
-                  />
-
-                  @if (updateDocumentShipmentForm.submitted && quantity.errors) {
-                    <div class="invalid-feedback">
-                      @if (quantity.errors['required']) {Укажите кол-во}
-                      @if (quantity.errors['min']) {Минимум 1}
-                      @if (quantity.errors['max']) { На складе только {{ getMaxQuantity(input) }}}
-                    </div>
-                  }
-                </td>
-
-                <td [hidden]="isStatusActive" class="text-center">
-                  <button
-                    type="button"
-                      class="btn btn-outline-danger btn-sm"
-                    (click)="onExcludeResourceShipment(i)"
-                  >
-                      &times;
-                  </button>
-                </td>
-              </tr>
-            } @empty {
-              <tr>
-                <td colspan="3" class="text-center text-muted py-3">
-                  Список пуст. Нажмите "+ Добавить ресурс"
-                </td>
-              </tr>
+            @if (numberCode.errors && updateDocumentShipmentForm.submitted) {
+              <div class="invalid-feedback">
+                @if (numberCode.errors['required']) {
+                  Номер документа отгрузки не заполнен
+                }
+                @if (numberCode.errors['minlength']) {
+                  Номер документа отгрузки слишком короткий
+                }
+                @if (numberCode.errors['maxlength']) {
+                  Номер документа отгрузки слишком длинный
+                }
+              </div>
             }
-          </tbody>
-        </table>
-      </div>
+
+            @if (serverNameError) {
+              <span class="invalid-feedback">{{ serverNameError }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="row align-items-center mb-3">
+          <div class="col-md-1">
+            <label class="col-form-label">Клиент:</label>
+          </div>
+          <div class="col-md-3">
+            <select
+              class="form-select"
+              [(ngModel)]="updateDocumentShipmentInput.documentShipmentClientId"
+              name="clientId"
+              #client="ngModel"
+              required
+              [disabled]="isStatusActive"
+              [ngClass]="{ 'is-invalid': updateDocumentShipmentForm.submitted && client.errors }"
+            >
+              <option [value]="null" disabled>Выберите клиента</option>
+              @for (c of activeClients$ | async; track c.id) {
+                <option [value]="c.id">
+                  {{ c.name }}
+                </option>
+              } @empty {
+                <option disabled>Клиенты отсутствуют</option>
+              }
+            </select>
+
+            @if (client.errors && updateDocumentShipmentForm.submitted) {
+              <div class="invalid-feedback">
+                @if (client.errors['required']) {
+                  Клиент не выбран
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="row align-items-center mb-3">
+          <div class="col-md-1">
+            <label class="col-form-label">Дата:</label>
+          </div>
+          <div class="col-md-3">
+            <input
+              class="form-control"
+              type="datetime-local"
+              name="date"
+              [(ngModel)]="updateDocumentShipmentInput.documentShipmentDate"
+              [disabled]="isStatusActive"
+              placeholder="Выберите дату отгрузки"
+            />
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <div class="d-flex align-items-center mb-2">
+            <h4 class="me-3 mb-0">Доступные ресурсы к отгрузке</h4>
+            <button
+              [hidden]="isStatusActive"
+              type="button"
+              class="btn btn-sm btn-outline-primary"
+              (click)="onIncludeResourceShipment()"
+            >
+              + Добавить ресурс
+            </button>
+          </div>
+
+          @if (tableResourcesError) {
+            <div class="alert alert-danger">
+              {{ tableResourcesError }}
+            </div>
+          }
+
+          <table class="table table-sm table-bordered border-dark align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Ресурс (Доступно на складе)</th>
+                <th>Кол-во</th>
+                <th [hidden]="isStatusActive" class="text-center">Удалить</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (
+                input of updateDocumentShipmentInput.modifyResourceShipmentInputs;
+                track input;
+                let i = $index
+              ) {
+                <tr>
+                  <td>
+                    <select
+                      class="form-select form-select-sm"
+                      [name]="'resourse-' + $index"
+                      [(ngModel)]="input._balanceId"
+                      (ngModelChange)="onBalanceChange(input, $event)"
+                      #resource="ngModel"
+                      required
+                      [disabled]="isStatusActive"
+                      [ngClass]="{
+                        'is-invalid': updateDocumentShipmentForm.submitted && resource.errors,
+                      }"
+                      (input)="tableResourcesError = null"
+                    >
+                      <option [value]="null" disabled>Выберите ресурс...</option>
+                      @for (balance of balances$ | async; track balance.id) {
+                        <option [value]="balance.id">
+                          {{ balance.resourceTitle }} ({{ balance.measureUnitTitle }}) - Доступно:
+                          {{ balance.availableQuantity }}
+                        </option>
+                      }
+                    </select>
+
+                    @if (updateDocumentShipmentForm.submitted && resource.errors) {
+                      <div class="invalid-feedback">
+                        @if (resource.errors['required']) {
+                          Выберите ресурс
+                        }
+                      </div>
+                    }
+                  </td>
+                  <td>
+                    <input
+                      class="form-control form-control-sm"
+                      type="number"
+                      [(ngModel)]="input.resourceQuantity"
+                      [name]="'quantity-' + $index"
+                      placeholder="Кол-во"
+                      min="1"
+                      [max]="getMaxQuantity(input)"
+                      required
+                      #quantity="ngModel"
+                      [disabled]="isStatusActive"
+                      [ngClass]="{
+                        'is-invalid': updateDocumentShipmentForm.submitted && quantity.errors,
+                      }"
+                    />
+
+                    @if (updateDocumentShipmentForm.submitted && quantity.errors) {
+                      <div class="invalid-feedback">
+                        @if (quantity.errors['required']) {
+                          Укажите кол-во
+                        }
+                        @if (quantity.errors['min']) {
+                          Минимум 1
+                        }
+                        @if (quantity.errors['max']) {
+                          На складе только {{ getMaxQuantity(input) }}
+                        }
+                      </div>
+                    }
+                  </td>
+
+                  <td [hidden]="isStatusActive" class="text-center">
+                    <button
+                      type="button"
+                      class="btn btn-outline-danger btn-sm"
+                      (click)="onExcludeResourceShipment(i)"
+                    >
+                      &times;
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3" class="text-center text-muted py-3">
+                    Список пуст. Нажмите "+ Добавить ресурс"
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </fieldset>
     </form>
     <a class="btn btn-primary" (click)="onGetResourceShipments()">Назад</a>
   </div>

@@ -63,7 +63,7 @@ export class CreateDocumentShipmentComponent implements OnInit {
     });
   }
 
-/**
+  /**
    * Функция добавляет пустую строку ресурса в список.
    */
   public onIncludeResourceReceipt() {
@@ -77,7 +77,7 @@ export class CreateDocumentShipmentComponent implements OnInit {
       measureUnitId: null,
       resourceQuantity: null,
       _selectedBalance: null,
-      _balanceId: null
+      _balanceId: null,
     });
   }
 
@@ -108,8 +108,7 @@ export class CreateDocumentShipmentComponent implements OnInit {
   private getBalances() {
     return this._balanceService
       .getAvailableBalances()
-      .pipe(
-        tap(() => console.log('Получен список баланса: ', this.balances$.value)));
+      .pipe(tap(() => console.log('Получен список баланса: ', this.balances$.value)));
   }
 
   /**
@@ -119,7 +118,7 @@ export class CreateDocumentShipmentComponent implements OnInit {
    */
   public onBalanceChange(item: IncludeResourceShipmentInput, selectedBalanceId: string) {
     const balanceId: number = parseInt(selectedBalanceId);
-    const selectedBalance = this.balances$.value.find(b => b.id === balanceId);
+    const selectedBalance = this.balances$.value.find((b) => b.id === balanceId);
 
     if (selectedBalance) {
       item.resourceId = selectedBalance.resourceId;
@@ -133,21 +132,18 @@ export class CreateDocumentShipmentComponent implements OnInit {
    * Функция создает документ отгрузки.
    */
   public onCreateDocumentShipment(isSetActive: boolean = false) {
+    if (this.createResourceShipmentInput.includeResourceShipmentInputs.length === 0) {
+      this.tableResourcesError = 'Выберите ресурсы';
+      return;
+    }
 
-if (this.createResourceShipmentInput.includeResourceShipmentInputs.length === 0) {
-  this.tableResourcesError = "Выберите ресурсы";
-  return;
-}
-
-this.createResourceShipmentInput.isSetActiveStatus = isSetActive;
+    this.createResourceShipmentInput.isSetActiveStatus = isSetActive;
 
     this._documentShipmentService
       .createResourceShipment(this.createResourceShipmentInput)
       .subscribe({
         next: (_) => {
           console.log('Документ отгрузки создан');
-          this.createResourceShipmentInput = new CreateResourceShipmentInput();
-
           this.onGetDocumentShipments();
         },
         error: (err) => {

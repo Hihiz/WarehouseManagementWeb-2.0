@@ -4,7 +4,11 @@
   @if (isLoader) {
     <p class="text-center">Загрузка данных документов отгрузок...</p>
   } @else {
-    <div class="elem-bottom">
+    <div class="elem-bottom elem-column">
+      <p class="badge bg-info">Общее Количество документов: {{countDocuments}}</p>
+      <p class="badge bg-success">Количество подписанных документов: {{countStatusActiveDocuments}}</p>
+      <p class="badge bg-danger">Количество не подписанных документов: {{countStatusInActiveDocuments}}</p>
+
       <a class="btn btn-success" (click)="onCreateResourceShipment()">Добавить</a>
     </div>
 

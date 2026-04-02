@@ -22,7 +22,7 @@ import { CreateDocumentShipmentComponent } from './warehouse/document-shipment/c
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/clients',
+    redirectTo: '/document-shipments',
     pathMatch: 'full',
   },
 

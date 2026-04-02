@@ -134,8 +134,6 @@ export class CreateDocumentReceiptComponent implements OnInit {
     this._documentReceiptService.createResourceReceipt(this.createResourceReceiptInput).subscribe({
       next: (_) => {
         console.log('Документ поступления создан');
-        this.createResourceReceiptInput = new CreateResourceReceiptInput();
-
         this.onGetDocumentReceipts();
       },
       error: (err) => {

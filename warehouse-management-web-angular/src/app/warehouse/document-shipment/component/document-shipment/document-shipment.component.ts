@@ -33,6 +33,10 @@ export class DocumentShipmentComponent implements OnInit {
     this.documentShipments$ = this._documentShipmentService.documentShipments$;
   }
 
+  countStatusActiveDocuments: number = 0;
+  countStatusInActiveDocuments: number = 0;
+  countDocuments: number = 0;
+
   isLoader: boolean = true;
   updateResourceShipmentInput: UpdateResourceShipmentInput = new UpdateResourceShipmentInput();
 
@@ -48,6 +52,12 @@ export class DocumentShipmentComponent implements OnInit {
       console.log('Получен список ресурсов отгрузок: ', this.documentShipments$.value);
 
       this.isLoader = false;
+      this.countDocuments = this.documentShipments$.value.length;
+      this.countStatusActiveDocuments = this.documentShipments$.value
+        .filter(d => d.documentStatusEnum.toString().toLowerCase() === 'active').length;
+      this.countStatusInActiveDocuments = this.documentShipments$.value
+        .filter(d => d.documentStatusEnum.toString().toLowerCase() === 'inactive').length;
+
       this._cdr.detectChanges();
     });
   }
