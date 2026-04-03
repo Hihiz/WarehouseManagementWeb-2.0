@@ -48,9 +48,10 @@ namespace WarehouseManagementWeb.Api.Controllers
         /// <returns>Список активных единиц измерения.</returns>
         [HttpGet]
         [Route("active-measure-units")]
-        public async Task<IActionResult> GetActiveMeasureUnitsAsync()
+        public async Task<IActionResult> GetActiveMeasureUnitsAsync([FromQuery] int[]? measureUnitIds = null)
         {
-            IEnumerable<MeasureUnitOutput> result = await _measureUnitService.GetActiveMeasureUnitsAsync();
+            IEnumerable<MeasureUnitOutput> result = await _measureUnitService.GetActiveMeasureUnitsAsync(
+                measureUnitIds);
 
             return Ok(result);
         }
