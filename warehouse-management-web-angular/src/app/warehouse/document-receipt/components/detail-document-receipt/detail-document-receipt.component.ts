@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ResourceReceiptListOutput } from '../../models/output/resource-receipt-list-output';
-import { BehaviorSubject, forkJoin, tap } from 'rxjs';
+import { BehaviorSubject, forkJoin, switchMap, tap } from 'rxjs';
 import { DocumentReceiptSerivce } from '../../services/document-receipt.serivce';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MeasureUnitOutput } from '../../../../directory/measure-unit/models/output/measure-unit-output';
@@ -64,21 +64,33 @@ export class DetailDocumentReceiptComponent implements OnInit {
 
   ngOnInit() {
     this.checkUrlParams();
-    forkJoin([
-      this.getActiveMeasureUnits(),
-      this.getActiveClients(),
-      this.getActiveResources(),
-      this.getResourceReceiptByDocumentReceiptId(),
-    ]).subscribe({
-      next: () => {
-        this.isLoader = false;
-        this._cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Ошибка при загрузке данных:', err);
-        this.isLoader = false;
-      },
-    });
+    this.getResourceReceiptByDocumentReceiptId()
+      .pipe(
+        switchMap(() => {
+          const unitIds = this.updateResourceReceiptInput.modifyResourceReceiptInputs
+            .map((x) => x.measureUnitId)
+            .filter((x) => x !== null);
+          const resourceIds = this.updateResourceReceiptInput.modifyResourceReceiptInputs
+            .map((x) => x.resourceId)
+            .filter((x) => x !== null);
+
+          return forkJoin([
+            this.getActiveClients(this.updateResourceReceiptInput.documentReceiptClientId),
+            this.getActiveResources(resourceIds),
+            this.getActiveMeasureUnits(unitIds),
+          ]);
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.isLoader = false;
+          this._cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Ошибка при загрузке данных:', err);
+          this.isLoader = false;
+        },
+      });
   }
 
   /**
