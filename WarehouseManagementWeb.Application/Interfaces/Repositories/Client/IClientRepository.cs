@@ -19,7 +19,7 @@ namespace WarehouseManagementWeb.Application.Interfaces.Repositories.Client
         /// Метод получает список активных клиентов.
         /// </summary>
         /// <returns>Список активных клиентов.</returns>
-        Task<IEnumerable<ClientOutput>> GetActiveClientsAsync();
+        Task<IEnumerable<ClientOutput>> GetActiveClientsAsync(int? clientId);
 
         /// <summary>
         /// Метод получает клиента по Id.

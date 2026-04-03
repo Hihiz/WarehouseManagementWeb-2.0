@@ -48,9 +48,9 @@ namespace WarehouseManagementWeb.Api.Controllers
         /// <returns>Список активных ресурсов.</returns>
         [HttpGet]
         [Route("active-resources")]
-        public async Task<IActionResult> GetActiveResourcesAsync()
+        public async Task<IActionResult> GetActiveResourcesAsync([FromQuery] int[]? resourceIds = null)
         {
-            IEnumerable<ResourceOutput> result = await _resourceService.GetActiveResourcesAsync();
+            IEnumerable<ResourceOutput> result = await _resourceService.GetActiveResourcesAsync(resourceIds);
 
             return Ok(result);
         }

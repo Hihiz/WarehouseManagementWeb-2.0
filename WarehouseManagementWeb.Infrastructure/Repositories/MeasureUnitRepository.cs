@@ -43,16 +43,17 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<MeasureUnitOutput>> GetActiveMeasureUnitsAsync()
+        public async Task<IEnumerable<MeasureUnitOutput>> GetActiveMeasureUnitsAsync(int[]? measureUnitIds)
         {
             IEnumerable<MeasureUnitOutput> result = await _db.MeasureUnits
              .AsNoTracking()
                .OrderByDescending(mu => mu.Id)
-             .Where(mu => mu.MeasureUnitStatusEnum == DirectoryStatusEnum.Active)
+             .Where(mu => mu.MeasureUnitStatusEnum == DirectoryStatusEnum.Active ||
+                    measureUnitIds != null && measureUnitIds.Any() && measureUnitIds.Contains(mu.Id))
              .Select(mu => new MeasureUnitOutput
              {
                  Id = mu.Id,
-                 Title = mu.Title,
+                 Title = mu.Title + (mu.MeasureUnitStatusEnum == DirectoryStatusEnum.Archived ? " (Архив)" : ""),
                  MeasureUnitStatusEnum = mu.MeasureUnitStatusEnum
              })           
              .ToListAsync();

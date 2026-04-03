@@ -43,16 +43,17 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<ResourceOutput>> GetActiveResourcesAsync()
+        public async Task<IEnumerable<ResourceOutput>> GetActiveResourcesAsync(int[]? resourceIds)
         {
             IEnumerable<ResourceOutput> result = await _db.Resources
                 .AsNoTracking()
                 .OrderByDescending(r => r.Id)
-                .Where(r => r.ResourceStatusEnum == DirectoryStatusEnum.Active)
+                .Where(r => r.ResourceStatusEnum == DirectoryStatusEnum.Active || 
+                       resourceIds != null && resourceIds.Any() && resourceIds.Contains(r.Id))
                 .Select(r => new ResourceOutput
                 {
                     Id = r.Id,
-                    Title = r.Title,
+                    Title = r.Title + (r.ResourceStatusEnum == DirectoryStatusEnum.Archived ? " (Архив)" : ""),
                     ResourceStatusEnum = r.ResourceStatusEnum
                 })                
                 .ToListAsync();

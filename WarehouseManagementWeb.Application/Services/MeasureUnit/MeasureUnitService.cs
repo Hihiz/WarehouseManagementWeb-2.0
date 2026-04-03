@@ -75,11 +75,12 @@ namespace WarehouseManagementWeb.Application.Services.MeasureUnit
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<MeasureUnitOutput>> GetActiveMeasureUnitsAsync()
+        public async Task<IEnumerable<MeasureUnitOutput>> GetActiveMeasureUnitsAsync(int[]? measureUnitId)
         {
             try
             {
-                IEnumerable<MeasureUnitOutput> result = await _measureUnitRepository.GetActiveMeasureUnitsAsync();
+                IEnumerable<MeasureUnitOutput> result = await _measureUnitRepository.GetActiveMeasureUnitsAsync(
+                    measureUnitId);
 
                 return result;
             }

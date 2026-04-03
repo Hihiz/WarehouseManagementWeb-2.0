@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MeasureUnitListByStatusOutput } from '../models/output/measure-unit-list-by-status-output';
 import { BehaviorSubject, tap } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../core/core-urls/environment';
 import { MeasureUnitOutput } from '../models/output/measure-unit-output';
 import { CreateMeasureUnitInput } from '../models/input/create-measure-unit-input';
@@ -43,9 +43,19 @@ export class MeasureUnitService {
    * Функция получает список активных единиц измерений.
    * @returns Список активных единиц измерений.
    */
-  public getActiveMeasureUnits() {
+  public getActiveMeasureUnits(unitIds: number[] | null = null) {
+    let params = new HttpParams();
+
+    if (unitIds) {
+      unitIds?.forEach((id) => {
+        params = params.append('measureUnitIds', id.toString());
+      });
+    }
+
     return this._httpClient
-      .get<MeasureUnitOutput[]>(environment.apiUrl + '/api/directory/measure-unit/active-measure-units')
+      .get<
+        MeasureUnitOutput[]
+      >(environment.apiUrl + '/api/directory/measure-unit/active-measure-units', { params })
       .pipe(tap((data) => this.activeMeasureUnits$.next(data)));
   }
 

@@ -19,11 +19,11 @@ namespace WarehouseManagementWeb.Tests.Unit.Service.Client
             };
 
             mockClientRepository
-                .Setup(repo => repo.GetActiveClientsAsync())
+                .Setup(repo => repo.GetActiveClientsAsync(null))
                 .ReturnsAsync(mockClients);
 
             // Act
-            var result = await clientService.GetActiveClientsAsync();
+            var result = await clientService.GetActiveClientsAsync(null);
 
             // Assert
             Assert.NotNull(result);
@@ -37,11 +37,11 @@ namespace WarehouseManagementWeb.Tests.Unit.Service.Client
             List<ClientOutput> clients = null;
 
             mockClientRepository
-                .Setup(repo => repo.GetActiveClientsAsync())
+                .Setup(repo => repo.GetActiveClientsAsync(null))
                 .ReturnsAsync(clients);
 
             // Act
-            var result = await clientService.GetActiveClientsAsync();
+            var result = await clientService.GetActiveClientsAsync(null);
 
             // Assert
             Assert.Null(result);
@@ -52,11 +52,11 @@ namespace WarehouseManagementWeb.Tests.Unit.Service.Client
         {
             // Arrange
             mockClientRepository
-                .Setup(repo => repo.GetActiveClientsAsync())
+                .Setup(repo => repo.GetActiveClientsAsync(null))
                 .ReturnsAsync(new List<ClientOutput>());
 
             // Act
-            var result = await clientService.GetActiveClientsAsync();
+            var result = await clientService.GetActiveClientsAsync(null);
 
             // Assert
             Assert.NotNull(result);
@@ -69,11 +69,11 @@ namespace WarehouseManagementWeb.Tests.Unit.Service.Client
             var exception = new Exception("Ошибка");
 
             mockClientRepository
-                .Setup(repo => repo.GetActiveClientsAsync())
+                .Setup(repo => repo.GetActiveClientsAsync(null))
                 .ThrowsAsync(exception);
 
             // Act & Assert
-            await Assert.ThrowsAsync<Exception>(clientService.GetActiveClientsAsync);
+            await Assert.ThrowsAsync<Exception>(() => clientService.GetActiveClientsAsync(null));
         }
     }
 }
