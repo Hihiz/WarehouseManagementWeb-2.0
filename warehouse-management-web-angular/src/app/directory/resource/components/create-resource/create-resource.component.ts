@@ -34,7 +34,7 @@ export class CreateResourceComponent {
    * Функция добавляет ресурс.
    */
   public onCreateResource() {
-    this._resourceService.CreateResourceAsync(this.createResourceInput).subscribe({
+    this._resourceService.сreateResourceAsync(this.createResourceInput).subscribe({
       next: (_) => {
         console.log('Ресурс добавлен');
         this.createResourceInput = new CreateResourceInput();
@@ -46,8 +46,8 @@ export class CreateResourceComponent {
         if (err.status === 400) {
           this.serverNameError =
             err.error.message || 'Ресурс с таким наименованием уже существует в системе.';
-        
-            this.cdr.detectChanges();
+
+          this.cdr.detectChanges();
         }
 
         console.error('Ошибка при создании ресурса: ', err);
