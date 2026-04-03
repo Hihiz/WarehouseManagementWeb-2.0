@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, tap } from 'rxjs';
 import { ClientListByStatusOutput } from '../models/output/client-list-by-status-output';
 import { ClientOutput } from '../models/output/client-output';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../core/core-urls/environment';
 import { CreateClientInput } from '../models/input/create-client-input';
 import { UpdateClientInput } from '../models/input/update-client-input';
@@ -39,9 +39,16 @@ export class ClientService {
    * Функция получает список активных клиентов.
    * @returns Список активных клиентов.
    */
-  public getActiveClients() {
+  public getActiveClients(clientId: number | null = null) {
+    let params = new HttpParams();
+
+    if (clientId) {
+      params = params.append('clientId', clientId);
+    }
+
+    console.log('Params проверка: ', params);
     return this._httpClient
-      .get<ClientOutput[]>(environment.apiUrl + '/api/directory/client/active-clients')
+      .get<ClientOutput[]>(environment.apiUrl + `/api/directory/client/active-clients`, { params })
       .pipe(tap((data) => this.activeClients$.next(data)));
   }
 
