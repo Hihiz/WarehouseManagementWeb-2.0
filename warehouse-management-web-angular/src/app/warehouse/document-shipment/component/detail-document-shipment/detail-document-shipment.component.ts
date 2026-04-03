@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { BehaviorSubject, forkJoin, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, switchMap, tap } from 'rxjs';
 import { ResourceShipmentListOutput } from '../../models/output/resource-shipment-list-output';
 import { ClientOutput } from '../../../../directory/client/models/output/client-output';
 import { BalanceOutput } from '../../../balance/models/output/balance-output';
@@ -63,8 +63,13 @@ export class DetailDocumentShipmentComponent implements OnInit {
   ngOnInit() {
     this.checkUrlParams();
 
-    forkJoin([this.getActiveClients(), this.getBalances()])
-      .pipe(switchMap(() => this.getResourceShipmentByDocumentShipmentId()))
+    this.getBalances()
+      .pipe(
+        switchMap(() => this.getResourceShipmentByDocumentShipmentId()),
+        switchMap(() =>
+          this.getActiveClients(this.updateDocumentShipmentInput.documentShipmentClientId),
+        ),
+      )
       .subscribe({
         next: () => {
           this.isLoader = false;
@@ -100,8 +105,8 @@ export class DetailDocumentShipmentComponent implements OnInit {
    */
   public getMaxQuantity(input: ModifyResourceShipmentInput): number {
     if (input._selectedBalance === null) {
-       this.tableResourcesError = 'Ошибка: Баланс не выбран!';
-       throw new Error('Ошибка: Баланс не выбран!');
+      this.tableResourcesError = 'Ошибка: Баланс не выбран!';
+      throw new Error('Ошибка: Баланс не выбран!');
     }
 
     const available = input._selectedBalance.availableQuantity;
@@ -164,9 +169,9 @@ export class DetailDocumentShipmentComponent implements OnInit {
    * Фукнция получает список активных клиентов для заполнения выпадающего списка.
    * @returns Cписок активных клиентов.
    */
-  private getActiveClients() {
+  private getActiveClients(clientId: number) {
     return this._clientService
-      .getActiveClients()
+      .getActiveClients(clientId)
       .pipe(
         tap(() => console.log('Получен список активных клиентов: ', this.activeClients$.value)),
       );
