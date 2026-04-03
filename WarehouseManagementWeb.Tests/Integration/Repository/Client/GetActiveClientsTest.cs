@@ -12,7 +12,7 @@
             var activeClient2 = await SeedClientAsync();
           
             // Act
-            var result = await clientRepository.GetActiveClientsAsync();
+            var result = await clientRepository.GetActiveClientsAsync(null);
 
             // Assert
             Assert.NotNull(result);

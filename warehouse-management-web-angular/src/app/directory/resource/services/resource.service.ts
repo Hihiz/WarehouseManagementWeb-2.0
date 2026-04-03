@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, tap } from 'rxjs';
 import { ResourceListByStatusOutput } from '../models/output/resource-list-by-status-output';
 import { ResourceOutput } from '../models/output/resource-output';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../core/core-urls/environment';
 import { CreateResourceInput } from '../models/input/create-resource-input';
 import { UpdateResourceInput } from '../models/input/update-resource-input';
@@ -41,9 +41,19 @@ export class ResourceService {
    * Функция получает список активных ресурсов.
    * @returns Список активных ресурсов.
    */
-  public getActiveResources() {
+  public getActiveResources(resourceIds: number[] | null = null) {
+    let params = new HttpParams();
+
+    if (resourceIds) {
+      resourceIds?.forEach((id) => {
+        params = params.append('resourceIds', id.toString());
+      });
+    }
+
     return this._httpClient
-      .get<ResourceOutput[]>(environment.apiUrl + '/api/directory/resource/active-resources')
+      .get<
+        ResourceOutput[]
+      >(environment.apiUrl + '/api/directory/resource/active-resources', { params })
       .pipe(tap((data) => this.activeResources$.next(data)));
   }
 
@@ -64,7 +74,7 @@ export class ResourceService {
    * Функция добавляет ресурс.
    * @param createResourceInput Входная модель.
    */
-  public CreateResourceAsync(createResourceInput: CreateResourceInput) {
+  public сreateResourceAsync(createResourceInput: CreateResourceInput) {
     return this._httpClient.post<void>(
       environment.apiUrl + '/api/directory/resource/resource',
       createResourceInput,

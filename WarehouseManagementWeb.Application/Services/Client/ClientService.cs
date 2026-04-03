@@ -80,11 +80,11 @@ namespace WarehouseManagementWeb.Application.Services.Client
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<ClientOutput>> GetActiveClientsAsync()
+        public async Task<IEnumerable<ClientOutput>> GetActiveClientsAsync(int? clientId)
         {
             try
             {
-                IEnumerable<ClientOutput> result = await _clientRepository.GetActiveClientsAsync();
+                IEnumerable<ClientOutput> result = await _clientRepository.GetActiveClientsAsync(clientId);
 
                 return result;
             }

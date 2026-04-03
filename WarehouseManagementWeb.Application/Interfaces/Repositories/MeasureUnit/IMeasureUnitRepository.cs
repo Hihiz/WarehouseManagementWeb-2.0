@@ -19,7 +19,7 @@ namespace WarehouseManagementWeb.Application.Interfaces.Repositories.MeasureUnit
         /// Метод получает список активных единиц измерения.
         /// </summary>
         /// <returns>Список активных единиц измерения.</returns>
-        Task<IEnumerable<MeasureUnitOutput>> GetActiveMeasureUnitsAsync();
+        Task<IEnumerable<MeasureUnitOutput>> GetActiveMeasureUnitsAsync(int[]? measureUnitId);
 
         /// <summary>
         /// Метод получает единицу измерения по Id.

@@ -48,9 +48,9 @@ namespace WarehouseManagementWeb.Api.Controllers
         /// <returns>Список активных клиентов.</returns>
         [HttpGet]
         [Route("active-clients")]
-        public async Task<IActionResult> GetActiveClientsAsync()
+        public async Task<IActionResult> GetActiveClientsAsync([FromQuery] int? clientId = null)
         {
-            IEnumerable<ClientOutput> result = await _clientService.GetActiveClientsAsync();
+            IEnumerable<ClientOutput> result = await _clientService.GetActiveClientsAsync(clientId);
 
             return Ok(result);
         }

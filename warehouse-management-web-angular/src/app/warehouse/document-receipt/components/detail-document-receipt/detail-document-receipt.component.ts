@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ResourceReceiptListOutput } from '../../models/output/resource-receipt-list-output';
-import { BehaviorSubject, forkJoin, tap } from 'rxjs';
+import { BehaviorSubject, forkJoin, switchMap, tap } from 'rxjs';
 import { DocumentReceiptSerivce } from '../../services/document-receipt.serivce';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MeasureUnitOutput } from '../../../../directory/measure-unit/models/output/measure-unit-output';
@@ -64,21 +64,33 @@ export class DetailDocumentReceiptComponent implements OnInit {
 
   ngOnInit() {
     this.checkUrlParams();
-    forkJoin([
-      this.getActiveMeasureUnits(),
-      this.getActiveClients(),
-      this.getActiveResources(),
-      this.getResourceReceiptByDocumentReceiptId(),
-    ]).subscribe({
-      next: () => {
-        this.isLoader = false;
-        this._cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Ошибка при загрузке данных:', err);
-        this.isLoader = false;
-      },
-    });
+    this.getResourceReceiptByDocumentReceiptId()
+      .pipe(
+        switchMap(() => {
+          const unitIds = this.updateResourceReceiptInput.modifyResourceReceiptInputs
+            .map((x) => x.measureUnitId)
+            .filter((x) => x !== null);
+          const resourceIds = this.updateResourceReceiptInput.modifyResourceReceiptInputs
+            .map((x) => x.resourceId)
+            .filter((x) => x !== null);
+
+          return forkJoin([
+            this.getActiveClients(this.updateResourceReceiptInput.documentReceiptClientId),
+            this.getActiveResources(resourceIds),
+            this.getActiveMeasureUnits(unitIds),
+          ]);
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.isLoader = false;
+          this._cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Ошибка при загрузке данных:', err);
+          this.isLoader = false;
+        },
+      });
   }
 
   /**
@@ -161,9 +173,9 @@ export class DetailDocumentReceiptComponent implements OnInit {
   /**
    * Фукнция получает список активных ресурсов для заполнения выпадающего списка.
    */
-  private getActiveResources() {
+  private getActiveResources(resourceIds: number[] | null) {
     return this._resourceService
-      .getActiveResources()
+      .getActiveResources(resourceIds)
       .pipe(
         tap(() => console.log('Получен список активных ресурсов: ', this.activeResources$.value)),
       );
@@ -172,9 +184,9 @@ export class DetailDocumentReceiptComponent implements OnInit {
   /**
    * Фукнция получает список активных единиц измерений для заполнения выпадающего списка.
    */
-  private getActiveMeasureUnits() {
+  private getActiveMeasureUnits(unitIds: number[] | null) {
     return this._measureUnitSerivce
-      .getActiveMeasureUnits()
+      .getActiveMeasureUnits(unitIds)
       .pipe(
         tap(() =>
           console.log('Получен список активных единиц измерений: ', this.activeMeasureUnits$.value),
@@ -185,9 +197,9 @@ export class DetailDocumentReceiptComponent implements OnInit {
   /**
    * Фукнция получает список активных клиентов для заполнения выпадающего списка.
    */
-  private getActiveClients() {
+  private getActiveClients(clientId: number) {
     return this._clientService
-      .getActiveClients()
+      .getActiveClients(clientId)
       .pipe(
         tap(() => console.log('Получен список активных клиентов: ', this.activeClients$.value)),
       );

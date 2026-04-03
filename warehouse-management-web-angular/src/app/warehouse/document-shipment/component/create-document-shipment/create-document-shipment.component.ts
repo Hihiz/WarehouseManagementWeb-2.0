@@ -50,7 +50,6 @@ export class CreateDocumentShipmentComponent implements OnInit {
 
   ngOnInit() {
     this.createResourceShipmentInput.documentShipmentDate = this._dateService.getDateNow();
-
     forkJoin([this.getActiveClients(), this.getBalances()]).subscribe({
       next: () => {
         this.isLoader = false;

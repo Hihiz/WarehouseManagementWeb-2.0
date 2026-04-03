@@ -45,20 +45,21 @@ namespace WarehouseManagementWeb.Infrastructure.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<ClientOutput>> GetActiveClientsAsync()
+        public async Task<IEnumerable<ClientOutput>> GetActiveClientsAsync(int? clientId)
         {
             IEnumerable<ClientOutput> result = await _db.Clients
                 .AsNoTracking()
                 .OrderByDescending(c => c.Id)
-                .Where(c => c.ClientStatusEnum == DirectoryStatusEnum.Active)
+                .Where(c => c.ClientStatusEnum == DirectoryStatusEnum.Active ||
+                      clientId.HasValue && c.Id == clientId)
                 .Select(c => new ClientOutput
                 {
                     Id = c.Id,
-                    Name = c.Name,
+                    Name = c.Name + (c.ClientStatusEnum == DirectoryStatusEnum.Archived ? " (Архив)" : ""),
                     Address = c.Address,
                     ClientStatusEnum = c.ClientStatusEnum,
                     ClientStatusTitle = c.ClientStatusEnum.ToString()
-                })                
+                })
                 .ToListAsync();
 
             return result;

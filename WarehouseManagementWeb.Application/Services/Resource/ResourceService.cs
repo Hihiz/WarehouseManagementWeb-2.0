@@ -75,11 +75,11 @@ namespace WarehouseManagementWeb.Application.Services.Resource
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<ResourceOutput>> GetActiveResourcesAsync()
+        public async Task<IEnumerable<ResourceOutput>> GetActiveResourcesAsync(int[]? resourceIds)
         {
             try
             {
-                IEnumerable<ResourceOutput> result = await _resourceRepository.GetActiveResourcesAsync();
+                IEnumerable<ResourceOutput> result = await _resourceRepository.GetActiveResourcesAsync(resourceIds);
 
                 return result;
             }

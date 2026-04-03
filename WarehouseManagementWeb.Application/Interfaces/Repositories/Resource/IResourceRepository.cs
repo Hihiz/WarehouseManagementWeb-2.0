@@ -19,7 +19,7 @@ namespace WarehouseManagementWeb.Application.Interfaces.Repositories.Resource
         /// Метод получает список активных ресурсов.
         /// </summary>
         /// <returns>Список активных ресурсов.</returns>
-        Task<IEnumerable<ResourceOutput>> GetActiveResourcesAsync();
+        Task<IEnumerable<ResourceOutput>> GetActiveResourcesAsync(int[]? resourceIds);
 
         /// <summary>
         /// Метод получает ресурс по Id.
