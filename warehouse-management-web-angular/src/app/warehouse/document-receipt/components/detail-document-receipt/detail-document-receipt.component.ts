@@ -173,9 +173,9 @@ export class DetailDocumentReceiptComponent implements OnInit {
   /**
    * Фукнция получает список активных ресурсов для заполнения выпадающего списка.
    */
-  private getActiveResources() {
+  private getActiveResources(resourceIds: number[] | null) {
     return this._resourceService
-      .getActiveResources()
+      .getActiveResources(resourceIds)
       .pipe(
         tap(() => console.log('Получен список активных ресурсов: ', this.activeResources$.value)),
       );
@@ -184,9 +184,9 @@ export class DetailDocumentReceiptComponent implements OnInit {
   /**
    * Фукнция получает список активных единиц измерений для заполнения выпадающего списка.
    */
-  private getActiveMeasureUnits() {
+  private getActiveMeasureUnits(unitIds: number[] | null) {
     return this._measureUnitSerivce
-      .getActiveMeasureUnits()
+      .getActiveMeasureUnits(unitIds)
       .pipe(
         tap(() =>
           console.log('Получен список активных единиц измерений: ', this.activeMeasureUnits$.value),
@@ -197,9 +197,9 @@ export class DetailDocumentReceiptComponent implements OnInit {
   /**
    * Фукнция получает список активных клиентов для заполнения выпадающего списка.
    */
-  private getActiveClients() {
+  private getActiveClients(clientId: number) {
     return this._clientService
-      .getActiveClients()
+      .getActiveClients(clientId)
       .pipe(
         tap(() => console.log('Получен список активных клиентов: ', this.activeClients$.value)),
       );
